@@ -15,4 +15,17 @@ module top_level(
 )
     assign led = sw;
 
+    logic [1:0] mic_select;
+
+    assign mic_select = sw[15:14]
+    always_comb begin
+        case (mic_select)
+            2'b10: // Select mic 1
+            2'b11: // Select mic 2
+            2'b00: // Select mic 3
+            default: 
+        endcase
+        
+    end
+
 endmodule 
