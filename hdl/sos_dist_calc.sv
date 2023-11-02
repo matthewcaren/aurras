@@ -54,8 +54,9 @@ module sos_dist_calculator #(
             WAITING: begin
                 if (trigger) begin
                     // kick off an impulse
-                    state <= AWAITING_IMPULSE;
                     impulse_trigger <= 1;
+                    delay_valid <= 0;
+                    state <= AWAITING_IMPULSE;
                 end
             end
 
@@ -76,14 +77,14 @@ module sos_dist_calculator #(
                 if (step_in) begin
                     // if we hit max delay without detecting an onset, try again
                     if (delay_cycle_counter == MAX_DELAY) begin
-                        state <= AWAITING_IMPULSE;
                         impulse_trigger <= 1;
+                        state <= AWAITING_IMPULSE;
                     end else begin
                         // end of window
                         if (window_ix_counter == WINDOW_SIZE) begin
                             // check for transient
                             if ((current_window_sum > prev_window_sum) && (current_window_sum > (prev_prev_window_sum + (prev_prev_window_sum >> 1)))) begin
-                                delay <= delay_cycle_counter;
+                                delay <= delay_cycle_counter - WINDOW_SIZE;
                                 delay_valid <= 1;
                                 state <= WAITING;
                             end
@@ -106,7 +107,6 @@ module sos_dist_calculator #(
         endcase
     end
   end
-
 endmodule
 
 `default_nettype wire
