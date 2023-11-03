@@ -10,8 +10,9 @@ module top_level(
     output logic spkl, spkr, //speaker outputs
     output logic [15:0] led, // led outputs
     output logic uart_txd, // if we want to use Manta
-    input wire uart_rxd
-);
+    input wire uart_rxd,
+    output logic mic_clk, //microphone clock
+    input wire  mic_data //microphone data
 
     assign led = sw;
     logic sys_rst;
