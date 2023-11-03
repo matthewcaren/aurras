@@ -47,20 +47,6 @@ module top_level(
   logic audio_sample_valid;//single-cycle enable for samples at ~12 kHz (approx)
   logic[7:0] audio_data; //raw scaled audio data
 
-  //logic for interfacing with the microphone and generating 3.072 MHz signals
-  logic [7:0] pdm_tally;
-  logic [8:0] pdm_counter;
-
-  localparam PDM_COUNT_PERIOD = 32; //do not change
-  localparam NUM_PDM_SAMPLES = 256; //number of pdm in downsample/decimation/average
-
-  logic old_mic_clk; //prior mic clock for edge detection
-  logic sampled_mic_data; //one bit grabbed/held values of mic
-  logic pdm_signal_valid; //single-cycle signal at 3.072 MHz indicating pdm steps
-
-  assign pdm_signal_valid = mic_clk && ~old_mic_clk;
-
-
   //logic to produce 25 MHz step signal for PWM module
   logic [1:0] pwm_counter;
   logic pwm_step; //single-cycle pwm step
