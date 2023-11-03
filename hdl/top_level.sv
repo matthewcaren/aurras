@@ -43,9 +43,8 @@ module top_level(
 
 
   //logic for controlling PDM associated modules:
-  logic [8:0] m_clock_counter; //used for counting for mic clock generation
+
   logic audio_sample_valid;//single-cycle enable for samples at ~12 kHz (approx)
-  logic signed [7:0] mic_audio; //audio from microphone 8 bit unsigned at 12 kHz
   logic[7:0] audio_data; //raw scaled audio data
 
   //logic for interfacing with the microphone and generating 3.072 MHz signals
@@ -114,10 +113,6 @@ module top_level(
       audio_data_sel = tone_750; //signed
     end else if (sw[1])begin
       audio_data_sel = tone_440; //signed
-    end else if (sw[5])begin
-      audio_data_sel = mic_audio; //signed
-    end else begin
-      audio_data_sel = mic_audio; //signed
     end
   end
 
