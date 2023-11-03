@@ -1,7 +1,10 @@
 `timescale 1ns / 1ps
 `default_nettype none // prevents system from inferring an undeclared logic (good practice)
 
-//Sine Wave Generator
+/**
+ * 8-bit sine wave generator.
+ */
+
 module sine_generator (
   input wire clk_in,
   input wire rst_in, //clock and reset
