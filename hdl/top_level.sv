@@ -15,17 +15,20 @@ module top_level(
     input wire  mic_data //microphone data
 
 );
+
+    assign rgb1= 0;
+    assign rgb0 = 0;
     logic [1:0] mic_select;
 
-    // assign mic_select = sw[15:14];
-    // always_comb begin
-    //     case (mic_select)
-    //         2'b10: // Select mic 1
-    //         2'b11: // Select mic 2
-    //         2'b00: // Select mic 3
-    //         default: 
-    //     endcase
-    // end
+    assign mic_select = sw[15:14];
+    always_comb begin
+        case (mic_select)
+            2'b10: // Select mic 1
+            2'b11: // Select mic 2
+            2'b00: // Select mic 3
+            default: 
+        endcase
+    end
 
 
   logic clk_m;
@@ -37,13 +40,6 @@ module top_level(
   // a decimation by a factor of 256 gives us 8 bit 12 kHz audio
   //we do the latter in this lab.
 
-
-  logic record; //signal used to trigger recording
-  //definitely want this debounced:
-  debouncer rec_deb(  .clk_in(clk_m),
-                      .rst_in(sys_rst),
-                      .dirty_in(btn[1]),
-                      .clean_out(record));
 
   //logic for controlling PDM associated modules:
   logic [8:0] m_clock_counter; //used for counting for mic clock generation
@@ -102,11 +98,6 @@ module top_level(
   logic [7:0] single_audio; //recorder non-echo output
   logic [7:0] echo_audio; //recorder echo output
 
-  // //generate a 750 Hz tone
-  // assign tone_750 = 0; //replace and make instance of sine_generator for 750Hz
-  // //generate a 440 Hz tone
-  // assign tone_440 = 0; //replace and make instance of sine generator for 440 Hz
-
 
   sine_generator sine_750 (
     .clk_in(clk_m),
@@ -124,16 +115,6 @@ module top_level(
 
   defparam sine_440.PHASE_INCR = 32'b1001_0110_0010_1111_1100_1001_0110;
   //2^32/(12000/440) = 157,482,134.2 
-
-  recorder my_recorder(
-    .clk_in(clk_m), //system clock
-    .rst_in(sys_rst),//global reset
-    .record_in(record), //button indicating whether to record or not
-    .audio_valid_in(audio_sample_valid), //12 kHz audio sample valid signal
-    .audio_in(mic_audio), //8 bit signed data from microphone
-    .single_out(single_audio), //played back audio (8 bit signed at 12 kHz)
-    .echo_out(echo_audio) //played back audio (8 bit signed at 12 kHz)
-  );
 
 
   //choose which signal to play:
