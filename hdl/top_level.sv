@@ -12,23 +12,24 @@ module top_level(
     output logic uart_txd, // if we want to use Manta
     input wire uart_rxd,
     output logic mic_clk, //microphone clock
-    input wire  mic_data //microphone data
+    input wire  mic_data, //microphone data
+    output logic [2:0] rgb0, //rgb led
+    output logic [2:0] rgb1 //rgb led
 
 );
 
     assign rgb1= 0;
     assign rgb0 = 0;
-    logic [1:0] mic_select;
+    // logic [1:0] mic_select;
 
-    assign mic_select = sw[15:14];
-    always_comb begin
-        case (mic_select)
-            2'b10: // Select mic 1
-            2'b11: // Select mic 2
-            2'b00: // Select mic 3
-            default: 
-        endcase
-    end
+    // assign mic_select = sw[15:14];
+    // always_comb begin
+    //     case: (mic_select)
+    //         2'b10: // Select mic 1
+    //         2'b11: // Select mic 2
+    //         2'b00: // Select mic 3
+    //     endcase
+    // end
 
 
   logic clk_m;
@@ -70,34 +71,22 @@ module top_level(
     pwm_counter <= pwm_counter+1;
   end
 
-  //generate clock signal for microphone
-  //microphone signal at ~3.072 MHz
-  always_ff @(posedge clk_m)begin
-    mic_clk <= m_clock_counter < PDM_COUNT_PERIOD/2;
-    m_clock_counter <= (m_clock_counter==PDM_COUNT_PERIOD-1)?0:m_clock_counter+1;
-    old_mic_clk <= mic_clk;
-  end
-  
-  //generate audio signal (samples at ~12 kHz
-  always_ff @(posedge clk_m)begin
-    if (pdm_signal_valid)begin
-      sampled_mic_data    <= mic_data;
-      pdm_counter         <= (pdm_counter==NUM_PDM_SAMPLES)?0:pdm_counter + 1;
-      pdm_tally           <= (pdm_counter==NUM_PDM_SAMPLES)?mic_data
-                                                            :pdm_tally+mic_data;
-      audio_sample_valid  <= (pdm_counter==NUM_PDM_SAMPLES);
-      mic_audio           <= (pdm_counter==NUM_PDM_SAMPLES)?{~pdm_tally[7],pdm_tally[6:0]}
-                                                            :mic_audio;
-    end else begin
-      audio_sample_valid <= 0;
+
+  localparam integer COUNTER_MAX = 8192; // This is 2^13, which divides 98.3MHz down to ~12kHz
+  logic [12:0] counter; // 13-bit counter to divide down the clock
+
+  always @(posedge clk_m) begin
+      if (counter == COUNTER_MAX - 1) begin
+        audio_sample_valid <= 1;
+        counter <= 0;
+      end else begin
+        audio_sample_valid <= 0;
+        counter <= counter + 1;
+      end
     end
-  end
 
   logic [7:0] tone_750; //output of sine wave of 750Hz
   logic [7:0] tone_440; //output of sine wave of 440 Hz
-  logic [7:0] single_audio; //recorder non-echo output
-  logic [7:0] echo_audio; //recorder echo output
-
 
   sine_generator sine_750 (
     .clk_in(clk_m),
@@ -127,31 +116,17 @@ module top_level(
       audio_data_sel = tone_440; //signed
     end else if (sw[5])begin
       audio_data_sel = mic_audio; //signed
-    end else if (sw[6])begin
-      audio_data_sel = single_audio; //signed
-    end else if (sw[7])begin
-      audio_data_sel = echo_audio; //signed
     end else begin
       audio_data_sel = mic_audio; //signed
     end
   end
 
 
-  logic signed [7:0] vol_out; //can be signed or not signed...doesn't really matter
-  // all this does is convey the output of vol_out to the input of the pdm
-  // since it isn't used directly with any sort of math operation its signedness
-  // is not as important.
+  logic signed [7:0] vol_out;
   volume_control vc (.vol_in(sw[15:13]),.signal_in(audio_data_sel), .signal_out(vol_out));
 
-  //PWM:
-  logic pwm_out_signal; //an inherently digital signal (0 or 1..no need to make signed)
-  //the "value" is encoded using Pulse Width Modulation
-  //PDM:
-  logic pdm_out_signal; //an inherently digital signal (0 or 1..no need to make signed)
-  //the value is encoded using Pulse Density Modulation
-  logic audio_out; //value that drives output channels directly
+  logic pwm_out_signal;
 
-  //already implemented for you:
   pwm my_pwm(
     .clk_in(clk_m),
     .rst_in(sys_rst),
@@ -160,26 +135,9 @@ module top_level(
     .pwm_out(pwm_out_signal)
   );
 
-  //you build (currently empty):
-  pdm my_pdm(
-    .clk_in(clk_m),
-    .rst_in(sys_rst),
-    .level_in(vol_out),
-    .tick_in(pdm_signal_valid),
-    .pdm_out(pdm_out_signal)
-  );
-
-  always_comb begin
-    case (sw[4:3])
-      2'b00: audio_out = pwm_out_signal;
-      2'b01: audio_out = pdm_out_signal;
-      2'b10: audio_out = sampled_mic_data;
-      2'b11: audio_out = 0;
-    endcase
-  end
-
-  assign spkl = audio_out;
-  assign spkr = audio_out;
+ 
+  assign spkl = pwm_out_signal;
+  assign spkr = pwm_out_signal;
 
 endmodule // top_level
 
