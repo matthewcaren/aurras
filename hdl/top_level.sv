@@ -21,37 +21,31 @@ module top_level(
     assign led = sw;
     logic sys_rst;
     assign sys_rst = btn[0];
+
     logic audio_clk;
     logic audio_trigger;
 
     audio_clk_wiz macw (.clk_in(clk_100mhz), .clk_out(audio_clk)); //98.3MHz
-    // we make 98.3 MHz since that number is cleanly divisible by
-    // 32 to give us 3.072 MHz.  3.072 MHz is nice because it is cleanly divisible
-    // by nice powers of 2 to give us reasonable audio sample rates. For example,
-    // a decimation by a factor of 64 could give us 6 bit 48 kHz audio
-    // a decimation by a factor of 256 gives us 8 bit 12 kHz audio
-    //we do the latter in this lab.
 
     logic [11:0] counter;
     always_ff @(posedge audio_clk) begin
         counter <= counter + 1;
     end
-
-    assign audio_trigger = (counter == 0);
+    assign audio_trigger = (counter == 0); // This triggers at 24kHz
 
     logic [4:0] i2s_clk_counter;
-    logic i2s_clk;
+    logic i2s_clk; //3.072MHz
     always_ff @(posedge audio_clk) begin
         i2s_clk_counter <= i2s_clk_counter + 1;
     end
-    assign i2s_clk = (i2s_clk_counter > 15);
+    assign i2s_clk = i2s_clk_counter[4];
     
     logic [10:0] lrcl_counter;
-    logic lrcl_clk;
+    logic lrcl_clk; // 48kHz
     always_ff @(posedge audio_clk) begin
         lrcl_counter <= lrcl_counter + 1;
     end
-    assign lrcl_clk = (lrcl_counter > 1027);
+    assign lrcl_clk = lrcl_counter[10];
 
     logic mic_1_data;
     logic mic_2_data;
@@ -76,7 +70,10 @@ module top_level(
     logic [63:0] audio_out;
     logic [15:0] actual_audio_out;
     logic data_valid;
+
     i2s mic_1(.mic_data(mic_1_data), .i2s_clk(i2s_clk), .lrcl_clk(lrcl_clk), .data_valid(data_valid), .data_out(audio_out));
+    // i2s mic_2(.mic_data(mic_2_data), .i2s_clk(i2s_clk), .lrcl_clk(lrcl_clk), .data_valid(), .full_audio());
+    // i2s mic_3(.mic_data(mic_3_data), .i2s_clk(i2s_clk), .lrcl_clk(lrcl_clk), .data_valid(), .full_audio());
 
     always_ff @(posedge audio_clk) begin
         if (data_valid) begin
@@ -84,28 +81,19 @@ module top_level(
         end
     end 
 
-    // i2s mic_2(.mic_data(mic_2_data), .i2s_clk(i2s_clk), .lrcl_clk(lrcl_clk), .data_valid(), .full_audio());
-    // i2s mic_3(.mic_data(mic_3_data), .i2s_clk(i2s_clk), .lrcl_clk(lrcl_clk), .data_valid(), .full_audio());
-
-
-    logic [6:0] ss_c;
-    assign ss0_c = ss_c; //control upper four digit's cathodes!
-    assign ss1_c = ss_c; //same as above but for lower four digits!
-
-
     logic [31:0] prev_val;
     logic [31:0] val_to_display;
     always_ff @(posedge audio_clk) begin
         prev_val <= val_to_display;
     end
-    // assign val_to_display = btn[1] ? (sw[7] ? actual_audio_out[63:32] : (sw[8] ? actual_audio_out[31:0] : 32'b0)) : prev_val;
     assign val_to_display = btn[1] ? (sw[7] ? actual_audio_out : 32'b0) : prev_val;
     
-    // logic [15:0] prev_val;
-    // always_ff @(posedge audio_clk) begin
-    //     prev_val <= val_to_display;
-    // end
-    // assign val_to_display = btn[1] ? (sw[7] ? actual_audio_out : 32'b0) : prev_val;
+
+
+
+    logic [6:0] ss_c;
+    assign ss0_c = ss_c; //control upper four digit's cathodes!
+    assign ss1_c = ss_c; //same as above but for lower four digits!
     seven_segment_controller mssc(.clk_in(audio_clk),
                                 .rst_in(sys_rst),
                                 .val_in(val_to_display),
