@@ -6,7 +6,7 @@ def bundle(filelist):
 	fileargs = ""
 	for file in filelist: fileargs += f" {file}"
 
-	completed = subprocess.run(f"python3 remote/bundle/bundle.py -csf build.bundle {fileargs}",
+	completed = subprocess.run(f"python3 lab_bc/bundle/bundle.py -csf build.bundle {fileargs}",
 		shell=True)
 
 	if completed.returncode == 0: return "build.bundle"
