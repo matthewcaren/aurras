@@ -3,8 +3,8 @@
 # SW Build 3865809 on Sun May  7 15:04:56 MDT 2023
 # IP Build 3864474 on Sun May  7 20:36:21 MDT 2023
 # SharedData Build 3865790 on Sun May 07 13:33:03 MDT 2023
-# Start of session at: Sat Nov  4 18:22:47 2023
-# Process ID: 912
+# Start of session at: Sat Nov  4 20:35:20 2023
+# Process ID: 910
 # Current directory: /home/fpga
 # Command line: vivado -mode batch -source build.tcl
 # Log file: /home/fpga/vivado.log
@@ -37,15 +37,12 @@ INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7s50'
 INFO: [Device 21-403] Loading part xc7s50csga324-1
 INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 4 processes.
 INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
-INFO: [Synth 8-7075] Helper process launched with PID 921
-INFO: [Synth 8-11241] undeclared symbol 'sys_rst', assumed default net type 'wire' [/home/fpga/hdl/top_level.sv:96]
-INFO: [Synth 8-11241] undeclared symbol 'ss_c', assumed default net type 'wire' [/home/fpga/hdl/top_level.sv:98]
-INFO: [Synth 8-11241] undeclared symbol 'ss0_an', assumed default net type 'wire' [/home/fpga/hdl/top_level.sv:99]
-INFO: [Synth 8-11241] undeclared symbol 'ss1_an', assumed default net type 'wire' [/home/fpga/hdl/top_level.sv:99]
+INFO: [Synth 8-7075] Helper process launched with PID 919
+INFO: [Synth 8-11241] undeclared symbol 'sys_rst', assumed default net type 'wire' [/home/fpga/hdl/top_level.sv:104]
 CRITICAL WARNING: [Synth 8-9873] overwriting previous definition of module 'bto7s' [/home/fpga/hdl/seven_segment_controller.sv:78]
 INFO: [Synth 8-9937] previous definition of design element 'bto7s' is here [/home/fpga/hdl/bto7s.sv:33]
 ---------------------------------------------------------------------------------
-Starting RTL Elaboration : Time (s): cpu = 00:00:02 ; elapsed = 00:00:04 . Memory (MB): peak = 1990.344 ; gain = 377.770 ; free physical = 3357 ; free virtual = 8837
+Starting RTL Elaboration : Time (s): cpu = 00:00:02 ; elapsed = 00:00:04 . Memory (MB): peak = 1992.379 ; gain = 379.738 ; free physical = 3359 ; free virtual = 8840
 ---------------------------------------------------------------------------------
 INFO: [Synth 8-6157] synthesizing module 'top_level' [/home/fpga/hdl/top_level.sv:1]
 INFO: [Synth 8-6157] synthesizing module 'audio_clk_wiz' [/home/fpga/hdl/audio_clk_wiz.v:68]
@@ -69,22 +66,20 @@ INFO: [Synth 8-6155] done synthesizing module 'MMCME2_ADV' (0#1) [/opt/Xilinx/Vi
 INFO: [Synth 8-6157] synthesizing module 'BUFG' [/opt/Xilinx/Vivado/2023.1/scripts/rt/data/unisim_comp.v:1519]
 INFO: [Synth 8-6155] done synthesizing module 'BUFG' (0#1) [/opt/Xilinx/Vivado/2023.1/scripts/rt/data/unisim_comp.v:1519]
 INFO: [Synth 8-6155] done synthesizing module 'audio_clk_wiz' (0#1) [/home/fpga/hdl/audio_clk_wiz.v:68]
-WARNING: [Synth 8-6104] Input port 'pmodb' has an internal driver [/home/fpga/hdl/top_level.sv:56]
 WARNING: [Synth 8-6104] Input port 'pmodb' has an internal driver [/home/fpga/hdl/top_level.sv:60]
+WARNING: [Synth 8-6104] Input port 'pmodb' has an internal driver [/home/fpga/hdl/top_level.sv:64]
 INFO: [Synth 8-6157] synthesizing module 'i2s' [/home/fpga/hdl/i2s.sv:1]
 INFO: [Synth 8-6155] done synthesizing module 'i2s' (0#1) [/home/fpga/hdl/i2s.sv:1]
 INFO: [Synth 8-6157] synthesizing module 'seven_segment_controller' [/home/fpga/hdl/seven_segment_controller.sv:3]
 INFO: [Synth 8-6157] synthesizing module 'bto7s' [/home/fpga/hdl/seven_segment_controller.sv:50]
 INFO: [Synth 8-6155] done synthesizing module 'bto7s' (0#1) [/home/fpga/hdl/seven_segment_controller.sv:50]
 INFO: [Synth 8-6155] done synthesizing module 'seven_segment_controller' (0#1) [/home/fpga/hdl/seven_segment_controller.sv:3]
-WARNING: [Synth 8-689] width (1) of port connection 'cat_out' does not match port width (7) of module 'seven_segment_controller' [/home/fpga/hdl/top_level.sv:98]
-WARNING: [Synth 8-689] width (2) of port connection 'an_out' does not match port width (8) of module 'seven_segment_controller' [/home/fpga/hdl/top_level.sv:99]
 INFO: [Synth 8-6155] done synthesizing module 'top_level' (0#1) [/home/fpga/hdl/top_level.sv:1]
-WARNING: [Synth 8-6014] Unused sequential element counter_reg was removed.  [/home/fpga/hdl/top_level.sv:29]
-WARNING: [Synth 8-3848] Net spkl in module/entity top_level does not have driver. [/home/fpga/hdl/top_level.sv:7]
-WARNING: [Synth 8-3848] Net spkr in module/entity top_level does not have driver. [/home/fpga/hdl/top_level.sv:8]
-WARNING: [Synth 8-3848] Net uart_txd in module/entity top_level does not have driver. [/home/fpga/hdl/top_level.sv:10]
-WARNING: [Synth 8-3848] Net sys_rst in module/entity top_level does not have driver. [/home/fpga/hdl/top_level.sv:96]
+WARNING: [Synth 8-6014] Unused sequential element counter_reg was removed.  [/home/fpga/hdl/top_level.sv:33]
+WARNING: [Synth 8-3848] Net spkl in module/entity top_level does not have driver. [/home/fpga/hdl/top_level.sv:11]
+WARNING: [Synth 8-3848] Net spkr in module/entity top_level does not have driver. [/home/fpga/hdl/top_level.sv:12]
+WARNING: [Synth 8-3848] Net uart_txd in module/entity top_level does not have driver. [/home/fpga/hdl/top_level.sv:14]
+WARNING: [Synth 8-3848] Net sys_rst in module/entity top_level does not have driver. [/home/fpga/hdl/top_level.sv:104]
 WARNING: [Synth 8-7129] Port spkl in module top_level is either unconnected or has no load
 WARNING: [Synth 8-7129] Port spkr in module top_level is either unconnected or has no load
 WARNING: [Synth 8-7129] Port uart_txd in module top_level is either unconnected or has no load
@@ -107,18 +102,18 @@ WARNING: [Synth 8-7129] Port btn[1] in module top_level is either unconnected or
 WARNING: [Synth 8-7129] Port btn[0] in module top_level is either unconnected or has no load
 WARNING: [Synth 8-7129] Port uart_rxd in module top_level is either unconnected or has no load
 ---------------------------------------------------------------------------------
-Finished RTL Elaboration : Time (s): cpu = 00:00:03 ; elapsed = 00:00:05 . Memory (MB): peak = 2057.312 ; gain = 444.738 ; free physical = 3227 ; free virtual = 8711
+Finished RTL Elaboration : Time (s): cpu = 00:00:03 ; elapsed = 00:00:05 . Memory (MB): peak = 2057.348 ; gain = 444.707 ; free physical = 3230 ; free virtual = 8713
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Handling Custom Attributes
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Handling Custom Attributes : Time (s): cpu = 00:00:03 ; elapsed = 00:00:05 . Memory (MB): peak = 2072.156 ; gain = 459.582 ; free physical = 3225 ; free virtual = 8709
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:03 ; elapsed = 00:00:05 . Memory (MB): peak = 2072.191 ; gain = 459.551 ; free physical = 3227 ; free virtual = 8711
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:03 ; elapsed = 00:00:05 . Memory (MB): peak = 2072.156 ; gain = 459.582 ; free physical = 3225 ; free virtual = 8709
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:03 ; elapsed = 00:00:05 . Memory (MB): peak = 2072.191 ; gain = 459.551 ; free physical = 3227 ; free virtual = 8711
 ---------------------------------------------------------------------------------
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2078.094 ; gain = 0.000 ; free physical = 3219 ; free virtual = 8703
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2078.129 ; gain = 0.000 ; free physical = 3221 ; free virtual = 8706
 INFO: [Netlist 29-17] Analyzing 1 Unisim elements for replacement
 INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
 INFO: [Project 1-570] Preparing netlist for logic optimization
@@ -126,72 +121,6 @@ INFO: [Project 1-570] Preparing netlist for logic optimization
 Processing XDC Constraints
 Initializing timing engine
 Parsing XDC File [/home/fpga/xdc/top_level.xdc]
-WARNING: [Vivado 12-584] No ports matched 'ss0_an[0]'. [/home/fpga/xdc/top_level.xdc:60]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:60]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss0_an[1]'. [/home/fpga/xdc/top_level.xdc:61]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:61]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss0_an[2]'. [/home/fpga/xdc/top_level.xdc:62]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:62]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss0_an[3]'. [/home/fpga/xdc/top_level.xdc:63]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:63]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_an[0]'. [/home/fpga/xdc/top_level.xdc:65]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:65]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_an[1]'. [/home/fpga/xdc/top_level.xdc:66]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:66]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_an[2]'. [/home/fpga/xdc/top_level.xdc:67]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:67]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_an[3]'. [/home/fpga/xdc/top_level.xdc:68]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:68]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss0_c[0]'. [/home/fpga/xdc/top_level.xdc:71]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:71]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss0_c[1]'. [/home/fpga/xdc/top_level.xdc:72]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:72]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss0_c[2]'. [/home/fpga/xdc/top_level.xdc:73]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:73]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss0_c[3]'. [/home/fpga/xdc/top_level.xdc:74]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:74]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss0_c[4]'. [/home/fpga/xdc/top_level.xdc:75]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:75]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss0_c[5]'. [/home/fpga/xdc/top_level.xdc:76]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:76]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss0_c[6]'. [/home/fpga/xdc/top_level.xdc:77]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:77]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_c[0]'. [/home/fpga/xdc/top_level.xdc:80]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:80]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_c[1]'. [/home/fpga/xdc/top_level.xdc:81]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:81]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_c[2]'. [/home/fpga/xdc/top_level.xdc:82]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:82]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_c[3]'. [/home/fpga/xdc/top_level.xdc:83]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:83]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_c[4]'. [/home/fpga/xdc/top_level.xdc:84]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:84]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_c[5]'. [/home/fpga/xdc/top_level.xdc:85]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:85]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_c[6]'. [/home/fpga/xdc/top_level.xdc:86]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:86]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
 WARNING: [Vivado 12-584] No ports matched 'pmodbclk'. [/home/fpga/xdc/top_level.xdc:101]
 CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:101]
 Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
@@ -237,29 +166,29 @@ Resolution: To avoid this warning, move constraints listed in [.Xil/top_level_pr
 INFO: [Timing 38-2] Deriving generated clocks
 Completed Processing XDC Constraints
 
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2158.879 ; gain = 0.000 ; free physical = 3189 ; free virtual = 8688
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2152.914 ; gain = 0.000 ; free physical = 3191 ; free virtual = 8691
 INFO: [Project 1-111] Unisim Transformation Summary:
 No Unisim elements were transformed.
 
-Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2158.879 ; gain = 0.000 ; free physical = 3189 ; free virtual = 8688
+Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2152.914 ; gain = 0.000 ; free physical = 3191 ; free virtual = 8691
 ---------------------------------------------------------------------------------
-Finished Constraint Validation : Time (s): cpu = 00:00:06 ; elapsed = 00:00:09 . Memory (MB): peak = 2158.879 ; gain = 546.305 ; free physical = 3186 ; free virtual = 8687
+Finished Constraint Validation : Time (s): cpu = 00:00:06 ; elapsed = 00:00:09 . Memory (MB): peak = 2152.914 ; gain = 540.273 ; free physical = 3190 ; free virtual = 8690
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Loading Part and Timing Information
 ---------------------------------------------------------------------------------
 Loading part: xc7s50csga324-1
 ---------------------------------------------------------------------------------
-Finished Loading Part and Timing Information : Time (s): cpu = 00:00:06 ; elapsed = 00:00:09 . Memory (MB): peak = 2158.879 ; gain = 546.305 ; free physical = 3186 ; free virtual = 8687
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:06 ; elapsed = 00:00:09 . Memory (MB): peak = 2152.914 ; gain = 540.273 ; free physical = 3190 ; free virtual = 8690
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Applying 'set_property' XDC Constraints
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:06 ; elapsed = 00:00:09 . Memory (MB): peak = 2158.879 ; gain = 546.305 ; free physical = 3186 ; free virtual = 8687
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:06 ; elapsed = 00:00:09 . Memory (MB): peak = 2152.914 ; gain = 540.273 ; free physical = 3190 ; free virtual = 8690
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:06 ; elapsed = 00:00:09 . Memory (MB): peak = 2158.879 ; gain = 546.305 ; free physical = 3185 ; free virtual = 8687
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:06 ; elapsed = 00:00:09 . Memory (MB): peak = 2152.914 ; gain = 540.273 ; free physical = 3189 ; free virtual = 8690
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start RTL Component Statistics 
@@ -317,30 +246,26 @@ WARNING: [Synth 8-7129] Port btn[2] in module top_level is either unconnected or
 WARNING: [Synth 8-7129] Port btn[1] in module top_level is either unconnected or has no load
 WARNING: [Synth 8-7129] Port btn[0] in module top_level is either unconnected or has no load
 WARNING: [Synth 8-7129] Port uart_rxd in module top_level is either unconnected or has no load
-CRITICAL WARNING: [Synth 8-6859] multi-driven net on pin pmodb[1] with 1st driver pin 'lrcl_clk_inferred/lrcl_clk' [/home/fpga/hdl/top_level.sv:46]
-CRITICAL WARNING: [Synth 8-6859] multi-driven net on pin pmodb[1] with 2nd driver pin 'pmodb[1]' [/home/fpga/hdl/top_level.sv:1]
-CRITICAL WARNING: [Synth 8-6859] multi-driven net on pin pmodb[3] with 1st driver pin 'i2s_clk_counter0_inferred/out[4]' [/home/fpga/hdl/top_level.sv:37]
-CRITICAL WARNING: [Synth 8-6859] multi-driven net on pin pmodb[3] with 2nd driver pin 'pmodb[3]' [/home/fpga/hdl/top_level.sv:1]
 ---------------------------------------------------------------------------------
-Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:07 ; elapsed = 00:00:09 . Memory (MB): peak = 2158.879 ; gain = 546.305 ; free physical = 3182 ; free virtual = 8688
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:09 ; elapsed = 00:00:11 . Memory (MB): peak = 2152.914 ; gain = 540.273 ; free physical = 3158 ; free virtual = 8665
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Applying XDC Timing Constraints
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:09 ; elapsed = 00:00:12 . Memory (MB): peak = 2158.879 ; gain = 546.305 ; free physical = 3174 ; free virtual = 8687
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:11 ; elapsed = 00:00:14 . Memory (MB): peak = 2152.914 ; gain = 540.273 ; free physical = 3150 ; free virtual = 8664
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Timing Optimization
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Timing Optimization : Time (s): cpu = 00:00:09 ; elapsed = 00:00:12 . Memory (MB): peak = 2158.879 ; gain = 546.305 ; free physical = 3174 ; free virtual = 8687
+Finished Timing Optimization : Time (s): cpu = 00:00:11 ; elapsed = 00:00:14 . Memory (MB): peak = 2152.914 ; gain = 540.273 ; free physical = 3150 ; free virtual = 8664
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Technology Mapping
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Technology Mapping : Time (s): cpu = 00:00:09 ; elapsed = 00:00:12 . Memory (MB): peak = 2158.879 ; gain = 546.305 ; free physical = 3174 ; free virtual = 8687
+Finished Technology Mapping : Time (s): cpu = 00:00:11 ; elapsed = 00:00:14 . Memory (MB): peak = 2152.914 ; gain = 540.273 ; free physical = 3150 ; free virtual = 8664
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start IO Insertion
@@ -358,37 +283,48 @@ Start Final Netlist Cleanup
 Finished Final Netlist Cleanup
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished IO Insertion : Time (s): cpu = 00:00:10 ; elapsed = 00:00:13 . Memory (MB): peak = 2158.879 ; gain = 546.305 ; free physical = 3174 ; free virtual = 8687
+Finished IO Insertion : Time (s): cpu = 00:00:12 ; elapsed = 00:00:15 . Memory (MB): peak = 2152.914 ; gain = 540.273 ; free physical = 3150 ; free virtual = 8664
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Instances
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Instances : Time (s): cpu = 00:00:10 ; elapsed = 00:00:13 . Memory (MB): peak = 2158.879 ; gain = 546.305 ; free physical = 3174 ; free virtual = 8687
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:12 ; elapsed = 00:00:15 . Memory (MB): peak = 2152.914 ; gain = 540.273 ; free physical = 3150 ; free virtual = 8664
 ---------------------------------------------------------------------------------
+CRITICAL WARNING: [Synth 8-6859] multi-driven net on pin pmodb_IBUF[1] with 1st driver pin 'pmodb_IBUF[1]_inst/O' [/home/fpga/hdl/top_level.sv:1]
+CRITICAL WARNING: [Synth 8-6859] multi-driven net on pin pmodb_IBUF[1] with 2nd driver pin 'prev_lrcl_clk_i_1/O' [/home/fpga/hdl/top_level.sv:41]
+CRITICAL WARNING: [Synth 8-6859] multi-driven net on pin pmodb_IBUF[3] with 1st driver pin 'pmodb_IBUF[3]_inst/O' [/home/fpga/hdl/top_level.sv:1]
+CRITICAL WARNING: [Synth 8-6859] multi-driven net on pin pmodb_IBUF[3] with 2nd driver pin 'i2s_clk_counter_reg[4]/Q' [/home/fpga/hdl/top_level.sv:41]
+
+Report Check Netlist: 
++------+------------------+-------+---------+-------+------------------+
+|      |Item              |Errors |Warnings |Status |Description       |
++------+------------------+-------+---------+-------+------------------+
+|1     |multi_driven_nets |      0|        2|Failed |Multi driven nets |
++------+------------------+-------+---------+-------+------------------+
 ---------------------------------------------------------------------------------
 Start Rebuilding User Hierarchy
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:10 ; elapsed = 00:00:13 . Memory (MB): peak = 2158.879 ; gain = 546.305 ; free physical = 3174 ; free virtual = 8687
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:12 ; elapsed = 00:00:15 . Memory (MB): peak = 2152.914 ; gain = 540.273 ; free physical = 3150 ; free virtual = 8664
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Ports
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Ports : Time (s): cpu = 00:00:10 ; elapsed = 00:00:13 . Memory (MB): peak = 2158.879 ; gain = 546.305 ; free physical = 3174 ; free virtual = 8687
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:12 ; elapsed = 00:00:15 . Memory (MB): peak = 2152.914 ; gain = 540.273 ; free physical = 3150 ; free virtual = 8664
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Handling Custom Attributes
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Handling Custom Attributes : Time (s): cpu = 00:00:10 ; elapsed = 00:00:13 . Memory (MB): peak = 2158.879 ; gain = 546.305 ; free physical = 3174 ; free virtual = 8687
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:12 ; elapsed = 00:00:15 . Memory (MB): peak = 2152.914 ; gain = 540.273 ; free physical = 3150 ; free virtual = 8664
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Nets
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Nets : Time (s): cpu = 00:00:10 ; elapsed = 00:00:13 . Memory (MB): peak = 2158.879 ; gain = 546.305 ; free physical = 3174 ; free virtual = 8687
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:12 ; elapsed = 00:00:15 . Memory (MB): peak = 2152.914 ; gain = 540.273 ; free physical = 3150 ; free virtual = 8664
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Writing Synthesis Report
@@ -405,89 +341,32 @@ Report Cell Usage:
 |      |Cell       |Count |
 +------+-----------+------+
 |1     |BUFG       |     2|
-|2     |MMCME2_ADV |     1|
-|3     |IBUF       |    17|
-|4     |OBUF       |    16|
-|5     |OBUFT      |     3|
+|2     |CARRY4     |     8|
+|3     |LUT1       |    12|
+|4     |LUT2       |     6|
+|5     |LUT3       |     5|
+|6     |LUT4       |    21|
+|7     |LUT5       |    81|
+|8     |LUT6       |    35|
+|9     |MMCME2_ADV |     1|
+|10    |FDRE       |   255|
+|11    |FDSE       |     1|
+|12    |IBUF       |    20|
+|13    |OBUF       |    38|
+|14    |OBUFT      |     3|
 +------+-----------+------+
 ---------------------------------------------------------------------------------
-Finished Writing Synthesis Report : Time (s): cpu = 00:00:10 ; elapsed = 00:00:13 . Memory (MB): peak = 2158.879 ; gain = 546.305 ; free physical = 3174 ; free virtual = 8687
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:12 ; elapsed = 00:00:15 . Memory (MB): peak = 2152.914 ; gain = 540.273 ; free physical = 3150 ; free virtual = 8664
 ---------------------------------------------------------------------------------
 Synthesis finished with 0 errors, 4 critical warnings and 22 warnings.
-Synthesis Optimization Runtime : Time (s): cpu = 00:00:09 ; elapsed = 00:00:12 . Memory (MB): peak = 2158.879 ; gain = 459.582 ; free physical = 3174 ; free virtual = 8687
-Synthesis Optimization Complete : Time (s): cpu = 00:00:10 ; elapsed = 00:00:13 . Memory (MB): peak = 2158.887 ; gain = 546.305 ; free physical = 3174 ; free virtual = 8687
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:11 ; elapsed = 00:00:14 . Memory (MB): peak = 2152.914 ; gain = 459.551 ; free physical = 3150 ; free virtual = 8664
+Synthesis Optimization Complete : Time (s): cpu = 00:00:12 ; elapsed = 00:00:15 . Memory (MB): peak = 2152.922 ; gain = 540.273 ; free physical = 3149 ; free virtual = 8665
 INFO: [Project 1-571] Translating synthesized netlist
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2158.887 ; gain = 0.000 ; free physical = 3173 ; free virtual = 8687
-INFO: [Netlist 29-17] Analyzing 1 Unisim elements for replacement
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2152.922 ; gain = 0.000 ; free physical = 3148 ; free virtual = 8664
+INFO: [Netlist 29-17] Analyzing 9 Unisim elements for replacement
 INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
 INFO: [Project 1-570] Preparing netlist for logic optimization
 Parsing XDC File [/home/fpga/xdc/top_level.xdc]
-WARNING: [Vivado 12-584] No ports matched 'ss0_an[0]'. [/home/fpga/xdc/top_level.xdc:60]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:60]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss0_an[1]'. [/home/fpga/xdc/top_level.xdc:61]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:61]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss0_an[2]'. [/home/fpga/xdc/top_level.xdc:62]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:62]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss0_an[3]'. [/home/fpga/xdc/top_level.xdc:63]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:63]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_an[0]'. [/home/fpga/xdc/top_level.xdc:65]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:65]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_an[1]'. [/home/fpga/xdc/top_level.xdc:66]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:66]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_an[2]'. [/home/fpga/xdc/top_level.xdc:67]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:67]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_an[3]'. [/home/fpga/xdc/top_level.xdc:68]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:68]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss0_c[0]'. [/home/fpga/xdc/top_level.xdc:71]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:71]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss0_c[1]'. [/home/fpga/xdc/top_level.xdc:72]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:72]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss0_c[2]'. [/home/fpga/xdc/top_level.xdc:73]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:73]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss0_c[3]'. [/home/fpga/xdc/top_level.xdc:74]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:74]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss0_c[4]'. [/home/fpga/xdc/top_level.xdc:75]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:75]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss0_c[5]'. [/home/fpga/xdc/top_level.xdc:76]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:76]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss0_c[6]'. [/home/fpga/xdc/top_level.xdc:77]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:77]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_c[0]'. [/home/fpga/xdc/top_level.xdc:80]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:80]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_c[1]'. [/home/fpga/xdc/top_level.xdc:81]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:81]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_c[2]'. [/home/fpga/xdc/top_level.xdc:82]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:82]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_c[3]'. [/home/fpga/xdc/top_level.xdc:83]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:83]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_c[4]'. [/home/fpga/xdc/top_level.xdc:84]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:84]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_c[5]'. [/home/fpga/xdc/top_level.xdc:85]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:85]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-WARNING: [Vivado 12-584] No ports matched 'ss1_c[6]'. [/home/fpga/xdc/top_level.xdc:86]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:86]
-Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
 WARNING: [Vivado 12-584] No ports matched 'pmodbclk'. [/home/fpga/xdc/top_level.xdc:101]
 CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/home/fpga/xdc/top_level.xdc:101]
 Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
@@ -529,23 +408,23 @@ CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [/h
 Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
 Finished Parsing XDC File [/home/fpga/xdc/top_level.xdc]
 INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2158.887 ; gain = 0.000 ; free physical = 3451 ; free virtual = 8968
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2152.922 ; gain = 0.000 ; free physical = 3426 ; free virtual = 8943
 INFO: [Project 1-111] Unisim Transformation Summary:
 No Unisim elements were transformed.
 
-Synth Design complete | Checksum: f1e50b5b
+Synth Design complete | Checksum: 6a1e0c89
 INFO: [Common 17-83] Releasing license: Synthesis
-39 Infos, 122 Warnings, 75 Critical Warnings and 0 Errors encountered.
+36 Infos, 76 Warnings, 31 Critical Warnings and 0 Errors encountered.
 synth_design completed successfully
-synth_design: Time (s): cpu = 00:00:14 ; elapsed = 00:00:16 . Memory (MB): peak = 2158.887 ; gain = 865.250 ; free physical = 3451 ; free virtual = 8967
-INFO: [Common 17-2834] synth_design peak Physical Memory [PSS] (MB): overall = 1934.884; main = 1644.152; forked = 430.375
-INFO: [Common 17-2834] synth_design peak Virtual Memory [VSS] (MB): overall = 3133.684; main = 2158.883; forked = 974.801
+synth_design: Time (s): cpu = 00:00:16 ; elapsed = 00:00:19 . Memory (MB): peak = 2152.922 ; gain = 859.219 ; free physical = 3426 ; free virtual = 8944
+INFO: [Common 17-2834] synth_design peak Physical Memory [PSS] (MB): overall = 1955.252; main = 1671.877; forked = 431.342
+INFO: [Common 17-2834] synth_design peak Virtual Memory [VSS] (MB): overall = 3127.723; main = 2152.918; forked = 974.805
 # write_checkpoint -force $outputDir/post_synth.dcp
 INFO: [Timing 38-480] Writing timing data to binary archive.
 Writing XDEF routing.
 Writing XDEF routing logical nets.
 Writing XDEF routing special nets.
-Write XDEF Complete: Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00 . Memory (MB): peak = 2174.887 ; gain = 0.000 ; free physical = 3450 ; free virtual = 8967
+Write XDEF Complete: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2168.922 ; gain = 0.000 ; free physical = 3425 ; free virtual = 8944
 INFO: [Common 17-1381] The checkpoint '/home/fpga/obj/post_synth.dcp' has been generated.
 # report_timing_summary -file $outputDir/post_synth_timing_summary.rpt
 INFO: [Timing 38-35] Done setting XDC timing constraints.
@@ -562,379 +441,19 @@ INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xc
 Running DRC as a precondition to command opt_design
 
 Starting DRC Task
-INFO: [Project 1-461] DRC finished with 0 Errors
+ERROR: [DRC MDRV-1] Multiple Driver Nets: Net pmodb_IBUF[1] has multiple drivers: mic_1/prev_lrcl_clk_i_1/O, and pmodb_IBUF[1]_inst/O.
+ERROR: [DRC MDRV-1] Multiple Driver Nets: Net pmodb_IBUF[3] has multiple drivers: pmodb_IBUF[3]_inst/O, and i2s_clk_counter_reg[4]/Q.
+INFO: [Project 1-461] DRC finished with 2 Errors
 INFO: [Project 1-462] Please refer to the DRC report (report_drc) for more information.
+ERROR: [Vivado_Tcl 4-78] Error(s) found during DRC. Opt_design not run.
 
-Time (s): cpu = 00:00:00.21 ; elapsed = 00:00:00.29 . Memory (MB): peak = 2190.895 ; gain = 8.004 ; free physical = 3390 ; free virtual = 8924
-
-Starting Cache Timing Information Task
-Ending Cache Timing Information Task | Checksum: 13a57cd38
-
-Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2190.895 ; gain = 0.000 ; free physical = 3390 ; free virtual = 8924
-
-Starting Logic Optimization Task
-
-Phase 1 Retarget
-INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
-INFO: [Opt 31-49] Retargeted 0 cell(s).
-Phase 1 Retarget | Checksum: 13a57cd38
-
-Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00 . Memory (MB): peak = 2399.895 ; gain = 0.000 ; free physical = 3159 ; free virtual = 8694
-INFO: [Opt 31-389] Phase Retarget created 0 cells and removed 0 cells
-INFO: [Opt 31-1021] In phase Retarget, 1 netlist objects are constrained preventing optimization. Please run opt_design with -debug_log to get more detail. 
-
-Phase 2 Constant propagation
-INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
-Phase 2 Constant propagation | Checksum: 13a57cd38
-
-Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.03 . Memory (MB): peak = 2399.895 ; gain = 0.000 ; free physical = 3159 ; free virtual = 8694
-INFO: [Opt 31-389] Phase Constant propagation created 0 cells and removed 0 cells
-
-Phase 3 Sweep
-Phase 3 Sweep | Checksum: 117b05ce8
-
-Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.03 . Memory (MB): peak = 2399.895 ; gain = 0.000 ; free physical = 3159 ; free virtual = 8694
-INFO: [Opt 31-389] Phase Sweep created 0 cells and removed 5 cells
-
-Phase 4 BUFG optimization
-Phase 4 BUFG optimization | Checksum: 117b05ce8
-
-Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.03 . Memory (MB): peak = 2423.906 ; gain = 24.012 ; free physical = 3159 ; free virtual = 8694
-INFO: [Opt 31-662] Phase BUFG optimization created 0 cells of which 0 are BUFGs and removed 0 cells.
-
-Phase 5 Shift Register Optimization
-INFO: [Opt 31-1064] SRL Remap converted 0 SRLs to 0 registers and converted 0 registers of register chains to 0 SRLs
-Phase 5 Shift Register Optimization | Checksum: 214d5cd14
-
-Time (s): cpu = 00:00:00.02 ; elapsed = 00:00:00.03 . Memory (MB): peak = 2423.906 ; gain = 24.012 ; free physical = 3159 ; free virtual = 8694
-INFO: [Opt 31-389] Phase Shift Register Optimization created 0 cells and removed 0 cells
-
-Phase 6 Post Processing Netlist
-Phase 6 Post Processing Netlist | Checksum: 214d5cd14
-
-Time (s): cpu = 00:00:00.02 ; elapsed = 00:00:00.03 . Memory (MB): peak = 2423.906 ; gain = 24.012 ; free physical = 3159 ; free virtual = 8694
-INFO: [Opt 31-389] Phase Post Processing Netlist created 0 cells and removed 0 cells
-Opt_design Change Summary
-=========================
-
-
--------------------------------------------------------------------------------------------------------------------------
-|  Phase                        |  #Cells created  |  #Cells Removed  |  #Constrained objects preventing optimizations  |
--------------------------------------------------------------------------------------------------------------------------
-|  Retarget                     |               0  |               0  |                                              1  |
-|  Constant propagation         |               0  |               0  |                                              0  |
-|  Sweep                        |               0  |               5  |                                              0  |
-|  BUFG optimization            |               0  |               0  |                                              0  |
-|  Shift Register Optimization  |               0  |               0  |                                              0  |
-|  Post Processing Netlist      |               0  |               0  |                                              0  |
--------------------------------------------------------------------------------------------------------------------------
-
-
-
-Starting Connectivity Check Task
-
-Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3159 ; free virtual = 8694
-Ending Logic Optimization Task | Checksum: 214d5cd14
-
-Time (s): cpu = 00:00:00.02 ; elapsed = 00:00:00.03 . Memory (MB): peak = 2423.906 ; gain = 24.012 ; free physical = 3159 ; free virtual = 8694
-
-Starting Power Optimization Task
-INFO: [Pwropt 34-132] Skipping clock gating for clocks with a period < 2.00 ns.
-Ending Power Optimization Task | Checksum: 214d5cd14
-
-Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.03 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3159 ; free virtual = 8694
-
-Starting Final Cleanup Task
-Ending Final Cleanup Task | Checksum: 214d5cd14
-
-Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3159 ; free virtual = 8694
-
-Starting Netlist Obfuscation Task
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3159 ; free virtual = 8694
-Ending Netlist Obfuscation Task | Checksum: 214d5cd14
-
-Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3159 ; free virtual = 8694
+Time (s): cpu = 00:00:00.21 ; elapsed = 00:00:00.19 . Memory (MB): peak = 2255.586 ; gain = 19.879 ; free physical = 3365 ; free virtual = 8901
 INFO: [Common 17-83] Releasing license: Implementation
-16 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.
-opt_design completed successfully
-# place_design
-Command: place_design
-Attempting to get a license for feature 'Implementation' and/or device 'xc7s50'
-INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xc7s50'
-INFO: [Vivado_Tcl 4-198] DRC finished with 0 Errors
-INFO: [Vivado_Tcl 4-199] Please refer to the DRC report (report_drc) for more information.
-Running DRC as a precondition to command place_design
-INFO: [Vivado_Tcl 4-198] DRC finished with 0 Errors
-INFO: [Vivado_Tcl 4-199] Please refer to the DRC report (report_drc) for more information.
-
-Starting Placer Task
-
-Phase 1 Placer Initialization
-
-Phase 1.1 Placer Initialization Netlist Sorting
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3159 ; free virtual = 8695
-Phase 1.1 Placer Initialization Netlist Sorting | Checksum: 13c693356
-
-Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3159 ; free virtual = 8695
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3159 ; free virtual = 8695
-
-Phase 1.2 IO Placement/ Clock Placement/ Build Placer Device
-INFO: [Timing 38-35] Done setting XDC timing constraints.
-Phase 1.2 IO Placement/ Clock Placement/ Build Placer Device | Checksum: 13c693356
-
-Time (s): cpu = 00:00:00.06 ; elapsed = 00:00:00.06 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3158 ; free virtual = 8695
-
-Phase 1.3 Build Placer Netlist Model
-WARNING: [Place 30-2953] Timing driven mode will be turned off because no critical terminals were found.
-Phase 1.3 Build Placer Netlist Model | Checksum: 1ad2c1794
-
-Time (s): cpu = 00:00:00.07 ; elapsed = 00:00:00.09 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3157 ; free virtual = 8695
-
-Phase 1.4 Constrain Clocks/Macros
-Phase 1.4 Constrain Clocks/Macros | Checksum: 1ad2c1794
-
-Time (s): cpu = 00:00:00.08 ; elapsed = 00:00:00.09 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3156 ; free virtual = 8695
-Phase 1 Placer Initialization | Checksum: 1ad2c1794
-
-Time (s): cpu = 00:00:00.08 ; elapsed = 00:00:00.09 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3156 ; free virtual = 8695
-
-Phase 2 Final Placement Cleanup
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3156 ; free virtual = 8695
-
-Time (s): cpu = 00:00:00.08 ; elapsed = 00:00:00.09 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3156 ; free virtual = 8695
-INFO: [Place 30-281] No place-able instance is found; design doesn't contain any instance or all instances are placed
-Ending Placer Task | Checksum: 13c693356
-
-Time (s): cpu = 00:00:00.08 ; elapsed = 00:00:00.09 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3156 ; free virtual = 8695
-INFO: [Common 17-83] Releasing license: Implementation
-8 Infos, 1 Warnings, 0 Critical Warnings and 0 Errors encountered.
-place_design completed successfully
-# report_clock_utilization -file $outputDir/clock_util.rpt
-# if {[get_property SLACK [get_timing_paths -max_paths 1 -nworst 1 -setup]] < 0} {
-#  puts "Found setup timing violations => running physical optimization"
-#  phys_opt_design
-# }
-INFO: [Timing 38-35] Done setting XDC timing constraints.
-Found setup timing violations => running physical optimization
-Command: phys_opt_design
-Attempting to get a license for feature 'Implementation' and/or device 'xc7s50'
-INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xc7s50'
-INFO: [Vivado_Tcl 4-383] Design worst setup slack (WNS) is greater than or equal to 0.000 ns. Skipping all physical synthesis optimizations.
-INFO: [Vivado_Tcl 4-232] No setup violation found. The netlist was not modified.
-INFO: [Common 17-83] Releasing license: Implementation
-5 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.
-phys_opt_design completed successfully
-# write_checkpoint -force $outputDir/post_place.dcp
-INFO: [Timing 38-480] Writing timing data to binary archive.
-Writing XDEF routing.
-Writing XDEF routing logical nets.
-Writing XDEF routing special nets.
-Write XDEF Complete: Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.02 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3154 ; free virtual = 8694
-INFO: [Common 17-1381] The checkpoint '/home/fpga/obj/post_place.dcp' has been generated.
-# report_utilization -file $outputDir/post_place_util.rpt
-# report_timing_summary -file $outputDir/post_place_timing_summary.rpt
-# report_timing -file $outputDir/post_place_timing.rpt
-INFO: [Timing 38-78] ReportTimingParams: -max_paths 1 -nworst 1 -delay_type max -sort_by slack.
-# route_design -directive Explore
-Command: route_design -directive Explore
-Attempting to get a license for feature 'Implementation' and/or device 'xc7s50'
-INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xc7s50'
-Running DRC as a precondition to command route_design
-INFO: [Vivado_Tcl 4-198] DRC finished with 0 Errors
-INFO: [Vivado_Tcl 4-199] Please refer to the DRC report (report_drc) for more information.
-
-
-Starting Routing Task
-INFO: [Route 35-270] Using Router directive 'Explore'.
-
-Phase 1 Build RT Design
-Checksum: PlaceDB: 7e7557fc ConstDB: 0 ShapeSum: bdf3db5a RouteDB: 0
-Post Restoration Checksum: NetGraph: baba82c5 | NumContArr: b1e03533 | Constraints: 190a55ad | Timing: 0
-Phase 1 Build RT Design | Checksum: 185a50da5
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3149 ; free virtual = 8693
-
-Phase 2 Router Initialization
-
-Phase 2.1 Fix Topology Constraints
-Phase 2.1 Fix Topology Constraints | Checksum: 185a50da5
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3149 ; free virtual = 8693
-
-Phase 2.2 Pre Route Cleanup
-Phase 2.2 Pre Route Cleanup | Checksum: 185a50da5
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3149 ; free virtual = 8693
- Number of Nodes with overlaps = 0
-
-Phase 2.3 Update Timing
-Phase 2.3 Update Timing | Checksum: bfb5848b
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3149 ; free virtual = 8693
-
-Router Utilization Summary
-  Global Vertical Routing Utilization    = 0 %
-  Global Horizontal Routing Utilization  = 0 %
-  Routable Net Status*
-  *Does not include unroutable nets such as driverless and loadless.
-  Run report_route_status for detailed report.
-  Number of Failed Nets               = 16
-    (Failed Nets is the sum of unrouted and partially routed nets)
-  Number of Unrouted Nets             = 16
-  Number of Partially Routed Nets     = 0
-  Number of Node Overlaps             = 0
-
-Phase 2 Router Initialization | Checksum: bfb5848b
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3148 ; free virtual = 8693
-
-Phase 3 Initial Routing
-
-Phase 3.1 Global Routing
-Phase 3.1 Global Routing | Checksum: bfb5848b
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3148 ; free virtual = 8693
-Phase 3 Initial Routing | Checksum: 65b27b6d
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3148 ; free virtual = 8693
-
-Phase 4 Rip-up And Reroute
-
-Phase 4.1 Global Iteration 0
- Number of Nodes with overlaps = 0
-Phase 4.1 Global Iteration 0 | Checksum: 55d2ff02
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3148 ; free virtual = 8693
-Phase 4 Rip-up And Reroute | Checksum: 55d2ff02
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3148 ; free virtual = 8693
-
-Phase 5 Delay and Skew Optimization
-
-Phase 5.1 Delay CleanUp
-Phase 5.1 Delay CleanUp | Checksum: 55d2ff02
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3148 ; free virtual = 8693
-
-Phase 5.2 Clock Skew Optimization
-Phase 5.2 Clock Skew Optimization | Checksum: 55d2ff02
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3148 ; free virtual = 8693
-Phase 5 Delay and Skew Optimization | Checksum: 55d2ff02
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3148 ; free virtual = 8693
-
-Phase 6 Post Hold Fix
-
-Phase 6.1 Hold Fix Iter
-
-Phase 6.1.1 Update Timing
-Phase 6.1.1 Update Timing | Checksum: 55d2ff02
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3148 ; free virtual = 8693
-Phase 6.1 Hold Fix Iter | Checksum: 55d2ff02
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3148 ; free virtual = 8693
-Phase 6 Post Hold Fix | Checksum: 55d2ff02
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3148 ; free virtual = 8693
-
-Phase 7 Route finalize
-
-Router Utilization Summary
-  Global Vertical Routing Utilization    = 0.0162641 %
-  Global Horizontal Routing Utilization  = 0.0786049 %
-  Routable Net Status*
-  *Does not include unroutable nets such as driverless and loadless.
-  Run report_route_status for detailed report.
-  Number of Failed Nets               = 0
-    (Failed Nets is the sum of unrouted and partially routed nets)
-  Number of Unrouted Nets             = 0
-  Number of Partially Routed Nets     = 0
-  Number of Node Overlaps             = 0
-
-Phase 7 Route finalize | Checksum: 55d2ff02
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3148 ; free virtual = 8693
-
-Phase 8 Verifying routed nets
-
- Verification completed successfully
-Phase 8 Verifying routed nets | Checksum: 55d2ff02
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3148 ; free virtual = 8693
-
-Phase 9 Depositing Routes
-Phase 9 Depositing Routes | Checksum: 55d2ff02
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3148 ; free virtual = 8693
-
-Phase 10 Post Router Timing
-INFO: [Route 35-20] Post Routing Timing Summary | WNS=inf    | TNS=0.000  | WHS=inf    | THS=0.000  |
-
-Phase 10 Post Router Timing | Checksum: 55d2ff02
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3148 ; free virtual = 8693
-INFO: [Route 35-61] The design met the timing requirement.
-INFO: [Route 35-16] Router Completed Successfully
-
-Phase 11 Post-Route Event Processing
-Phase 11 Post-Route Event Processing | Checksum: 13c693356
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3148 ; free virtual = 8693
-
-Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3148 ; free virtual = 8693
-
-Routing Is Done.
-INFO: [Common 17-83] Releasing license: Implementation
-8 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.
-route_design completed successfully
-route_design: Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3147 ; free virtual = 8692
-# write_checkpoint -force $outputDir/post_route.dcp
-INFO: [Timing 38-480] Writing timing data to binary archive.
-Writing XDEF routing.
-Writing XDEF routing logical nets.
-Writing XDEF routing special nets.
-Write XDEF Complete: Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.03 . Memory (MB): peak = 2423.906 ; gain = 0.000 ; free physical = 3146 ; free virtual = 8692
-INFO: [Common 17-1381] The checkpoint '/home/fpga/obj/post_route.dcp' has been generated.
-# report_route_status -file $outputDir/post_route_status.rpt
-# report_timing_summary -file $outputDir/post_route_timing_summary.rpt
-# report_timing -file $outputDir/post_route_timing.rpt
-INFO: [Timing 38-78] ReportTimingParams: -max_paths 1 -nworst 1 -delay_type max -sort_by slack.
-# report_power -file $outputDir/post_route_power.rpt
-Command: report_power -file obj/post_route_power.rpt
-Running Vector-less Activity Propagation...
-
-Finished Running Vector-less Activity Propagation
-0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.
-report_power completed successfully
-# report_drc -file $outputDir/post_imp_drc.rpt
-Command: report_drc -file obj/post_imp_drc.rpt
-INFO: [IP_Flow 19-234] Refreshing IP repositories
-INFO: [IP_Flow 19-1704] No user IP repositories specified
-INFO: [IP_Flow 19-2313] Loaded Vivado IP repository '/opt/Xilinx/Vivado/2023.1/data/ip'.
-INFO: [Vivado_Tcl 2-168] The results of DRC are in file /home/fpga/obj/post_imp_drc.rpt.
-report_drc completed successfully
-# write_bitstream -force $outputDir/final.bit
-Command: write_bitstream -force obj/final.bit
-Attempting to get a license for feature 'Implementation' and/or device 'xc7s50'
-INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xc7s50'
-Running DRC as a precondition to command write_bitstream
-INFO: [IP_Flow 19-1839] IP Catalog is up to date.
-INFO: [Vivado 12-3199] DRC finished with 0 Errors
-INFO: [Vivado 12-3200] Please refer to the DRC report (report_drc) for more information.
-Loading data files...
-Loading site data...
-Loading route data...
-Processing options...
-Creating bitmap...
-Creating bitstream...
-Bitstream compression saved 15479200 bits.
-Writing bitstream obj/final.bit...
-INFO: [Vivado 12-1842] Bitgen Completed Successfully.
-INFO: [Project 1-1876] WebTalk data collection is mandatory when using a ULT device. To see the specific WebTalk data collected for your design, open the usage_statistics_webtalk.html or usage_statistics_webtalk.xml file in the implementation directory.
-INFO: [Common 17-83] Releasing license: Implementation
-7 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.
-write_bitstream completed successfully
-write_bitstream: Time (s): cpu = 00:00:03 ; elapsed = 00:00:14 . Memory (MB): peak = 2704.633 ; gain = 256.715 ; free physical = 2871 ; free virtual = 8428
-INFO: [Common 17-206] Exiting Vivado at Sat Nov  4 18:23:36 2023...
+4 Infos, 0 Warnings, 0 Critical Warnings and 3 Errors encountered.
+opt_design failed
+ERROR: [Common 17-39] 'opt_design' failed due to earlier errors.
+
+    while executing
+"opt_design"
+    (file "build.tcl" line 37)
+INFO: [Common 17-206] Exiting Vivado at Sat Nov  4 20:35:47 2023...

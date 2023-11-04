@@ -4,6 +4,10 @@ module top_level(
     input wire [7:0] pmoda, // Tbd how many bits actually needed
     input wire [7:0] pmodb, // Tbd how many bits actually needed
     input wire [3:0] btn,
+    output logic [6:0] ss0_c,
+    output logic [6:0] ss1_c,
+    output logic [3:0] ss0_an,
+    output logic [3:0] ss1_an,
     output logic spkl,
     output logic spkr, //speaker outputs
     output logic [15:0] led, // led outputs
@@ -90,9 +94,13 @@ module top_level(
         
     // end
     
+    logic [6:0] ss_c;
+    assign ss0_c = ss_c; //control upper four digit's cathodes!
+    assign ss1_c = ss_c; //same as above but for lower four digits!
+
     logic [31:0] val_to_display;
     assign val_to_display = sw[7] ? actual_audio_out[63:32] : (sw[8] ? actual_audio_out[31:0] : 32'b0);
-    seven_segment_controller mssc(.clk_in(clk_100mhz),
+    seven_segment_controller mssc(.clk_in(audio_clk),
                                 .rst_in(sys_rst),
                                 .val_in(val_to_display),
                                 .cat_out(ss_c),

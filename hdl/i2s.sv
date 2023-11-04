@@ -10,7 +10,7 @@ logic [5:0] current_address;
 logic prev_lrcl_clk;
 logic [63:0] full_audio;
 always_ff @(posedge i2s_clk) begin
-    if (~prev_lrcl_clk && lrcl_clk) begin
+    if (~(prev_lrcl_clk) && lrcl_clk) begin
         data_out <= full_audio;
         data_valid <= 1;
         full_audio[0] <= mic_data;
