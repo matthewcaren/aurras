@@ -1,8 +1,11 @@
 module top_level(
     input wire clk_100mhz,
     input wire [15:0] sw,
+
+
     input wire [7:0] pmoda, // Tbd how many bits actually needed
-    input wire [7:0] pmodb, // Tbd how many bits actually needed
+    output logic [7:0] pmodb, // Tbd how many bits actually needed
+
     input wire [3:0] btn,
     output logic [6:0] ss0_c,
     output logic [6:0] ss1_c,
@@ -16,7 +19,8 @@ module top_level(
 );
 
     assign led = sw;
-
+    logic sys_rst;
+    assign sys_rst = btn[0];
     logic audio_clk;
     logic audio_trigger;
 
@@ -65,41 +69,43 @@ module top_level(
     // assign pmodb[5] = lrcl_clk;
     // assign pmoda[1] = lrcl_clk;
 
-    assign mic_1_data = pmodb[2];
+    assign mic_1_data = pmoda[3];
     // assign mic_2_data = pmodb[6];
     // assign mic_3_data = pmoda[2];
 
-    logic [63:0] actual_audio_out;
     logic [63:0] audio_out;
+    logic [15:0] actual_audio_out;
     logic data_valid;
     i2s mic_1(.mic_data(mic_1_data), .i2s_clk(i2s_clk), .lrcl_clk(lrcl_clk), .data_valid(data_valid), .data_out(audio_out));
 
     always_ff @(posedge audio_clk) begin
         if (data_valid) begin
-            actual_audio_out <= audio_out;
+            actual_audio_out <= audio_out[30:13];
         end
     end 
+
     // i2s mic_2(.mic_data(mic_2_data), .i2s_clk(i2s_clk), .lrcl_clk(lrcl_clk), .data_valid(), .full_audio());
     // i2s mic_3(.mic_data(mic_3_data), .i2s_clk(i2s_clk), .lrcl_clk(lrcl_clk), .data_valid(), .full_audio());
 
-    // logic [1:0] mic_select;
-    // assign mic_select = sw[15:14]
-    // always_comb begin
-    //     case (mic_select)
-    //         2'b10: // Select mic 1
-    //         2'b11: // Select mic 2
-    //         2'b00: // Select mic 3
-    //         default: 
-    //     endcase
-        
-    // end
-    
+
     logic [6:0] ss_c;
     assign ss0_c = ss_c; //control upper four digit's cathodes!
     assign ss1_c = ss_c; //same as above but for lower four digits!
 
+
+    logic [31:0] prev_val;
     logic [31:0] val_to_display;
-    assign val_to_display = sw[7] ? actual_audio_out[63:32] : (sw[8] ? actual_audio_out[31:0] : 32'b0);
+    always_ff @(posedge audio_clk) begin
+        prev_val <= val_to_display;
+    end
+    // assign val_to_display = btn[1] ? (sw[7] ? actual_audio_out[63:32] : (sw[8] ? actual_audio_out[31:0] : 32'b0)) : prev_val;
+    assign val_to_display = btn[1] ? (sw[7] ? actual_audio_out : 32'b0) : prev_val;
+    
+    // logic [15:0] prev_val;
+    // always_ff @(posedge audio_clk) begin
+    //     prev_val <= val_to_display;
+    // end
+    // assign val_to_display = btn[1] ? (sw[7] ? actual_audio_out : 32'b0) : prev_val;
     seven_segment_controller mssc(.clk_in(audio_clk),
                                 .rst_in(sys_rst),
                                 .val_in(val_to_display),
