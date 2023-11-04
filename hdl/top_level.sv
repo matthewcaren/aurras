@@ -68,7 +68,7 @@ module top_level(
     logic [63:0] actual_audio_out;
     logic [63:0] audio_out;
     logic data_valid;
-    i2s mic_1(.mic_data(mic_1_data), .i2s_clk(i2s_clk), .lrcl_clk(lrcl_clk), .data_valid(data_valid), .full_audio(audio_out));
+    i2s mic_1(.mic_data(mic_1_data), .i2s_clk(i2s_clk), .lrcl_clk(lrcl_clk), .data_valid(data_valid), .data_out(audio_out));
 
     always_ff @(posedge audio_clk) begin
         if (data_valid) begin

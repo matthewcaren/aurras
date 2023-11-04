@@ -8,7 +8,7 @@ module i2s(
 
 logic [5:0] current_address;
 logic prev_lrcl_clk;
-logic [63:0] full_audio
+logic [63:0] full_audio;
 always_ff @(posedge i2s_clk) begin
     if (~prev_lrcl_clk && lrcl_clk) begin
         data_out <= full_audio;

@@ -15,24 +15,16 @@ if {[llength $files] != 0} {
     puts "$outputDir is empty"
 }
 
-
 # read in all system veriilog files:
 read_verilog -sv [ glob ./hdl/*.sv ]
 # uncomment line below if verilog (.v) files present:
-# read_verilog  [ glob ./hdl/*.v ]
+read_verilog  [ glob ./hdl/*.v ]
 read_xdc ./xdc/top_level.xdc
-#we'll use this later:
-#read_mem [ glob ./data/*.mem ]
+#Using this in Lab 5 now!
+# read_mem [ glob ./data/*.mem ]
 
 # set the part number so Vivado knows how to build (each FPGA is different)
 set_part $partNum
-
-# Read in all IP
-read_ip ./ip/multiplier/multiplier.xci
-read_ip ./ip/adder/adder.xci
-read_ip ./ip/inv_sqrt/inv_sqrt.xci
-generate_target all [get_ips]
-synth_ip [get_ips]
 
 #Run Synthesis
 synth_design -top top_level -part $partNum -verbose
