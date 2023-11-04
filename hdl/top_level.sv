@@ -17,6 +17,11 @@ module top_level(
 
     logic [1:0] mic_select;
 
+    logic audio_clk;
+    assign audio_clk = clk_100mhz;
+    logic [4:0] 
+
+
     assign mic_select = sw[15:14]
     always_comb begin
         case (mic_select)
