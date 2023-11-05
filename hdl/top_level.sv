@@ -19,8 +19,9 @@ module top_level(
     assign rgb1 = 0;
     assign rgb0 = 0;
 
+    // 98.3MHz
     logic audio_clk;
-    audio_clk_wiz macw (.clk_in(clk_100mhz), .clk_out(audio_clk)); //98.3MHz
+    audio_clk_wiz macw (.clk_in(clk_100mhz), .clk_out(audio_clk)); 
 
     // This triggers at 24kHz for general audio
     logic audio_trigger;
@@ -64,36 +65,37 @@ module top_level(
     // assign mic_2_data = pmoda[7];
     // assign mic_3_data = pmoda[0];
 
-    logic [15:0] full_audio_out_1, full_audio_out_2, full_audio_out_3;
-    logic [15:0] actual_audio_out_1, actual_audio_out_2, actual_audio_out_3;
+    // Audio out sends data_valid_out signal at 48kHz
+    logic [15:0] audio_out_1, audio_out_2, audio_out_3;
+    logic [15:0] valid_audio_out_1, valid_audio_out_2, valid_audio_out_3;
     logic data_valid_out_1, data_valid_out_2, data_valid_out_3;
 
-    i2s mic_1(.mic_data(mic_1_data), .i2s_clk(i2s_clk), .lrcl_clk(lrcl_clk), .data_valid_out(data_valid_out_1), .full_audio_out(full_audio_out_1));
-    // i2s mic_2(.mic_data(mic_2_data), .i2s_clk(i2s_clk), .lrcl_clk(lrcl_clk), .data_valid_out(data_valid_out_2), .full_audio_out(full_audio_out_2));
-    // i2s mic_3(.mic_data(mic_3_data), .i2s_clk(i2s_clk), .lrcl_clk(lrcl_clk), .data_valid_out(data_valid_out_3), .full_audio_out(full_audio_out_3));
+    i2s mic_1(.mic_data(mic_1_data), .i2s_clk(i2s_clk), .lrcl_clk(lrcl_clk), .data_valid_out(data_valid_out_1), .audio_out(audio_out_1));
+    // i2s mic_2(.mic_data(mic_2_data), .i2s_clk(i2s_clk), .lrcl_clk(lrcl_clk), .data_valid_out(data_valid_out_2), .audio_out(audio_out_2));
+    // i2s mic_3(.mic_data(mic_3_data), .i2s_clk(i2s_clk), .lrcl_clk(lrcl_clk), .data_valid_out(data_valid_out_3), .audio_out(audio_out_3));
 
     always_ff @(posedge audio_clk) begin
         if (data_valid_out_1) begin
-            actual_audio_out_1 <= full_audio_out_1;
+            valid_audio_out_1 <= audio_out_1;
         end
         // if (data_valid_out_2) begin
-        //     actual_audio_out_2 <= full_audio_out_2;
+        //     valid_audio_out_2 <= audio_out_2;
         // end
         // if (data_valid_out_3) begin
-        //     actual_audio_out_3 <= full_audio_out_3;
+        //     valid_audio_out_3 <= audio_out_3;
         // end
     end
 
+
+    // seven segment display - display valid_audio_out_1
     logic [31:0] prev_val, val_to_display;
     always_ff @(posedge audio_clk) begin
         prev_val <= val_to_display;
     end
-    assign val_to_display = btn[1] ? (sw[7] ? actual_audio_out_1 : 16'b0) : prev_val;
-
-    // seven segment display
+    assign val_to_display = btn[1] ? (sw[7] ? valid_audio_out_1 : 16'b0) : prev_val;
     logic [6:0] ss_c;
-    assign ss0_c = ss_c; //control upper four digit's cathodes!
-    assign ss1_c = ss_c; //same as above but for lower four digits!
+    assign ss0_c = ss_c; 
+    assign ss1_c = ss_c;
     seven_segment_controller mssc(.clk_in(audio_clk),
                                 .rst_in(sys_rst),
                                 .val_in(val_to_display),

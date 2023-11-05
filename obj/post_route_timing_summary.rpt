@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2023.1 (lin64) Build 3865809 Sun May  7 15:04:56 MDT 2023
-| Date         : Sun Nov  5 18:45:26 2023
+| Date         : Sun Nov  5 19:24:19 2023
 | Host         : worker running 64-bit Ubuntu 20.04.6 LTS
 | Command      : report_timing_summary -file obj/post_route_timing_summary.rpt
 | Design       : top_level
@@ -137,7 +137,7 @@ Table of Contents
 
     WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
     -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
-      4.685        0.000                      0                  112        0.102        0.000                      0                  112        2.000        0.000                       0                    94  
+      4.873        0.000                      0                  112        0.102        0.000                      0                  112        2.000        0.000                       0                    94  
 
 
 All user specified timing constraints are met.
@@ -163,7 +163,7 @@ gclk                      {0.000 4.000}      10.000          100.000
 Clock                         WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
 -----                         -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
 gclk                                                                                                                                                                        2.000        0.000                       0                     1  
-  clk_out_audio_clk_wiz         4.685        0.000                      0                  112        0.102        0.000                      0                  112        4.587        0.000                       0                    90  
+  clk_out_audio_clk_wiz         4.873        0.000                      0                  112        0.102        0.000                      0                  112        4.587        0.000                       0                    90  
   clkfbout_audio_clk_wiz                                                                                                                                                   47.845        0.000                       0                     3  
 
 
@@ -220,7 +220,7 @@ High Pulse Width  Slow    MMCME2_ADV/CLKIN1  n/a            2.000         4.000 
 From Clock:  clk_out_audio_clk_wiz
   To Clock:  clk_out_audio_clk_wiz
 
-Setup :            0  Failing Endpoints,  Worst Slack        4.685ns,  Total Violation        0.000ns
+Setup :            0  Failing Endpoints,  Worst Slack        4.873ns,  Total Violation        0.000ns
 Hold  :            0  Failing Endpoints,  Worst Slack        0.102ns,  Total Violation        0.000ns
 PW    :            0  Failing Endpoints,  Worst Slack        4.587ns,  Total Violation        0.000ns
 ---------------------------------------------------------------------------------------------------
@@ -228,7 +228,7 @@ PW    :            0  Failing Endpoints,  Worst Slack        4.587ns,  Total Vio
 
 Max Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             4.685ns  (required time - arrival time)
+Slack (MET) :             4.873ns  (required time - arrival time)
   Source:                 mssc/segment_counter_reg[14]/C
                             (rising edge-triggered cell FDRE clocked by clk_out_audio_clk_wiz  {rise@0.000ns fall@5.087ns period=10.173ns})
   Destination:            mssc/segment_counter_reg[0]/R
@@ -236,7 +236,7 @@ Slack (MET) :             4.685ns  (required time - arrival time)
   Path Group:             clk_out_audio_clk_wiz
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.173ns  (clk_out_audio_clk_wiz rise@10.173ns - clk_out_audio_clk_wiz rise@0.000ns)
-  Data Path Delay:        4.638ns  (logic 0.856ns (18.455%)  route 3.782ns (81.545%))
+  Data Path Delay:        4.451ns  (logic 0.856ns (19.233%)  route 3.595ns (80.767%))
   Logic Levels:           3  (LUT4=1 LUT5=2)
   Clock Path Skew:        -0.106ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    -1.493ns = ( 8.680 - 10.173 ) 
@@ -263,13 +263,13 @@ Slack (MET) :             4.685ns  (required time - arrival time)
     SLICE_X5Y52          FDRE                                         r  mssc/segment_counter_reg[14]/C
   -------------------------------------------------------------------    -------------------
     SLICE_X5Y52          FDRE (Prop_fdre_C_Q)         0.456    -0.449 f  mssc/segment_counter_reg[14]/Q
-                         net (fo=2, routed)           1.534     1.085    mssc/segment_counter_reg[14]
-    SLICE_X4Y54          LUT4 (Prop_lut4_I0_O)        0.124     1.209 f  mssc/segment_state[7]_i_8/O
-                         net (fo=1, routed)           0.280     1.489    mssc/segment_state[7]_i_8_n_0
-    SLICE_X4Y54          LUT5 (Prop_lut5_I4_O)        0.124     1.613 f  mssc/segment_state[7]_i_4/O
-                         net (fo=2, routed)           0.958     2.571    mssc/segment_state[7]_i_4_n_0
-    SLICE_X4Y52          LUT5 (Prop_lut5_I2_O)        0.152     2.723 r  mssc/segment_counter[0]_i_1/O
-                         net (fo=32, routed)          1.010     3.733    mssc/segment_counter[0]_i_1_n_0
+                         net (fo=2, routed)           1.277     0.828    mssc/segment_counter_reg[14]
+    SLICE_X4Y54          LUT4 (Prop_lut4_I0_O)        0.124     0.952 f  mssc/segment_state[7]_i_8/O
+                         net (fo=1, routed)           0.280     1.232    mssc/segment_state[7]_i_8_n_0
+    SLICE_X4Y54          LUT5 (Prop_lut5_I4_O)        0.124     1.356 f  mssc/segment_state[7]_i_4/O
+                         net (fo=2, routed)           1.012     2.367    mssc/segment_state[7]_i_4_n_0
+    SLICE_X4Y52          LUT5 (Prop_lut5_I2_O)        0.152     2.519 r  mssc/segment_counter[0]_i_1/O
+                         net (fo=32, routed)          1.026     3.546    mssc/segment_counter[0]_i_1_n_0
     SLICE_X5Y49          FDRE                                         r  mssc/segment_counter_reg[0]/R
   -------------------------------------------------------------------    -------------------
 
@@ -290,9 +290,9 @@ Slack (MET) :             4.685ns  (required time - arrival time)
     SLICE_X5Y49          FDRE (Setup_fdre_C_R)       -0.637     8.418    mssc/segment_counter_reg[0]
   -------------------------------------------------------------------
                          required time                          8.418    
-                         arrival time                          -3.733    
+                         arrival time                          -3.546    
   -------------------------------------------------------------------
-                         slack                                  4.685    
+                         slack                                  4.873    
 
 
 
@@ -308,7 +308,7 @@ Slack (MET) :             0.102ns  (arrival time - required time)
   Path Group:             clk_out_audio_clk_wiz
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk_out_audio_clk_wiz rise@0.000ns - clk_out_audio_clk_wiz rise@0.000ns)
-  Data Path Delay:        0.476ns  (logic 0.355ns (74.570%)  route 0.121ns (25.430%))
+  Data Path Delay:        0.476ns  (logic 0.355ns (74.580%)  route 0.121ns (25.420%))
   Logic Levels:           2  (CARRY4=2)
   Clock Path Skew:        0.269ns (DCD - SCD - CPR)
     Destination Clock Delay (DCD):    -0.844ns
@@ -375,8 +375,8 @@ Sources:            { macw/mmcm_adv_inst/CLKOUT0 }
 Check Type        Corner  Lib Pin             Reference Pin  Required(ns)  Actual(ns)  Slack(ns)  Location         Pin
 Min Period        n/a     BUFG/I              n/a            2.155         10.173      8.018      BUFGCTRL_X0Y1    macw/clkout1_buf/I
 Max Period        n/a     MMCME2_ADV/CLKOUT0  n/a            213.360       10.173      203.187    MMCME2_ADV_X0Y0  macw/mmcm_adv_inst/CLKOUT0
-Low Pulse Width   Slow    FDRE/C              n/a            0.500         5.087       4.587      SLICE_X6Y55      actual_audio_out_1_reg[0]/C
-High Pulse Width  Slow    FDRE/C              n/a            0.500         5.087       4.587      SLICE_X6Y55      actual_audio_out_1_reg[0]/C
+Low Pulse Width   Slow    FDRE/C              n/a            0.500         5.087       4.587      SLICE_X36Y46     i2s_clk_counter_reg[0]/C
+High Pulse Width  Slow    FDRE/C              n/a            0.500         5.087       4.587      SLICE_X36Y46     i2s_clk_counter_reg[0]/C
 
 
 
