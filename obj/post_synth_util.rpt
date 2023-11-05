@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2023.1 (lin64) Build 3865809 Sun May  7 15:04:56 MDT 2023
-| Date         : Sat Nov  4 22:29:47 2023
+| Date         : Sun Nov  5 18:26:37 2023
 | Host         : worker running 64-bit Ubuntu 20.04.6 LTS
 | Command      : report_utilization -file obj/post_synth_util.rpt
 | Design       : top_level
@@ -92,9 +92,9 @@ Warning! LUT value is adjusted to account for LUT combining.
 +-----------------------------+------+-------+------------+-----------+-------+
 |          Site Type          | Used | Fixed | Prohibited | Available | Util% |
 +-----------------------------+------+-------+------------+-----------+-------+
-| Bonded IOB                  |   69 |    69 |          0 |       210 | 32.86 |
-|   IOB Master Pads           |   34 |       |            |           |       |
-|   IOB Slave Pads            |   35 |       |            |           |       |
+| Bonded IOB                  |   75 |    75 |          0 |       210 | 35.71 |
+|   IOB Master Pads           |   37 |       |            |           |       |
+|   IOB Slave Pads            |   38 |       |            |           |       |
 | Bonded IPADs                |    0 |     0 |          0 |         2 |  0.00 |
 | PHY_CONTROL                 |    0 |     0 |          0 |         5 |  0.00 |
 | PHASER_REF                  |    0 |     0 |          0 |         5 |  0.00 |
@@ -150,16 +150,16 @@ Warning! LUT value is adjusted to account for LUT combining.
 |  Ref Name  | Used | Functional Category |
 +------------+------+---------------------+
 | FDRE       |  126 |        Flop & Latch |
-| LUT6       |   43 |                 LUT |
-| OBUF       |   40 |                  IO |
-| LUT4       |   35 |                 LUT |
+| LUT4       |   53 |                 LUT |
+| OBUF       |   46 |                  IO |
+| LUT6       |   20 |                 LUT |
 | IBUF       |   20 |                  IO |
+| LUT5       |   12 |                 LUT |
 | LUT1       |   12 |                 LUT |
 | OBUFT      |    9 |                  IO |
 | CARRY4     |    8 |          CarryLogic |
-| LUT5       |    6 |                 LUT |
-| LUT2       |    6 |                 LUT |
 | LUT3       |    5 |                 LUT |
+| LUT2       |    5 |                 LUT |
 | BUFG       |    3 |               Clock |
 | FDSE       |    2 |        Flop & Latch |
 | MMCME2_ADV |    1 |               Clock |
