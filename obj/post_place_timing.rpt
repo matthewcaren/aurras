@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2023.1 (lin64) Build 3865809 Sun May  7 15:04:56 MDT 2023
-| Date         : Sun Nov  5 18:26:39 2023
+| Date         : Sun Nov  5 18:45:18 2023
 | Host         : worker running 64-bit Ubuntu 20.04.6 LTS
 | Command      : report_timing -file obj/post_place_timing.rpt
 | Design       : top_level
@@ -12,20 +12,20 @@ Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanc
 
 Timing Report
 
-Slack (MET) :             5.820ns  (required time - arrival time)
-  Source:                 mssc/segment_counter_reg[9]/C
+Slack (MET) :             5.557ns  (required time - arrival time)
+  Source:                 mssc/segment_counter_reg[1]/C
                             (rising edge-triggered cell FDRE clocked by clk_out_audio_clk_wiz  {rise@0.000ns fall@5.087ns period=10.173ns})
-  Destination:            mssc/segment_counter_reg[24]/R
+  Destination:            mssc/segment_counter_reg[4]/R
                             (rising edge-triggered cell FDRE clocked by clk_out_audio_clk_wiz  {rise@0.000ns fall@5.087ns period=10.173ns})
   Path Group:             clk_out_audio_clk_wiz
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.173ns  (clk_out_audio_clk_wiz rise@10.173ns - clk_out_audio_clk_wiz rise@0.000ns)
-  Data Path Delay:        3.588ns  (logic 0.854ns (23.802%)  route 2.734ns (76.198%))
+  Data Path Delay:        3.738ns  (logic 0.856ns (22.900%)  route 2.882ns (77.100%))
   Logic Levels:           3  (LUT4=1 LUT5=2)
-  Clock Path Skew:        -0.027ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    -1.563ns = ( 8.610 - 10.173 ) 
-    Source Clock Delay      (SCD):    -0.969ns
-    Clock Pessimism Removal (CPR):    0.568ns
+  Clock Path Skew:        -0.134ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    -1.559ns = ( 8.614 - 10.173 ) 
+    Source Clock Delay      (SCD):    -0.952ns
+    Clock Pessimism Removal (CPR):    0.474ns
   Clock Uncertainty:      0.107ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
     Discrete Jitter          (DJ):    0.203ns
@@ -43,18 +43,18 @@ Slack (MET) :             5.820ns  (required time - arrival time)
                                                      -7.025    -4.352 r  macw/mmcm_adv_inst/CLKOUT0
                          net (fo=1, estimated)        1.666    -2.686    macw/clk_out_audio_clk_wiz
     BUFGCTRL_X0Y1        BUFG (Prop_bufg_I_O)         0.096    -2.590 r  macw/clkout1_buf/O
-                         net (fo=88, estimated)       1.621    -0.969    mssc/clk_out
-    SLICE_X1Y59          FDRE                                         r  mssc/segment_counter_reg[9]/C
+                         net (fo=88, estimated)       1.638    -0.952    mssc/clk_out
+    SLICE_X5Y49          FDRE                                         r  mssc/segment_counter_reg[1]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X1Y59          FDRE (Prop_fdre_C_Q)         0.456    -0.513 r  mssc/segment_counter_reg[9]/Q
-                         net (fo=2, estimated)        0.793     0.280    mssc/segment_counter_reg[9]
-    SLICE_X0Y61          LUT4 (Prop_lut4_I0_O)        0.124     0.404 f  mssc/segment_state[7]_i_7/O
-                         net (fo=1, estimated)        0.439     0.843    mssc/segment_state[7]_i_7_n_0
-    SLICE_X0Y62          LUT5 (Prop_lut5_I4_O)        0.124     0.967 r  mssc/segment_state[7]_i_3/O
-                         net (fo=2, estimated)        0.803     1.770    mssc/segment_state[7]_i_3_n_0
-    SLICE_X0Y59          LUT5 (Prop_lut5_I3_O)        0.150     1.920 r  mssc/segment_counter[0]_i_1/O
-                         net (fo=32, estimated)       0.699     2.619    mssc/segment_counter[0]_i_1_n_0
-    SLICE_X1Y63          FDRE                                         r  mssc/segment_counter_reg[24]/R
+    SLICE_X5Y49          FDRE (Prop_fdre_C_Q)         0.456    -0.496 f  mssc/segment_counter_reg[1]/Q
+                         net (fo=2, estimated)        0.730     0.234    mssc/segment_counter_reg[1]
+    SLICE_X4Y51          LUT4 (Prop_lut4_I1_O)        0.124     0.358 f  mssc/segment_state[7]_i_6/O
+                         net (fo=1, estimated)        0.491     0.849    mssc/segment_state[7]_i_6_n_0
+    SLICE_X4Y51          LUT5 (Prop_lut5_I4_O)        0.124     0.973 f  mssc/segment_state[7]_i_2/O
+                         net (fo=2, estimated)        0.949     1.922    mssc/segment_state[7]_i_2_n_0
+    SLICE_X4Y52          LUT5 (Prop_lut5_I4_O)        0.152     2.074 r  mssc/segment_counter[0]_i_1/O
+                         net (fo=32, estimated)       0.712     2.786    mssc/segment_counter[0]_i_1_n_0
+    SLICE_X5Y50          FDRE                                         r  mssc/segment_counter_reg[4]/R
   -------------------------------------------------------------------    -------------------
 
                          (clock clk_out_audio_clk_wiz rise edge)
@@ -67,16 +67,16 @@ Slack (MET) :             5.820ns  (required time - arrival time)
                                                      -7.279     5.436 r  macw/mmcm_adv_inst/CLKOUT0
                          net (fo=1, estimated)        1.583     7.019    macw/clk_out_audio_clk_wiz
     BUFGCTRL_X0Y1        BUFG (Prop_bufg_I_O)         0.091     7.110 r  macw/clkout1_buf/O
-                         net (fo=88, estimated)       1.500     8.610    mssc/clk_out
-    SLICE_X1Y63          FDRE                                         r  mssc/segment_counter_reg[24]/C
-                         clock pessimism              0.568     9.177    
-                         clock uncertainty           -0.107     9.070    
-    SLICE_X1Y63          FDRE (Setup_fdre_C_R)       -0.631     8.439    mssc/segment_counter_reg[24]
+                         net (fo=88, estimated)       1.504     8.614    mssc/clk_out
+    SLICE_X5Y50          FDRE                                         r  mssc/segment_counter_reg[4]/C
+                         clock pessimism              0.474     9.087    
+                         clock uncertainty           -0.107     8.980    
+    SLICE_X5Y50          FDRE (Setup_fdre_C_R)       -0.637     8.343    mssc/segment_counter_reg[4]
   -------------------------------------------------------------------
-                         required time                          8.439    
-                         arrival time                          -2.619    
+                         required time                          8.343    
+                         arrival time                          -2.786    
   -------------------------------------------------------------------
-                         slack                                  5.820    
+                         slack                                  5.557    
 
 
 

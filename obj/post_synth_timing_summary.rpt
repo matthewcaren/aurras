@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2023.1 (lin64) Build 3865809 Sun May  7 15:04:56 MDT 2023
-| Date         : Sun Nov  5 18:26:37 2023
+| Date         : Sun Nov  5 18:45:15 2023
 | Host         : worker running 64-bit Ubuntu 20.04.6 LTS
 | Command      : report_timing_summary -file obj/post_synth_timing_summary.rpt
 | Design       : top_level
@@ -371,8 +371,8 @@ Sources:            { macw/mmcm_adv_inst/CLKOUT0 }
 Check Type        Corner  Lib Pin             Reference Pin  Required(ns)  Actual(ns)  Slack(ns)  Location  Pin
 Min Period        n/a     BUFG/I              n/a            2.155         10.173      8.018                macw/clkout1_buf/I
 Max Period        n/a     MMCME2_ADV/CLKOUT0  n/a            213.360       10.173      203.187              macw/mmcm_adv_inst/CLKOUT0
-Low Pulse Width   Slow    FDRE/C              n/a            0.500         5.087       4.587                actual_audio_out_2_reg[0]/C
-High Pulse Width  Slow    FDRE/C              n/a            0.500         5.087       4.587                actual_audio_out_2_reg[0]/C
+Low Pulse Width   Slow    FDRE/C              n/a            0.500         5.087       4.587                actual_audio_out_1_reg[0]/C
+High Pulse Width  Slow    FDRE/C              n/a            0.500         5.087       4.587                actual_audio_out_1_reg[0]/C
 
 
 
