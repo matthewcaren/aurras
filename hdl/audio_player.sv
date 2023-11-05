@@ -20,13 +20,13 @@ module audio_player(
   //we do the latter in this lab.
 
 
-  //logic to produce 25 MHz step signal for PWM module
-  logic [1:0] pwm_counter;
-  logic pwm_step; //single-cycle pwm step
-  assign pwm_step = (pwm_counter==2'b11);
+  //logic to produce 25 MHz step signal for pdm module
+  logic [1:0] pdm_counter;
+  logic pdm_step; //single-cycle pdm step
+  assign pdm_step = (pdm_counter==2'b11);
 
   always_ff @(posedge clk_m) begin
-    pwm_counter <= pwm_counter + 1;
+    pdm_counter <= pdm_counter + 1;
   end
 
   logic signed [7:0] vol_out;
@@ -36,17 +36,22 @@ module audio_player(
     .signal_in(sound_sample_in), 
     .signal_out(vol_out));
 
-  logic pwm_out_signal;
+  logic pdm_out_signal;
 
-  pwm my_pwm(
+  logic pdm_out_signal; 
+
+
+  logic pdm_signal_valid;
+
+  pdm my_pdm(
     .clk_in(clk_m),
     .rst_in(rst_in),
     .level_in(vol_out),
-    .tick_in(pwm_step),
-    .pwm_out(pwm_out_signal)
+    .tick_in(pdm_step),
+    .pdm_out(pdm_out_signal)
   );
 
-  assign signal_out = pwm_out_signal;
+  assign signal_out = pdm_out_signal; 
 
 
 endmodule 
