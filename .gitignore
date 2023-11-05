@@ -1,1 +1,5 @@
 .DS_Store
+*.jpg
+*.bit
+vivado.log
+*.pyc
