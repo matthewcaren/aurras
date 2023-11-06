@@ -19,7 +19,7 @@ if {[llength $files] != 0} {
 # read in all system veriilog files:
 read_verilog -sv [ glob ./hdl/*.sv ]
 # uncomment line below if verilog (.v) files present:
-# read_verilog  [ glob ./hdl/*.v ]
+read_verilog  [ glob ./hdl/*.v ]
 read_xdc ./xdc/top_level.xdc
 #we'll use this later:
 #read_mem [ glob ./data/*.mem ]
@@ -27,12 +27,12 @@ read_xdc ./xdc/top_level.xdc
 # set the part number so Vivado knows how to build (each FPGA is different)
 set_part $partNum
 
-# Read in all IP
-read_ip ./ip/multiplier/multiplier.xci
-read_ip ./ip/adder/adder.xci
-read_ip ./ip/inv_sqrt/inv_sqrt.xci
-generate_target all [get_ips]
-synth_ip [get_ips]
+# I think you need to read in each IP separately. blah oh well.
+#read_ip ./ip/xfft_0/xfft_0.xci
+#read_ip ./ip/cordic_0/cordic_0.xci
+#read_ip ./ip/axis_data_fifo_0/axis_data_fifo_0.xci
+#generate_target all [get_ips]
+#synth_ip [get_ips]
 
 #Run Synthesis
 synth_design -top top_level -part $partNum -verbose
