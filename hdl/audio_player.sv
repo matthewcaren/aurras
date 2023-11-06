@@ -4,7 +4,7 @@
 module audio_player(
     input wire clk_in,
     input wire [15:0] sw,
-    input wire [17:0] sound_sample_in,
+    input wire [15:0] sound_sample_in,
     input wire audio_trigger_in, 
     input wire rst_in, 
     output logic signal_out
@@ -20,7 +20,7 @@ module audio_player(
   //   pdm_counter <= pdm_counter + 1;
   // end
 
-  logic signed [17:0] vol_out;
+  logic signed [15:0] vol_out;
 
   volume_control vc (
     .vol_in(sw[15:12]),
@@ -48,8 +48,8 @@ endmodule
 //Volume Control
 module volume_control (
   input wire [3:0] vol_in,
-  input wire signed [17:0] signal_in,
-  output logic signed [17:0] signal_out);
+  input wire signed [15:0] signal_in,
+  output logic signed [15:0] signal_out);
     logic [3:0] shift;
     assign shift = 4'd15 - vol_in;
     assign signal_out = signal_in>>>shift;
