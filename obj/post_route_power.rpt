@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version     : Vivado v.2023.1 (lin64) Build 3865809 Sun May  7 15:04:56 MDT 2023
-| Date             : Mon Nov  6 02:43:02 2023
+| Date             : Mon Nov  6 03:00:52 2023
 | Host             : worker running 64-bit Ubuntu 20.04.6 LTS
 | Command          : report_power -file obj/post_route_power.rpt
 | Design           : top_level
@@ -30,10 +30,10 @@ Table of Contents
 ----------
 
 +--------------------------+--------------+
-| Total On-Chip Power (W)  | 0.225        |
+| Total On-Chip Power (W)  | 0.231        |
 | Design Power Budget (W)  | Unspecified* |
 | Power Budget Margin (W)  | NA           |
-| Dynamic (W)              | 0.153        |
+| Dynamic (W)              | 0.159        |
 | Device Static (W)        | 0.072        |
 | Effective TJA (C/W)      | 4.9          |
 | Max Ambient (C)          | 83.9         |
@@ -53,17 +53,17 @@ Table of Contents
 | On-Chip        | Power (W) | Used     | Available | Utilization (%) |
 +----------------+-----------+----------+-----------+-----------------+
 | Clocks         |     0.001 |        5 |       --- |             --- |
-| Slice Logic    |    <0.001 |      387 |       --- |             --- |
-|   LUT as Logic |    <0.001 |      156 |     32600 |            0.48 |
-|   CARRY4       |    <0.001 |       16 |      8150 |            0.20 |
-|   Register     |    <0.001 |      140 |     65200 |            0.21 |
+| Slice Logic    |    <0.001 |      312 |       --- |             --- |
+|   LUT as Logic |    <0.001 |      132 |     32600 |            0.40 |
+|   CARRY4       |    <0.001 |       13 |      8150 |            0.16 |
+|   Register     |    <0.001 |      128 |     65200 |            0.20 |
 |   BUFG         |    <0.001 |        1 |        32 |            3.13 |
-|   Others       |     0.000 |       10 |       --- |             --- |
-| Signals        |    <0.001 |      312 |       --- |             --- |
+|   Others       |     0.000 |        9 |       --- |             --- |
+| Signals        |    <0.001 |      270 |       --- |             --- |
 | MMCM           |     0.132 |        1 |         5 |           20.00 |
-| I/O            |     0.018 |       75 |       210 |           35.71 |
+| I/O            |     0.024 |       75 |       210 |           35.71 |
 | Static Power   |     0.072 |          |           |                 |
-| Total          |     0.225 |          |           |                 |
+| Total          |     0.231 |          |           |                 |
 +----------------+-----------+----------+-----------+-----------------+
 
 
@@ -75,7 +75,7 @@ Table of Contents
 +-----------+-------------+-----------+-------------+------------+-------------+-------------+------------+
 | Vccint    |       1.000 |     0.013 |       0.003 |      0.010 |       NA    | Unspecified | NA         |
 | Vccaux    |       1.800 |     0.087 |       0.074 |      0.013 |       NA    | Unspecified | NA         |
-| Vcco33    |       3.300 |     0.006 |       0.005 |      0.001 |       NA    | Unspecified | NA         |
+| Vcco33    |       3.300 |     0.008 |       0.007 |      0.001 |       NA    | Unspecified | NA         |
 | Vcco25    |       2.500 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
 | Vcco18    |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
 | Vcco15    |       1.500 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
@@ -142,7 +142,7 @@ Table of Contents
 +-----------+-----------+
 | Name      | Power (W) |
 +-----------+-----------+
-| top_level |     0.153 |
+| top_level |     0.159 |
 |   macw    |     0.132 |
 +-----------+-----------+
 

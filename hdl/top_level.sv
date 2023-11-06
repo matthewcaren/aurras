@@ -79,8 +79,8 @@ module top_level(
     // assign mic_3_data = pmoda[0];
 
     // Audio out sends data_valid_out signal at 48kHz
-    logic [17:0] audio_out_1, audio_out_2, audio_out_3;
-    logic [17:0] valid_audio_out_1, valid_audio_out_2, valid_audio_out_3;
+    logic [15:0] audio_out_1, audio_out_2, audio_out_3;
+    logic [15:0] valid_audio_out_1, valid_audio_out_2, valid_audio_out_3;
     logic data_valid_out_1, data_valid_out_2, data_valid_out_3;
 
     i2s mic_1(.mic_data(mic_1_data), .i2s_clk(i2s_clk), .lrcl_clk(lrcl_clk), .data_valid_out(data_valid_out_1), .audio_out(audio_out_1));
@@ -105,7 +105,7 @@ module top_level(
     always_ff @(posedge audio_clk) begin
         prev_val <= val_to_display;
     end
-    assign val_to_display = btn[1] ? (sw[7] ? audio_out_1 : 18'b0) : prev_val;
+    assign val_to_display = btn[1] ? (sw[7] ? audio_out_1 : 16'b0) : prev_val;
     logic [6:0] ss_c;
     assign ss0_c = ss_c; 
     assign ss1_c = ss_c;
