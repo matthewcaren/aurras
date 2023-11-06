@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2023.1 (lin64) Build 3865809 Sun May  7 15:04:56 MDT 2023
-| Date         : Sun Nov  5 19:24:19 2023
+| Date         : Mon Nov  6 02:43:02 2023
 | Host         : worker running 64-bit Ubuntu 20.04.6 LTS
 | Command      : report_timing_summary -file obj/post_route_timing_summary.rpt
 | Design       : top_level
@@ -48,12 +48,12 @@ check_timing report
 
 Table of Contents
 -----------------
-1. checking no_clock (40)
+1. checking no_clock (43)
 2. checking constant_clock (0)
 3. checking pulse_width_clock (0)
-4. checking unconstrained_internal_endpoints (94)
-5. checking no_input_delay (4)
-6. checking no_output_delay (24)
+4. checking unconstrained_internal_endpoints (85)
+5. checking no_input_delay (8)
+6. checking no_output_delay (26)
 7. checking multiple_clock (0)
 8. checking generated_clocks (0)
 9. checking loops (0)
@@ -61,9 +61,9 @@ Table of Contents
 11. checking partial_output_delay (0)
 12. checking latch_loops (0)
 
-1. checking no_clock (40)
+1. checking no_clock (43)
 -------------------------
- There are 40 register/latch pins with no clock driven by root clock pin: i2s_clk_counter_reg[4]/Q (HIGH)
+ There are 43 register/latch pins with no clock driven by root clock pin: i2s_clk_counter_reg[4]/Q (HIGH)
 
 
 2. checking constant_clock (0)
@@ -76,23 +76,23 @@ Table of Contents
  There are 0 register/latch pins which need pulse_width check
 
 
-4. checking unconstrained_internal_endpoints (94)
+4. checking unconstrained_internal_endpoints (85)
 -------------------------------------------------
- There are 94 pins that are not constrained for maximum delay. (HIGH)
+ There are 85 pins that are not constrained for maximum delay. (HIGH)
 
  There are 0 pins that are not constrained for maximum delay due to constant clock.
 
 
-5. checking no_input_delay (4)
+5. checking no_input_delay (8)
 ------------------------------
- There are 4 input ports with no input delay specified. (HIGH)
+ There are 8 input ports with no input delay specified. (HIGH)
 
  There are 0 input ports with no input delay but user has a false path constraint.
 
 
-6. checking no_output_delay (24)
+6. checking no_output_delay (26)
 --------------------------------
- There are 24 ports with no output delay specified. (HIGH)
+ There are 26 ports with no output delay specified. (HIGH)
 
  There are 0 ports with no output delay but user has a false path constraint
 
@@ -137,7 +137,7 @@ Table of Contents
 
     WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
     -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
-      4.873        0.000                      0                  112        0.102        0.000                      0                  112        2.000        0.000                       0                    94  
+      5.618        0.000                      0                  157        0.221        0.000                      0                  157        2.000        0.000                       0                   103  
 
 
 All user specified timing constraints are met.
@@ -163,7 +163,7 @@ gclk                      {0.000 4.000}      10.000          100.000
 Clock                         WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
 -----                         -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
 gclk                                                                                                                                                                        2.000        0.000                       0                     1  
-  clk_out_audio_clk_wiz         4.873        0.000                      0                  112        0.102        0.000                      0                  112        4.587        0.000                       0                    90  
+  clk_out_audio_clk_wiz         5.618        0.000                      0                  157        0.221        0.000                      0                  157        4.587        0.000                       0                    99  
   clkfbout_audio_clk_wiz                                                                                                                                                   47.845        0.000                       0                     3  
 
 
@@ -220,28 +220,28 @@ High Pulse Width  Slow    MMCME2_ADV/CLKIN1  n/a            2.000         4.000 
 From Clock:  clk_out_audio_clk_wiz
   To Clock:  clk_out_audio_clk_wiz
 
-Setup :            0  Failing Endpoints,  Worst Slack        4.873ns,  Total Violation        0.000ns
-Hold  :            0  Failing Endpoints,  Worst Slack        0.102ns,  Total Violation        0.000ns
+Setup :            0  Failing Endpoints,  Worst Slack        5.618ns,  Total Violation        0.000ns
+Hold  :            0  Failing Endpoints,  Worst Slack        0.221ns,  Total Violation        0.000ns
 PW    :            0  Failing Endpoints,  Worst Slack        4.587ns,  Total Violation        0.000ns
 ---------------------------------------------------------------------------------------------------
 
 
 Max Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             4.873ns  (required time - arrival time)
-  Source:                 mssc/segment_counter_reg[14]/C
+Slack (MET) :             5.618ns  (required time - arrival time)
+  Source:                 mssc/segment_counter_reg[6]/C
                             (rising edge-triggered cell FDRE clocked by clk_out_audio_clk_wiz  {rise@0.000ns fall@5.087ns period=10.173ns})
-  Destination:            mssc/segment_counter_reg[0]/R
+  Destination:            mssc/segment_counter_reg[28]/R
                             (rising edge-triggered cell FDRE clocked by clk_out_audio_clk_wiz  {rise@0.000ns fall@5.087ns period=10.173ns})
   Path Group:             clk_out_audio_clk_wiz
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.173ns  (clk_out_audio_clk_wiz rise@10.173ns - clk_out_audio_clk_wiz rise@0.000ns)
-  Data Path Delay:        4.451ns  (logic 0.856ns (19.233%)  route 3.595ns (80.767%))
+  Data Path Delay:        3.992ns  (logic 0.828ns (20.742%)  route 3.164ns (79.258%))
   Logic Levels:           3  (LUT4=1 LUT5=2)
-  Clock Path Skew:        -0.106ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    -1.493ns = ( 8.680 - 10.173 ) 
-    Source Clock Delay      (SCD):    -0.905ns
-    Clock Pessimism Removal (CPR):    0.482ns
+  Clock Path Skew:        -0.027ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    -1.574ns = ( 8.600 - 10.173 ) 
+    Source Clock Delay      (SCD):    -0.972ns
+    Clock Pessimism Removal (CPR):    0.575ns
   Clock Uncertainty:      0.107ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
     Discrete Jitter          (DJ):    0.203ns
@@ -259,18 +259,18 @@ Slack (MET) :             4.873ns  (required time - arrival time)
                                                      -6.965    -4.291 r  macw/mmcm_adv_inst/CLKOUT0
                          net (fo=1, routed)           1.666    -2.625    macw/clk_out_audio_clk_wiz
     BUFGCTRL_X0Y1        BUFG (Prop_bufg_I_O)         0.096    -2.529 r  macw/clkout1_buf/O
-                         net (fo=88, routed)          1.624    -0.905    mssc/clk_out
-    SLICE_X5Y52          FDRE                                         r  mssc/segment_counter_reg[14]/C
+                         net (fo=97, routed)          1.557    -0.972    mssc/clk_out
+    SLICE_X9Y53          FDRE                                         r  mssc/segment_counter_reg[6]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X5Y52          FDRE (Prop_fdre_C_Q)         0.456    -0.449 f  mssc/segment_counter_reg[14]/Q
-                         net (fo=2, routed)           1.277     0.828    mssc/segment_counter_reg[14]
-    SLICE_X4Y54          LUT4 (Prop_lut4_I0_O)        0.124     0.952 f  mssc/segment_state[7]_i_8/O
-                         net (fo=1, routed)           0.280     1.232    mssc/segment_state[7]_i_8_n_0
-    SLICE_X4Y54          LUT5 (Prop_lut5_I4_O)        0.124     1.356 f  mssc/segment_state[7]_i_4/O
-                         net (fo=2, routed)           1.012     2.367    mssc/segment_state[7]_i_4_n_0
-    SLICE_X4Y52          LUT5 (Prop_lut5_I2_O)        0.152     2.519 r  mssc/segment_counter[0]_i_1/O
-                         net (fo=32, routed)          1.026     3.546    mssc/segment_counter[0]_i_1_n_0
-    SLICE_X5Y49          FDRE                                         r  mssc/segment_counter_reg[0]/R
+    SLICE_X9Y53          FDRE (Prop_fdre_C_Q)         0.456    -0.516 f  mssc/segment_counter_reg[6]/Q
+                         net (fo=3, routed)           0.873     0.357    mssc/segment_counter_reg[6]
+    SLICE_X8Y53          LUT4 (Prop_lut4_I2_O)        0.124     0.481 r  mssc/segment_counter[0]_i_10/O
+                         net (fo=1, routed)           0.689     1.170    mssc/segment_counter[0]_i_10_n_0
+    SLICE_X8Y53          LUT5 (Prop_lut5_I4_O)        0.124     1.294 r  mssc/segment_counter[0]_i_5/O
+                         net (fo=1, routed)           0.731     2.025    mssc/segment_counter[0]_i_5_n_0
+    SLICE_X8Y55          LUT5 (Prop_lut5_I2_O)        0.124     2.149 r  mssc/segment_counter[0]_i_1/O
+                         net (fo=32, routed)          0.871     3.020    mssc/segment_counter[0]_i_1_n_0
+    SLICE_X9Y59          FDRE                                         r  mssc/segment_counter_reg[28]/R
   -------------------------------------------------------------------    -------------------
 
                          (clock clk_out_audio_clk_wiz rise edge)
@@ -283,16 +283,16 @@ Slack (MET) :             4.873ns  (required time - arrival time)
                                                      -7.221     5.484 r  macw/mmcm_adv_inst/CLKOUT0
                          net (fo=1, routed)           1.587     7.071    macw/clk_out_audio_clk_wiz
     BUFGCTRL_X0Y1        BUFG (Prop_bufg_I_O)         0.091     7.162 r  macw/clkout1_buf/O
-                         net (fo=88, routed)          1.518     8.680    mssc/clk_out
-    SLICE_X5Y49          FDRE                                         r  mssc/segment_counter_reg[0]/C
-                         clock pessimism              0.482     9.163    
-                         clock uncertainty           -0.107     9.055    
-    SLICE_X5Y49          FDRE (Setup_fdre_C_R)       -0.637     8.418    mssc/segment_counter_reg[0]
+                         net (fo=97, routed)          1.438     8.600    mssc/clk_out
+    SLICE_X9Y59          FDRE                                         r  mssc/segment_counter_reg[28]/C
+                         clock pessimism              0.575     9.174    
+                         clock uncertainty           -0.107     9.067    
+    SLICE_X9Y59          FDRE (Setup_fdre_C_R)       -0.429     8.638    mssc/segment_counter_reg[28]
   -------------------------------------------------------------------
-                         required time                          8.418    
-                         arrival time                          -3.546    
+                         required time                          8.638    
+                         arrival time                          -3.020    
   -------------------------------------------------------------------
-                         slack                                  4.873    
+                         slack                                  5.618    
 
 
 
@@ -300,20 +300,20 @@ Slack (MET) :             4.873ns  (required time - arrival time)
 
 Min Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             0.102ns  (arrival time - required time)
-  Source:                 mssc/segment_counter_reg[3]/C
+Slack (MET) :             0.221ns  (arrival time - required time)
+  Source:                 test_counter_reg[0]/C
                             (rising edge-triggered cell FDRE clocked by clk_out_audio_clk_wiz  {rise@0.000ns fall@5.087ns period=10.173ns})
-  Destination:            mssc/segment_counter_reg[4]/D
+  Destination:            test_counter_reg[4]/D
                             (rising edge-triggered cell FDRE clocked by clk_out_audio_clk_wiz  {rise@0.000ns fall@5.087ns period=10.173ns})
   Path Group:             clk_out_audio_clk_wiz
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk_out_audio_clk_wiz rise@0.000ns - clk_out_audio_clk_wiz rise@0.000ns)
-  Data Path Delay:        0.476ns  (logic 0.355ns (74.580%)  route 0.121ns (25.420%))
-  Logic Levels:           2  (CARRY4=2)
-  Clock Path Skew:        0.269ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    -0.844ns
-    Source Clock Delay      (SCD):    -0.605ns
-    Clock Pessimism Removal (CPR):    -0.508ns
+  Data Path Delay:        0.341ns  (logic 0.189ns (55.396%)  route 0.152ns (44.604%))
+  Logic Levels:           1  (LUT5=1)
+  Clock Path Skew:        0.013ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    -0.845ns
+    Source Clock Delay      (SCD):    -0.608ns
+    Clock Pessimism Removal (CPR):    -0.250ns
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
   -------------------------------------------------------------------    -------------------
@@ -327,18 +327,14 @@ Slack (MET) :             0.102ns  (arrival time - required time)
                                                      -2.362    -1.714 r  macw/mmcm_adv_inst/CLKOUT0
                          net (fo=1, routed)           0.489    -1.225    macw/clk_out_audio_clk_wiz
     BUFGCTRL_X0Y1        BUFG (Prop_bufg_I_O)         0.026    -1.199 r  macw/clkout1_buf/O
-                         net (fo=88, routed)          0.594    -0.605    mssc/clk_out
-    SLICE_X5Y49          FDRE                                         r  mssc/segment_counter_reg[3]/C
+                         net (fo=97, routed)          0.591    -0.608    audio_clk
+    SLICE_X1Y60          FDRE                                         r  test_counter_reg[0]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X5Y49          FDRE (Prop_fdre_C_Q)         0.141    -0.464 r  mssc/segment_counter_reg[3]/Q
-                         net (fo=2, routed)           0.120    -0.344    mssc/segment_counter_reg[3]
-    SLICE_X5Y49          CARRY4 (Prop_carry4_S[3]_CO[3])
-                                                      0.160    -0.184 r  mssc/segment_counter_reg[0]_i_2/CO[3]
-                         net (fo=1, routed)           0.001    -0.183    mssc/segment_counter_reg[0]_i_2_n_0
-    SLICE_X5Y50          CARRY4 (Prop_carry4_CI_O[0])
-                                                      0.054    -0.129 r  mssc/segment_counter_reg[4]_i_1/O[0]
-                         net (fo=1, routed)           0.000    -0.129    mssc/segment_counter_reg[4]_i_1_n_7
-    SLICE_X5Y50          FDRE                                         r  mssc/segment_counter_reg[4]/D
+    SLICE_X1Y60          FDRE (Prop_fdre_C_Q)         0.141    -0.467 r  test_counter_reg[0]/Q
+                         net (fo=8, routed)           0.152    -0.315    test_counter_reg[0]
+    SLICE_X0Y60          LUT5 (Prop_lut5_I2_O)        0.048    -0.267 r  test_counter[4]_i_1/O
+                         net (fo=1, routed)           0.000    -0.267    p_0_in__1[4]
+    SLICE_X0Y60          FDRE                                         r  test_counter_reg[4]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk_out_audio_clk_wiz rise edge)
@@ -351,15 +347,15 @@ Slack (MET) :             0.102ns  (arrival time - required time)
                                                      -3.145    -2.269 r  macw/mmcm_adv_inst/CLKOUT0
                          net (fo=1, routed)           0.534    -1.735    macw/clk_out_audio_clk_wiz
     BUFGCTRL_X0Y1        BUFG (Prop_bufg_I_O)         0.029    -1.706 r  macw/clkout1_buf/O
-                         net (fo=88, routed)          0.863    -0.844    mssc/clk_out
-    SLICE_X5Y50          FDRE                                         r  mssc/segment_counter_reg[4]/C
-                         clock pessimism              0.508    -0.336    
-    SLICE_X5Y50          FDRE (Hold_fdre_C_D)         0.105    -0.231    mssc/segment_counter_reg[4]
+                         net (fo=97, routed)          0.861    -0.845    audio_clk
+    SLICE_X0Y60          FDRE                                         r  test_counter_reg[4]/C
+                         clock pessimism              0.250    -0.595    
+    SLICE_X0Y60          FDRE (Hold_fdre_C_D)         0.107    -0.488    test_counter_reg[4]
   -------------------------------------------------------------------
-                         required time                          0.231    
-                         arrival time                          -0.129    
+                         required time                          0.488    
+                         arrival time                          -0.267    
   -------------------------------------------------------------------
-                         slack                                  0.102    
+                         slack                                  0.221    
 
 
 

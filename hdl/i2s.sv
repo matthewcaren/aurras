@@ -3,7 +3,7 @@ module i2s(
     input wire i2s_clk,
     input wire lrcl_clk,
     output logic data_valid_out,
-    output logic [15:0] audio_out
+    output logic [17:0] audio_out
 );
 
 logic [5:0] current_address;
@@ -19,10 +19,10 @@ always_ff @(posedge i2s_clk) begin
         current_address <= current_address + 1;
         build_up_audio[63-current_address] <= mic_data;
     end
-    if (data_valid_out) begin
-        data_valid_out <= 0;
-        audio_out <= 0;
-    end
+    // if (data_valid_out) begin
+    //     data_valid_out <= 0;
+        //audio_out <= 0;
+    //end
     prev_lrcl_clk <= lrcl_clk;
 end
 
