@@ -11,7 +11,7 @@
  */
 
 module sos_dist_calculator #(
-  parameter WINDOW_SIZE = 32     // ~150 for most accurate, lower means less latent
+  parameter WINDOW_SIZE = 32,     // ~150 for most accurate, lower means less latent
   parameter MAX_DELAY = 255
 ) (
   input wire clk_in,
@@ -34,9 +34,9 @@ module sos_dist_calculator #(
   logic [$clog2(WINDOW_SIZE):0] window_ix_counter;
 
   impulse_generator (
-  .clk_in(.clk_in),
-  .rst_in(.rst_in),
-  .step_in(.step_in),
+  .clk_in(clk_in),
+  .rst_in(rst_in),
+  .step_in(step_in),
   .impulse_in(impulse_trigger),
   .impulse_out(impulse_out),
   .amp_out(amp_out));
