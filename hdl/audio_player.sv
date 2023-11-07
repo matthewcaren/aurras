@@ -3,10 +3,10 @@
 
 module audio_player(
     input wire clk_in,
-    input wire [15:0] sw,
-    input wire [15:0] sound_sample_in,
-    input wire audio_trigger_in, 
     input wire rst_in, 
+    input wire audio_trigger_in, 
+    // input wire [15:0] sw,
+    input wire [15:0] sound_sample_in,
     output logic signal_out
 );
 
@@ -20,29 +20,20 @@ module audio_player(
   //   pdm_counter <= pdm_counter + 1;
   // end
 
-  logic signed [15:0] vol_out;
+  // logic signed [15:0] vol_out;
 
-  volume_control vc (
-    .vol_in(sw[15:12]),
-    .signal_in(sound_sample_in), 
-    .signal_out(vol_out));
+  // volume_control vc (
+  //   .vol_in(sw[15:12]),
+  //   .signal_in(sound_sample_in), 
+  //   .signal_out(vol_out));
 
   pdm my_pdm(
     .clk_in(clk_in),
     .rst_in(rst_in),
-    .level_in(vol_out),
+    .level_in(sound_sample_in),
     .tick_in(audio_trigger_in),
     .pdm_out(signal_out)
   );
-
-  // pwm my_pwm(
-  //   .clk_in(clk_in),
-  //   .rst_in(rst_in),
-  //   .tick_in(audio_trigger_in),
-
-  //   .
-  //   .pwm_out(signal_out)
-  // );
 endmodule 
 
 //Volume Control

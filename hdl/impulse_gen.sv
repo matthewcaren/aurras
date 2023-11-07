@@ -35,7 +35,7 @@ module impulse_generator (
                 if (step_in) begin
                     amp_out <= 16'sd16384; // 50% amplitude
                     impulse_out <= 1;
-                    state <= SENDING_IMPULSE;
+                    state <= SENT_IMPULSE;
                 end
             end
 
