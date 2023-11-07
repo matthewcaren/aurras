@@ -31,49 +31,34 @@ module top_level(
     end
     assign audio_trigger = (counter == 0);
 
-    //3.072MHz clock to send to i2s
-    logic [4:0] i2s_clk_counter;
-    logic i2s_clk;
-    always_ff @(posedge audio_clk) begin
-        i2s_clk_counter <= i2s_clk_counter + 1;
-    end
-    assign i2s_clk = i2s_clk_counter[4];
-    
-    // 48kHz clock for word select for i2s
-    logic [10:0] lrcl_counter;
-    logic lrcl_clk; 
-    always_ff @(posedge audio_clk) begin
-        lrcl_counter <= lrcl_counter + 1;
-    end
-    assign lrcl_clk = lrcl_counter[10];
+    // Mic 1: bclk - i2s_clk - pmodb[3]; dout - mic_1_data - pmoda[3]; lrcl_clk - pmodb[2], sel - grounded
+    // Mic 2: bclk - i2s_clk - pmodb[7]; dout - mic_2_data - pmoda[7]; lrcl_clk - pmodb[6], sel - grounded
+    // Mic 3: bclk - i2s_clk - pmodb[1]; dout - mic_3_data - pmoda[0]; lrcl_clk - pmodb[0], sel - grounded
 
     logic mic_1_data, mic_2_data, mic_3_data;
-
-    // Mic 1: blck - i2s_clk - pmodb[3]; dout - mic_1_data - pmoda[3]; lrcl_clk - pmodb[2], sel - grounded
-    // Mic 2: blck - i2s_clk - pmodb[7]; dout - mic_2_data - pmoda[7]; lrcl_clk - pmodb[6], sel - grounded
-    // Mic 3: blck - i2s_clk - pmodb[1]; dout - mic_3_data - pmoda[0]; lrcl_clk - pmodb[0], sel - grounded
-
-    assign pmodb[3] = i2s_clk;
-    // assign pmodb[7] = i2s_clk;
-    // assign pmodb[1] = i2s_clk;
-
-    assign pmodb[2] = lrcl_clk;
-    // assign pmodb[6] = lrcl_clk;
-    // assign pmodb[0] = lrcl_clk;
-
-    assign mic_1_data = pmoda[3];
-    // assign mic_2_data = pmoda[7];
-    // assign mic_3_data = pmoda[0];
-
-    // Audio out sends data_valid_out signal at 48kHz
+    logic i2s_clk_1, i2s_clk_2, i2s_clk_3;
+    logic lrcl_clk_1, lrcl_clk_2, lrcl_clk_3;
     logic [15:0] audio_out_1, audio_out_2, audio_out_3;
-    logic [15:0] valid_audio_out_1, valid_audio_out_2, valid_audio_out_3;
     logic data_valid_out_1, data_valid_out_2, data_valid_out_3;
 
-    i2s mic_1(.mic_data(mic_1_data), .i2s_clk(i2s_clk), .lrcl_clk(lrcl_clk), .data_valid_out(data_valid_out_1), .audio_out(audio_out_1));
-    // i2s mic_2(.mic_data(mic_2_data), .i2s_clk(i2s_clk), .lrcl_clk(lrcl_clk), .data_valid_out(data_valid_out_2), .audio_out(audio_out_2));
-    // i2s mic_3(.mic_data(mic_3_data), .i2s_clk(i2s_clk), .lrcl_clk(lrcl_clk), .data_valid_out(data_valid_out_3), .audio_out(audio_out_3));
+    i2s mic_1(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_1_data), .i2s_clk(i2s_clk_1), .lrcl_clk(lrcl_clk_1), .data_valid_out(data_valid_out_1), .audio_out(audio_out_1));
+    i2s mic_2(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_2_data), .i2s_clk(i2s_clk_2), .lrcl_clk(lrcl_clk_2), .data_valid_out(data_valid_out_2), .audio_out(audio_out_2));
+    i2s mic_3(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_3_data), .i2s_clk(i2s_clk_3), .lrcl_clk(lrcl_clk_3), .data_valid_out(data_valid_out_3), .audio_out(audio_out_3));
 
+    assign pmodb[3] = i2s_clk_1;
+    assign pmodb[7] = i2s_clk_2;
+    assign pmodb[1] = i2s_clk_3;
+
+    assign pmodb[2] = lrcl_clk_1;
+    assign pmodb[6] = lrcl_clk_2;
+    assign pmodb[0] = lrcl_clk_3;
+
+    assign mic_1_data = pmoda[3];
+    assign mic_2_data = pmoda[7];
+    assign mic_3_data = pmoda[0];
+
+
+    logic [15:0] valid_audio_out_1, valid_audio_out_2, valid_audio_out_3;
     always_ff @(posedge audio_clk) begin
         if (data_valid_out_1) begin
             valid_audio_out_1 <= audio_out_1;
