@@ -13,11 +13,11 @@ always_ff @(posedge i2s_clk) begin
     if (~(prev_lrcl_clk) && lrcl_clk) begin
         audio_out <= build_up_audio[30:13];
         data_valid_out <= 1;
-        build_up_audio[63] <= mic_data;
+        build_up_audio <= mic_data;
         current_address <= 1;
     end else begin
         current_address <= current_address + 1;
-        build_up_audio[63-current_address] <= mic_data;
+        build_up_audio <= {build_up_audio[62:0], mic_data};
     end
     if (data_valid_out) begin
         data_valid_out <= 0;
