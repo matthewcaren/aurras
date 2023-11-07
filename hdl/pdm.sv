@@ -14,9 +14,9 @@ module pdm( input wire clk_in,
   assign pdm_out = ~(stored_value[16]);
   assign feedback = stored_value[16] ? -'sd32768 : 'sd32767;
 
-  logic [3:0] pdm_counter;
+  logic [2:0] pdm_counter;
   logic pdm_trig;
-  assign pdm_trig = (pdm_counter==4'b1111);
+  assign pdm_trig = (pdm_counter==0);
 
   always_ff @(posedge clk_in) begin
     pdm_counter <= pdm_counter + 1;

@@ -114,17 +114,23 @@ module top_level(
 
   // ############################################################## Set up the sound sources - END 
   
-  logic sound_out; 
+  logic signed [7:0] selected_sine;
+  logic signed [15:0] pdm_in;
+  logic sound_out;
+
+  // select sine wave and sign-extend it to 16 bits
+  assign selected_sine = sw[2] ? tone_750 : tone_440;
+  assign pdm_in = { {8{selected_sine[7]}}, selected_sine[7:0] };
 
   pdm my_pdm(
-    .clk_in(clk_in),
+    .clk_in(audio_clk),
     .rst_in(rst_in),
-    .level_in(tone_440),
+    .level_in(pdm_in),
     .pdm_out(sound_out)
   );
 
-  assign spkl = sw[0]? sound_out : 0;
-  assign spkr = sw[1]? sound_out : 0;
+  assign spkl = sw[0] ? sound_out : 0;
+  assign spkr = sw[1] ? sound_out : 0;
 
 endmodule // top_level
 
