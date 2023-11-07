@@ -38,7 +38,7 @@ module top_level(
     logic mic_1_data, mic_2_data, mic_3_data;
     logic i2s_clk_1, i2s_clk_2, i2s_clk_3;
     logic lrcl_clk_1, lrcl_clk_2, lrcl_clk_3;
-    logic [15:0] audio_out_1, audio_out_2, audio_out_3;
+    logic [63:0] audio_out_1, audio_out_2, audio_out_3;
     logic data_valid_out_1, data_valid_out_2, data_valid_out_3;
 
     i2s mic_1(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_1_data), .i2s_clk(i2s_clk_1), .lrcl_clk(lrcl_clk_1), .data_valid_out(data_valid_out_1), .audio_out(audio_out_1));
@@ -58,7 +58,7 @@ module top_level(
     assign mic_3_data = pmoda[0];
 
 
-    logic [15:0] valid_audio_out_1, valid_audio_out_2, valid_audio_out_3;
+    logic [63:0] valid_audio_out_1, valid_audio_out_2, valid_audio_out_3;
     always_ff @(posedge audio_clk) begin
         if (data_valid_out_1) begin
             valid_audio_out_1 <= audio_out_1;
@@ -77,7 +77,7 @@ module top_level(
     always_ff @(posedge audio_clk) begin
         prev_val <= val_to_display;
     end
-    assign val_to_display = btn[1] ? (sw[7] ? valid_audio_out_1 : 16'b0) : prev_val;
+    assign val_to_display = btn[1] ? (sw[7] ? valid_audio_out_1[63:32] : (sw[8] ? valid_audio_out_1[31:0] : 32'b0)) : prev_val;
     logic [6:0] ss_c;
     assign ss0_c = ss_c; 
     assign ss1_c = ss_c;
