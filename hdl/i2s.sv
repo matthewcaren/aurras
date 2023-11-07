@@ -49,20 +49,19 @@ always_ff @(posedge audio_clk) begin
                 end
             end 
             ACCUMULATING: begin
-                if (prev_i2s_clk && ~(i2s_clk)) begin
-                    build_up_audio <= {build_up_audio[62:0], mic_data};
-                    total_bits_seen <= total_bits_seen + 1;
-                end if (total_bits_seen == 7'd64) begin
+
+                if (total_bits_seen == 7'd64) begin
                     total_bits_seen <= 0;
                     data_valid_out <= 1;
                     audio_out <= build_up_audio;
-                        // current_i2s_state <= IDLE;
-                        // current_i2s_state <= SENDING_DATA;
                 end else if (data_valid_out) begin
                     data_valid_out <= 0;
                     audio_out <= 0;
                     build_up_audio <= 0;
-                end
+                end else if (prev_i2s_clk && ~(i2s_clk)) begin
+                    build_up_audio <= {build_up_audio[62:0], mic_data};
+                    total_bits_seen <= total_bits_seen + 1;
+                end 
             end
         endcase
     end

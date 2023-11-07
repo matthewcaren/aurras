@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2023.1 (lin64) Build 3865809 Sun May  7 15:04:56 MDT 2023
-| Date         : Tue Nov  7 18:39:36 2023
+| Date         : Tue Nov  7 19:10:31 2023
 | Host         : worker running 64-bit Ubuntu 20.04.6 LTS
 | Command      : report_timing -file obj/post_synth_timing.rpt
 | Design       : top_level
@@ -13,7 +13,7 @@ Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanc
 Timing Report
 
 Slack (MET) :             5.528ns  (required time - arrival time)
-  Source:                 mssc/segment_counter_reg[6]/C
+  Source:                 mssc/segment_counter_reg[28]/C
                             (rising edge-triggered cell FDRE clocked by clk_out_audio_clk_wiz  {rise@0.000ns fall@5.087ns period=10.173ns})
   Destination:            mssc/segment_counter_reg[0]/R
                             (rising edge-triggered cell FDRE clocked by clk_out_audio_clk_wiz  {rise@0.000ns fall@5.087ns period=10.173ns})
@@ -44,10 +44,10 @@ Slack (MET) :             5.528ns  (required time - arrival time)
                          net (fo=1, unplaced)         0.800    -2.284    macw/clk_out_audio_clk_wiz
                          BUFG (Prop_bufg_I_O)         0.096    -2.188 r  macw/clkout1_buf/O
                          net (fo=291, unplaced)       0.584    -1.604    mssc/clk_out
-                         FDRE                                         r  mssc/segment_counter_reg[6]/C
+                         FDRE                                         r  mssc/segment_counter_reg[28]/C
   -------------------------------------------------------------------    -------------------
-                         FDRE (Prop_fdre_C_Q)         0.456    -1.148 f  mssc/segment_counter_reg[6]/Q
-                         net (fo=2, unplaced)         0.752    -0.396    mssc/segment_counter_reg[6]
+                         FDRE (Prop_fdre_C_Q)         0.456    -1.148 f  mssc/segment_counter_reg[28]/Q
+                         net (fo=2, unplaced)         0.752    -0.396    mssc/segment_counter_reg[28]
                          LUT4 (Prop_lut4_I1_O)        0.295    -0.101 f  mssc/segment_state[7]_i_7/O
                          net (fo=1, unplaced)         0.449     0.348    mssc/segment_state[7]_i_7_n_0
                          LUT5 (Prop_lut5_I4_O)        0.124     0.472 r  mssc/segment_state[7]_i_3/O

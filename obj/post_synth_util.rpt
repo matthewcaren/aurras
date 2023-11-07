@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2023.1 (lin64) Build 3865809 Sun May  7 15:04:56 MDT 2023
-| Date         : Tue Nov  7 18:39:36 2023
+| Date         : Tue Nov  7 19:10:31 2023
 | Host         : worker running 64-bit Ubuntu 20.04.6 LTS
 | Command      : report_utilization -file obj/post_synth_util.rpt
 | Design       : top_level
@@ -152,14 +152,14 @@ Warning! LUT value is adjusted to account for LUT combining.
 | FDRE       |  290 |        Flop & Latch |
 | LUT6       |   78 |                 LUT |
 | OBUF       |   50 |                  IO |
-| LUT4       |   39 |                 LUT |
+| LUT4       |   37 |                 LUT |
 | IBUF       |   20 |                  IO |
-| LUT5       |   11 |                 LUT |
+| LUT5       |   12 |                 LUT |
 | LUT1       |   11 |                 LUT |
 | CARRY4     |    8 |          CarryLogic |
 | LUT2       |    6 |                 LUT |
 | OBUFT      |    5 |                  IO |
-| LUT3       |    4 |                 LUT |
+| LUT3       |    5 |                 LUT |
 | BUFG       |    2 |               Clock |
 | MMCME2_ADV |    1 |               Clock |
 | FDSE       |    1 |        Flop & Latch |

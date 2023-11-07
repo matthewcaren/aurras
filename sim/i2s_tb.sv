@@ -36,7 +36,10 @@ initial begin
     #20;
     rst_in = 0;
     mic_data = 1;
-    #100000;
+    for (integer  i = 0; i < 100; i = i + 1) begin
+      #1000;
+      mic_data = ~(mic_data);
+    end
     $display("Simulation finished");
     $finish;
 end
