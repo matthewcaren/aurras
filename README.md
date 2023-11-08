@@ -1,13 +1,22 @@
 # aurras
-Active environmental noise cancellation using an FPGA
+Active environmental noise cancellation using an FPGA.
+
+<br />
+
+## specs
+16-bit audio @ 24 kHz
 
 
-## Clocking
+### clocking
+- main clock: 98.3MhZ
+- I2S driver clock (main clock / 32) ≈ 3.072 MhZ
+- input audio rate from I2S (main clock / 2048) ≈ 48KhZ
+- project audio rate (main clock / 4096) ≈ 24kHZ
 
-Main clock: 98.3MhZ from audio_clk_wiz.v
-Clock to I2S: Main Clock / 32 ~= 3.072 MhZ
-Initial audio rate from I2S = I2S Clock / 64 ~= 48KhZ
-Audio_trigger for all other modules ~= 24kHZ and exactly Main clock / 4096
+### memory
+- 2s impulse response = 96 kB  →  ~192 kB required working memory for IR + convolution buffer
+- delay buffer @ 0.5 meters ≈ 560 bits
 
-
-Board clock: 100MhZ, not used in any modules (eventually)
+### peripherals
+- 3-channel input via I2S MEMS microphones
+- 2-channel output to analog amplifier & full-range drivers
