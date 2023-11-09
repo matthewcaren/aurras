@@ -123,8 +123,8 @@ module top_level(
 
   // select sine wave and sign-extend it to 16 bits
   assign selected_sine = sw[2] ? tone_750 : tone_440;
-  assign pdm_in = {selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], 
-                    selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7:0]} <<< 8;
+  assign pdm_in = sw[3] ? {selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], 
+                    selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7:0]} <<< 8 : valid_audio_out_1;
 
   pdm my_pdm(
     .clk_in(audio_clk),
