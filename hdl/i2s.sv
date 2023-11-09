@@ -9,7 +9,7 @@ module i2s(
 
     // Deserialized outputs to system
     output logic data_valid_out,
-    output logic [63:0] audio_out
+    output logic [15:0] audio_out
 );
 
 logic prev_lrcl_clk;
@@ -35,7 +35,6 @@ always_ff @(posedge audio_clk) begin
         build_up_audio <= 0;
         current_i2s_state <= IDLE;
     end else begin
-        
         i2s_clk_counter <= i2s_clk_counter + 1;
         lrcl_counter <= lrcl_counter + 1;
         case(current_i2s_state)
@@ -49,11 +48,10 @@ always_ff @(posedge audio_clk) begin
                 end
             end 
             ACCUMULATING: begin
-
                 if (total_bits_seen == 7'd64) begin
                     total_bits_seen <= 0;
                     data_valid_out <= 1;
-                    audio_out <= build_up_audio;
+                    audio_out <= build_up_audio[63:48];
                 end else if (data_valid_out) begin
                     data_valid_out <= 0;
                     audio_out <= 0;
