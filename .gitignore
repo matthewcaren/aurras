@@ -3,3 +3,6 @@
 *.bit
 vivado.log
 *.pyc
+obj/
+*.vcd
+*.out
