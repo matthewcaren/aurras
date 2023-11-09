@@ -31,6 +31,7 @@ module top_level(
     end
     assign audio_trigger = (counter == 0);
 
+    // I2S MIC PIN ASSIGNMENTS
     // Mic 1: bclk - i2s_clk - pmodb[3]; dout - mic_1_data - pmoda[3]; lrcl_clk - pmodb[2], sel - grounded
     // Mic 2: bclk - i2s_clk - pmodb[7]; dout - mic_2_data - pmoda[7]; lrcl_clk - pmodb[6], sel - grounded
     // Mic 3: bclk - i2s_clk - pmodb[1]; dout - mic_3_data - pmoda[0]; lrcl_clk - pmodb[0], sel - grounded
@@ -38,7 +39,9 @@ module top_level(
     logic mic_1_data, mic_2_data, mic_3_data;
     logic i2s_clk_1, i2s_clk_2, i2s_clk_3;
     logic lrcl_clk_1, lrcl_clk_2, lrcl_clk_3;
-    logic [63:0] audio_out_1, audio_out_2, audio_out_3;
+
+    logic [15:0] audio_out_1, audio_out_2, audio_out_3;
+
     logic data_valid_out_1, data_valid_out_2, data_valid_out_3;
 
     i2s mic_1(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_1_data), .i2s_clk(i2s_clk_1), .lrcl_clk(lrcl_clk_1), .data_valid_out(data_valid_out_1), .audio_out(audio_out_1));
@@ -58,7 +61,8 @@ module top_level(
     assign mic_3_data = pmoda[0];
 
 
-    logic [63:0] valid_audio_out_1, valid_audio_out_2, valid_audio_out_3;
+    logic [15:0] valid_audio_out_1, valid_audio_out_2, valid_audio_out_3;
+
     always_ff @(posedge audio_clk) begin
         if (data_valid_out_1) begin
             valid_audio_out_1 <= audio_out_1;
@@ -77,7 +81,8 @@ module top_level(
     always_ff @(posedge audio_clk) begin
         prev_val <= val_to_display;
     end
-    assign val_to_display = btn[1] ? (sw[7] ? valid_audio_out_1[63:32] : (sw[8] ? valid_audio_out_1[31:0] : 32'b0)) : prev_val;
+    //assign val_to_display = btn[1] ? (sw[7] ? valid_audio_out_1[63:32] : (sw[8] ? valid_audio_out_1[31:0] : 32'b0)) : prev_val;
+     assign val_to_display = btn[1] ? valid_audio_out_1 : prev_val;
     logic [6:0] ss_c;
     assign ss0_c = ss_c; 
     assign ss1_c = ss_c;
@@ -87,4 +92,52 @@ module top_level(
                                 .cat_out(ss_c),
                                 .an_out({ss0_an, ss1_an}));
 
-endmodule 
+
+  
+  // ###### AUDIO TESTING ######
+
+  logic signed [7:0] tone_750; 
+  logic signed [7:0] tone_440; 
+
+  sine_generator sine_750 (
+    .clk_in(audio_clk),
+    .rst_in(sys_rst),
+    .step_in(audio_trigger),
+    .amp_out(tone_750)
+  ); 
+
+  sine_generator sine_440 (
+    .clk_in(audio_clk),
+    .rst_in(sys_rst),
+    .step_in(audio_trigger),
+    .amp_out(tone_440)
+  ); 
+
+  defparam sine_440.PHASE_INCR = 32'b1001_0110_0010_1111_1100_1001_0110;
+
+  // ############################################################## Set up the sound sources - END 
+  
+  logic signed [7:0] selected_sine;
+  logic signed [15:0] pdm_in;
+  logic sound_out;
+
+  // select sine wave and sign-extend it to 16 bits
+  assign selected_sine = sw[2] ? tone_750 : tone_440;
+  assign pdm_in = {selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], 
+                    selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7:0]} <<< 8;
+
+  pdm my_pdm(
+    .clk_in(audio_clk),
+    .rst_in(sys_rst),
+    .level_in(pdm_in),
+    .pdm_out(sound_out)
+  );
+
+  assign spkl = sw[0] ? sound_out : 0;
+  assign spkr = sw[1] ? sound_out : 0;
+
+endmodule // top_level
+
+
+    
+    

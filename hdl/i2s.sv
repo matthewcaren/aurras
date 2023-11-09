@@ -67,6 +67,5 @@ always_ff @(posedge audio_clk) begin
     end
     prev_i2s_clk <= i2s_clk;
     prev_lrcl_clk <= lrcl_clk; 
-    
 end
 endmodule
