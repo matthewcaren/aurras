@@ -31,6 +31,7 @@ module top_level(
     end
     assign audio_trigger = (counter == 0);
 
+
     // I2S MIC PIN ASSIGNMENTS
     // Mic 1: bclk - i2s_clk - pmodb[3]; dout - mic_1_data - pmoda[3]; lrcl_clk - pmodb[2], sel - grounded
     // Mic 2: bclk - i2s_clk - pmodb[7]; dout - mic_2_data - pmoda[7]; lrcl_clk - pmodb[6], sel - grounded
@@ -60,19 +61,18 @@ module top_level(
     assign mic_2_data = pmoda[7];
     assign mic_3_data = pmoda[0];
 
-
     logic [15:0] valid_audio_out_1, valid_audio_out_2, valid_audio_out_3;
 
     always_ff @(posedge audio_clk) begin
         if (data_valid_out_1) begin
             valid_audio_out_1 <= audio_out_1;
         end
-        // if (data_valid_out_2) begin
-        //     valid_audio_out_2 <= audio_out_2;
-        // end
-        // if (data_valid_out_3) begin
-        //     valid_audio_out_3 <= audio_out_3;
-        // end
+        if (data_valid_out_2) begin
+            valid_audio_out_2 <= audio_out_2;
+        end
+        if (data_valid_out_3) begin
+            valid_audio_out_3 <= audio_out_3;
+        end
     end
 
 
@@ -95,33 +95,45 @@ module top_level(
   
   // ###### AUDIO TESTING ######
 
-  logic signed [7:0] tone_750; 
+  logic signed [7:0] tone_1500; 
   logic signed [7:0] tone_440; 
+  logic signed [7:0] tone_880;
+  logic signed [7:0] tone_24000;
 
-  sine_generator sine_750 (
+  sine_generator sine_1500 (
     .clk_in(audio_clk),
     .rst_in(sys_rst),
     .step_in(audio_trigger),
-    .amp_out(tone_750)
+    .amp_out(tone_1500)
   ); 
 
-  sine_generator sine_440 (
+  sine_generator sine_880 (
+    .clk_in(audio_clk),
+    .rst_in(sys_rst),
+    .step_in(audio_trigger),
+    .amp_out(tone_880)
+  ); 
+
+  defparam sine_880.PHASE_INCR = 32'b1001_0110_0010_1111_1100_1001_0110;
+
+   sine_generator sine_440 (
     .clk_in(audio_clk),
     .rst_in(sys_rst),
     .step_in(audio_trigger),
     .amp_out(tone_440)
   ); 
+  defparam sine_440.PHASE_INCR = 32'b0000_0100_1011_0001_0111_1110_0100_1011;
 
-  defparam sine_440.PHASE_INCR = 32'b1001_0110_0010_1111_1100_1001_0110;
 
-   sine_generator sine_12k (
+
+   sine_generator sine_24k (
     .clk_in(audio_clk),
     .rst_in(sys_rst),
     .step_in(audio_trigger),
-    .amp_out(tone_440)
+    .amp_out(tone_24000)
   ); 
+    defparam sine_24k.PHASE_INCR = 32'b1000_0000_0000_0000_0000_0000_0000_0000;
 
-  defparam sine_12k.PHASE_INCR = 32'b1000_0000_0000_0000_0000_0000_0000_0000;
 
   // ############################################################## Set up the sound sources - END 
   
@@ -131,21 +143,21 @@ module top_level(
 
   // select sine wave and sign-extend it to 16 bits
   
-  assign selected_sine = sw[2] ? tone_750 : tone_440;
+  assign selected_sine = sw[2] ? tone_880 : tone_440;
 
   assign pdm_in = sw[3] ? {selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], 
                     selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7:0]} <<< 8 : 
                     (sw[4] ? valid_audio_out_1 : 
                     (sw[5] ? down_sampled_audio : 0));
 
-  pdm my_pdm(
+  pdm pdm(
     .clk_in(audio_clk),
     .rst_in(sys_rst),
     .level_in(pdm_in),
     .pdm_out(sound_out)
   );
 
-  logic [15:0] filter_output;
+  logic [31:0] filter_output;
   logic filter_valid;
   fir_compiler_0 anti_alias_filter(.aclk(audio_clk),
                                   .s_axis_data_tvalid(data_valid_out_1),
@@ -160,7 +172,7 @@ module top_level(
     if (filter_valid) begin
       down_sampler <= down_sampler + 1;
       if (down_sampler) begin
-        down_sampled_audio <= filter_valid;
+        down_sampled_audio <= filter_output[31:16];
       end
     end
   end
