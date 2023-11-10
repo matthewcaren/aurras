@@ -82,7 +82,7 @@ module top_level(
         prev_val <= val_to_display;
     end
     //assign val_to_display = btn[1] ? (sw[7] ? valid_audio_out_1[63:32] : (sw[8] ? valid_audio_out_1[31:0] : 32'b0)) : prev_val;
-     assign val_to_display = btn[1] ? valid_audio_out_1 : prev_val;
+    assign val_to_display = btn[1] ? valid_audio_out_1 : prev_val;
     logic [6:0] ss_c;
     assign ss0_c = ss_c; 
     assign ss1_c = ss_c;
@@ -91,7 +91,6 @@ module top_level(
                                 .val_in(val_to_display),
                                 .cat_out(ss_c),
                                 .an_out({ss0_an, ss1_an}));
-
 
   
   // ###### AUDIO TESTING ######
@@ -115,7 +114,7 @@ module top_level(
 
   defparam sine_440.PHASE_INCR = 32'b1001_0110_0010_1111_1100_1001_0110;
 
-  // ############################################################## Set up the sound sources - END 
+  // ######## AUDIO TESTING ######
   
   logic signed [7:0] selected_sine;
   logic signed [15:0] pdm_in;
@@ -123,14 +122,17 @@ module top_level(
 
   // select sine wave and sign-extend it to 16 bits
   assign selected_sine = sw[2] ? tone_750 : tone_440;
+
   assign pdm_in = sw[3] ? {selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], 
                     selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7:0]} <<< 8 : valid_audio_out_1;
 
-  pdm my_pdm(
+
+  audio_player audio_calibration (
     .clk_in(audio_clk),
-    .rst_in(sys_rst),
-    .level_in(pdm_in),
-    .pdm_out(sound_out)
+    .rst_in(sys_rst), 
+    .sound_source_in(pdm_in), 
+    .sound_out(sound_out)
+
   );
 
   assign spkl = sw[0] ? sound_out : 0;
