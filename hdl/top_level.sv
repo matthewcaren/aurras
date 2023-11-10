@@ -130,9 +130,11 @@ module top_level(
   logic sound_out;
 
   // select sine wave and sign-extend it to 16 bits
+  
   assign selected_sine = sw[2] ? tone_750 : tone_440;
+
   assign pdm_in = sw[3] ? {selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], 
-                    selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7:0]} <<< 8 : down_sampled_audio;
+                    selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7:0]} <<< 8 : (sw[4] ? valid_audio_out_1 : (sw[5] ? down_sampled_audio : 0));
 
   pdm my_pdm(
     .clk_in(audio_clk),
@@ -140,7 +142,6 @@ module top_level(
     .level_in(pdm_in),
     .pdm_out(sound_out)
   );
-
 
   logic [15:0] filter_output;
   logic filter_valid;
@@ -154,10 +155,10 @@ module top_level(
   logic down_sampler;
   logic [15:0] down_sampled_audio;
   always_ff @(posedge audio_clk) begin
-    if (filter_valid) begin
+    if (data_valid_out_1) begin
       down_sampler <= down_sampler + 1;
       if (down_sampler) begin
-        down_sampled_audio <= filter_output;
+        down_sampled_audio <= audio_out_1;
       end
     end
   end
