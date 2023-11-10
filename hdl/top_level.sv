@@ -81,8 +81,7 @@ module top_level(
     always_ff @(posedge audio_clk) begin
         prev_val <= val_to_display;
     end
-    //assign val_to_display = btn[1] ? (sw[7] ? valid_audio_out_1[63:32] : (sw[8] ? valid_audio_out_1[31:0] : 32'b0)) : prev_val;
-     assign val_to_display = btn[1] ? valid_audio_out_1 : prev_val;
+    assign val_to_display = btn[1] ? valid_audio_out_1 : prev_val;
     logic [6:0] ss_c;
     assign ss0_c = ss_c; 
     assign ss1_c = ss_c;
@@ -124,7 +123,7 @@ module top_level(
   // select sine wave and sign-extend it to 16 bits
   assign selected_sine = sw[2] ? tone_750 : tone_440;
   assign pdm_in = sw[3] ? {selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], 
-                    selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7:0]} <<< 8 : valid_audio_out_1;
+                    selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7:0]} <<< 8 : down_sampled_audio;
 
   pdm my_pdm(
     .clk_in(audio_clk),
@@ -132,6 +131,27 @@ module top_level(
     .level_in(pdm_in),
     .pdm_out(sound_out)
   );
+
+
+  logic [15:0] filter_output;
+  logic filter_valid;
+  fir_compiler_0 anti_alias_filter(.aclk(audio_clk),
+                                  .s_axis_data_tvalid(data_valid_out_1),
+                                  .s_axis_data_tready(1'b1),
+                                  .s_axis_data_tdata(audio_out_1),
+                                  .m_axis_data_tvalid(filter_valid),
+                                  .m_axis_data_tdata(filter_output));
+
+  logic down_sampler;
+  logic [15:0] down_sampled_audio;
+  always_ff @(posedge audio_clk) begin
+    if (filter_valid) begin
+      down_sampler <= down_sampler + 1;
+      if (down_sampler) begin
+        down_sampled_audio <= filter_output;
+      end
+    end
+  end
 
   assign spkl = sw[0] ? sound_out : 0;
   assign spkr = sw[1] ? sound_out : 0;
