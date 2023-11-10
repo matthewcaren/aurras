@@ -114,6 +114,15 @@ module top_level(
 
   defparam sine_440.PHASE_INCR = 32'b1001_0110_0010_1111_1100_1001_0110;
 
+   sine_generator sine_12k (
+    .clk_in(audio_clk),
+    .rst_in(sys_rst),
+    .step_in(audio_trigger),
+    .amp_out(tone_440)
+  ); 
+
+  defparam sine_12k.PHASE_INCR = 32'b1000_0000_0000_0000_0000_0000_0000_0000;
+
   // ############################################################## Set up the sound sources - END 
   
   logic signed [7:0] selected_sine;
