@@ -125,7 +125,9 @@ module top_level(
   assign selected_sine = sw[2] ? tone_750 : tone_440;
 
   assign pdm_in = sw[3] ? {selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], 
-                    selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7:0]} <<< 8 : (sw[4] ? valid_audio_out_1 : (sw[5] ? down_sampled_audio : 0));
+                    selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7:0]} <<< 8 : 
+                    (sw[4] ? valid_audio_out_1 : 
+                    (sw[5] ? down_sampled_audio : 0));
 
   pdm my_pdm(
     .clk_in(audio_clk),
@@ -146,10 +148,10 @@ module top_level(
   logic down_sampler;
   logic [15:0] down_sampled_audio;
   always_ff @(posedge audio_clk) begin
-    if (data_valid_out_1) begin
+    if (filter_valid) begin
       down_sampler <= down_sampler + 1;
       if (down_sampler) begin
-        down_sampled_audio <= audio_out_1;
+        down_sampled_audio <= filter_valid;
       end
     end
   end
