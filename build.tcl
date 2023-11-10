@@ -28,11 +28,12 @@ read_xdc ./xdc/top_level.xdc
 set_part $partNum
 
 # I think you need to read in each IP separately. blah oh well.
+read_ip ./ip/fir_compiler_0/fir_compiler_0.xci
 #read_ip ./ip/xfft_0/xfft_0.xci
 #read_ip ./ip/cordic_0/cordic_0.xci
 #read_ip ./ip/axis_data_fifo_0/axis_data_fifo_0.xci
-#generate_target all [get_ips]
-#synth_ip [get_ips]
+generate_target all [get_ips]
+synth_ip [get_ips]
 
 #Run Synthesis
 synth_design -top top_level -part $partNum -verbose
