@@ -122,8 +122,16 @@ module top_level(
 
   // select sine wave and sign-extend it to 16 bits
   assign selected_sine = sw[2] ? tone_750 : tone_440;
-  assign pdm_in = sw[3] ? {selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], 
-                    selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7:0]} <<< 8 : down_sampled_audio;
+  always_comb begin
+    case(sw[5:3])
+      3'b001: pdm_in = {selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], 
+                    selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7:0]};
+      3'b010: pdm_in = valid_audio_out_1;
+      3'b100: pdm_in = down_sampled_audio;
+      default: pdm_in = 0;
+    endcase
+  end
+
 
   pdm my_pdm(
     .clk_in(audio_clk),
