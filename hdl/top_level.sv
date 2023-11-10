@@ -121,17 +121,11 @@ module top_level(
   logic sound_out;
 
   // select sine wave and sign-extend it to 16 bits
+  
   assign selected_sine = sw[2] ? tone_750 : tone_440;
-  always_comb begin
-    case(sw[5:3])
-      3'b001: pdm_in = {selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], 
-                    selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7:0]};
-      3'b010: pdm_in = valid_audio_out_1;
-      3'b100: pdm_in = down_sampled_audio;
-      default: pdm_in = 0;
-    endcase
-  end
 
+  assign pdm_in = sw[3] ? {selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], 
+                    selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7], selected_sine[7:0]} <<< 8 : (sw[4] ? valid_audio_out_1 : (sw[5] ? down_sampled_audio : 0));
 
   pdm my_pdm(
     .clk_in(audio_clk),
@@ -140,23 +134,22 @@ module top_level(
     .pdm_out(sound_out)
   );
 
-
-  logic [15:0] filter_output;
-  logic filter_valid;
-  fir_compiler_0 anti_alias_filter(.aclk(audio_clk),
-                                  .s_axis_data_tvalid(data_valid_out_1),
-                                  .s_axis_data_tready(1'b1),
-                                  .s_axis_data_tdata(audio_out_1),
-                                  .m_axis_data_tvalid(filter_valid),
-                                  .m_axis_data_tdata(filter_output));
+  // logic [15:0] filter_output;
+  // logic filter_valid;
+  // fir_compiler_0 anti_alias_filter(.aclk(audio_clk),
+  //                                 .s_axis_data_tvalid(data_valid_out_1),
+  //                                 .s_axis_data_tready(1'b1),
+  //                                 .s_axis_data_tdata(audio_out_1),
+  //                                 .m_axis_data_tvalid(filter_valid),
+  //                                 .m_axis_data_tdata(filter_output));
 
   logic down_sampler;
   logic [15:0] down_sampled_audio;
   always_ff @(posedge audio_clk) begin
-    if (filter_valid) begin
+    if (data_valid_out_1) begin
       down_sampler <= down_sampler + 1;
       if (down_sampler) begin
-        down_sampled_audio <= filter_output;
+        down_sampled_audio <= audio_out_1;
       end
     end
   end
