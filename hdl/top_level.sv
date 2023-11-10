@@ -157,9 +157,9 @@ module top_level(
     .pdm_out(sound_out)
   );
 
-  logic [31:0] filter_output;
+  logic [15:0] filter_output;
   logic filter_valid;
-  fir_compiler_0 anti_alias_filter(.aclk(audio_clk),
+  fir_compiler_5 anti_alias_filter(.aclk(audio_clk),
                                   .s_axis_data_tvalid(data_valid_out_1),
                                   .s_axis_data_tready(1'b1),
                                   .s_axis_data_tdata(audio_out_1),
@@ -172,7 +172,7 @@ module top_level(
     if (filter_valid) begin
       down_sampler <= down_sampler + 1;
       if (down_sampler) begin
-        down_sampled_audio <= filter_output[31:16];
+        down_sampled_audio <= filter_output;
       end
     end
   end
