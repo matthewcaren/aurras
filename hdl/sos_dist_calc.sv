@@ -11,8 +11,8 @@
  */
 
 module sos_dist_calculator #(
-  parameter WINDOW_SIZE = 64,     // ~150 for most accurate, lower means less latent
-  parameter MAX_DELAY = 512
+  parameter WINDOW_SIZE = 32,     // ~150 for most accurate, lower means less latent
+  parameter MAX_DELAY = 256
 ) (
   input wire clk_in,
   input wire rst_in,
@@ -78,9 +78,12 @@ module sos_dist_calculator #(
 
             ANALYZING_RESPONSE: begin
                 if (step_in) begin
-                    // if we hit max delay without detecting an onset, max out delay and return
+                    // if we hit max delay without detecting an onset, reset
                     if (delay_cycle_counter == MAX_DELAY) begin
-                        delay <= 8'hFF;
+                        delay <= 0;
+                        delay_valid <= 0;
+                        impulse_trigger <= 0;
+                        delay_cycle_counter <= 0;
                         state <= WAITING;
                     end else begin
                         // end of window

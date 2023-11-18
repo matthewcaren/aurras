@@ -43,7 +43,7 @@ module impulse_generator (
 
             SENDING_IMPULSE: begin
                 if (step_in) begin
-                    if (impulse_length_counter == 8'hFF) begin
+                    if (impulse_length_counter == 8'h8F) begin
                         impulse_out <= 1;
                         state <= SENT_IMPULSE;
                     end else begin
