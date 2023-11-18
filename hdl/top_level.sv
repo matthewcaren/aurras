@@ -74,42 +74,16 @@ module top_level(
         end
     end
 
-    // seven segment display - display valid_audio_out_1
-    logic [31:0] prev_val, val_to_display;
-    always_ff @(posedge audio_clk) begin
-        prev_val <= val_to_display;
-    end
-    assign val_to_display = btn[1] ? valid_audio_out_1 : prev_val;
-    logic [6:0] ss_c;
-    assign ss0_c = ss_c; 
-    assign ss1_c = ss_c;
-    seven_segment_controller mssc(.clk_in(audio_clk),
-                                .rst_in(sys_rst),
-                                .val_in(val_to_display),
-                                .cat_out(ss_c),
-                                .an_out({ss0_an, ss1_an}));
-
-  logic signed [7:0] tone_440; 
-  sine_generator sine_440 (
-    .clk_in(audio_clk),
-    .rst_in(sys_rst),
-    .step_in(audio_trigger),
-    .amp_out(tone_440)
-  ); 
-  defparam sine_440.PHASE_INCR = 32'b0000_0100_1011_0001_0111_1110_0100_1011;
-
-  // ############################################################## Set up the sound sources - END 
 
 
-
-  // ##### SPEED OF SOUND #####
+    // ##### SPEED OF SOUND #####
 
   logic sos_trigger;
   logic last_switch_val;
   logic [15:0] sos_audio_out;
   logic [7:0] calculated_delay;
 
-  @always_ff(posedge audio_clk) begin
+  always_ff @(posedge audio_clk) begin
     sos_trigger <= sw[0] & !last_switch_val;
     last_switch_val <= sw[0];
   end
@@ -124,6 +98,26 @@ module top_level(
     .delay(calculated_delay),
     .delay_valid());
 
+
+    logic [6:0] ss_c;
+    assign ss0_c = ss_c; 
+    assign ss1_c = ss_c;
+    seven_segment_controller mssc(.clk_in(audio_clk),
+                                .rst_in(sys_rst),
+                                .val_in(calculated_delay),
+                                .cat_out(ss_c),
+                                .an_out({ss0_an, ss1_an}));
+
+  logic signed [7:0] tone_440; 
+  sine_generator sine_440 (
+    .clk_in(audio_clk),
+    .rst_in(sys_rst),
+    .step_in(audio_trigger),
+    .amp_out(tone_440)
+  ); 
+  defparam sine_440.PHASE_INCR = 32'b0000_0100_1011_0001_0111_1110_0100_1011;
+
+  // ############################################################## Set up the sound sources - END 
 
   
   logic signed [15:0] pdm_in;
