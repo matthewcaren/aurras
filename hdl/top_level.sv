@@ -99,6 +99,32 @@ module top_level(
   defparam sine_440.PHASE_INCR = 32'b0000_0100_1011_0001_0111_1110_0100_1011;
 
   // ############################################################## Set up the sound sources - END 
+
+
+
+  // ##### SPEED OF SOUND #####
+
+  logic sos_trigger;
+  logic last_switch_val;
+  logic [15:0] sos_audio_out;
+  logic [7:0] calculated_delay;
+
+  @always_ff(posedge audio_clk) begin
+    sos_trigger <= sw[0] & !last_switch_val;
+    last_switch_val <= sw[0];
+  end
+
+  sos_dist_calculator sos_calc(
+    .clk_in(audio_clk),
+    .rst_in(sys_rst),
+    .step_in(audio_trigger),
+    .trigger(sos_trigger),
+    .mic_in(valid_audio_out_1),
+    .amp_out(sos_audio_out),
+    .delay(calculated_delay),
+    .delay_valid());
+
+
   
   logic signed [15:0] pdm_in;
   logic sound_out;
