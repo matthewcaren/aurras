@@ -101,7 +101,7 @@ module top_level(
 
   logic sos_trigger;
   logic last_switch_val;
-  logic [15:0] sos_audio_out;
+  logic signed [15:0] sos_audio_out;
   logic [7:0] calculated_delay;
 
   always_ff @(posedge audio_clk) begin
@@ -118,6 +118,14 @@ module top_level(
     .amp_out(sos_audio_out),
     .delay(calculated_delay),
     .delay_valid());
+
+  // impulse_generator imp_gen (
+  // .clk_in(audio_clk),
+  // .rst_in(sys_rst),
+  // .step_in(audio_trigger),
+  // .impulse_in(sos_trigger),                // impulse trigger signal
+  // .impulse_out(),             // HI for one cycle at start of impulse
+  // .amp_out(sos_audio_out));
 
 
   logic [6:0] ss_c;

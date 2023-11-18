@@ -13,7 +13,9 @@ module impulse_generator (
   output logic impulse_out,             // HI for one cycle at start of impulse
   output logic signed [15:0] amp_out);  // audio out
 
-  typedef enum {WAITING=0, WILL_SEND_IMPULSE=1, SENT_IMPULSE=2} system_state;
+  typedef enum {WAITING=0, WILL_SEND_IMPULSE=1, SENDING_IMPULSE=2, SENT_IMPULSE=3} system_state;
+  
+  logic [7:0] impulse_length_counter;
 
   system_state state;
 
@@ -33,9 +35,20 @@ module impulse_generator (
 
             WILL_SEND_IMPULSE: begin
                 if (step_in) begin
-                    amp_out <= 16'sd16384; // 50% amplitude
+                    amp_out <= 16'shCFFF;
                     impulse_out <= 1;
-                    state <= SENT_IMPULSE;
+                    impulse_length_counter <= 0;
+                    state <= SENDING_IMPULSE;
+                end
+            end
+
+            SENDING_IMPULSE: begin
+                if (step_in) begin
+                    if (impulse_length_counter == 8'hFF) begin
+                        state <= SENT_IMPULSE;
+                    end else begin
+                        impulse_length_counter <= impulse_length_counter + 1;
+                    end
                 end
             end
 
