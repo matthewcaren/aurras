@@ -68,9 +68,10 @@ module sos_dist_calculator #(
 
                 if (impulse_out) begin
                     // set up variables for transient detection algo
-                    prev_window_sum <= 0;
-                    prev_prev_window_sum <= 0;
+                    prev_window_sum <= 32'hFFFF_FFFF;
+                    prev_prev_window_sum <= 32'hFFFF_FFFF;
                     window_ix_counter <= 0;
+                    delay_cycle_counter <= 0;
 
                     state <= ANALYZING_RESPONSE;
                 end
@@ -89,8 +90,8 @@ module sos_dist_calculator #(
                         // end of window
                         if (window_ix_counter == WINDOW_SIZE) begin
                             // check for transient
-                            if ((current_window_sum > prev_window_sum) && (current_window_sum > (prev_prev_window_sum + (prev_prev_window_sum >> 1)))) begin
-                                delay <= delay_cycle_counter - WINDOW_SIZE;
+                            if ((current_window_sum > prev_window_sum) && (current_window_sum > (prev_prev_window_sum + prev_prev_window_sum >> 1))) begin
+                                delay <= delay_cycle_counter;
                                 delay_valid <= 1;
                                 state <= WAITING;
                             end
