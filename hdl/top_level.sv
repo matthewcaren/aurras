@@ -103,6 +103,7 @@ module top_level(
   logic last_switch_val;
   logic signed [15:0] sos_audio_out;
   logic [7:0] calculated_delay;
+  logic [2:0] sos_state;
 
   always_ff @(posedge audio_clk) begin
     sos_trigger <= sw[6] & !last_switch_val;
@@ -117,7 +118,8 @@ module top_level(
     .mic_in(valid_audio_out_1),
     .amp_out(sos_audio_out),
     .delay(calculated_delay),
-    .delay_valid());
+    // .delay_valid(1),
+    .current_state(sos_state));
 
   // impulse_generator imp_gen (
   // .clk_in(audio_clk),
@@ -133,7 +135,7 @@ module top_level(
   assign ss1_c = ss_c;
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in(calculated_delay),
+                              .val_in({14'b0, sos_state, 8'b0, calculated_delay}),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
 
