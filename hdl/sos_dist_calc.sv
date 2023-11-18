@@ -11,7 +11,7 @@
  */
 
 module sos_dist_calculator #(
-  parameter WINDOW_SIZE = 32,     // ~150 for most accurate, lower means less latent
+  parameter WINDOW_SIZE = 16,     // ~150 for most accurate, lower means less latent
   parameter MAX_DELAY = 256
 ) (
   input wire clk_in,
