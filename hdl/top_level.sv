@@ -123,7 +123,6 @@ module top_level(
     .mic_in(valid_audio_out_1),
     .amp_out(sos_audio_out),
     .delay(calculated_delay),
-    // .delay_valid(1),
     .current_state(sos_state));
 
 
@@ -133,7 +132,7 @@ module top_level(
   assign ss1_c = ss_c;
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in({14'b0, sos_state, 8'b0, calculated_delay}),
+                              .val_in({24'b0, calculated_delay}),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
 
