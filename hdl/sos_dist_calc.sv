@@ -21,8 +21,7 @@ module sos_dist_calculator #(
   input wire [7:0] mic_in,
   output logic signed [15:0] amp_out,    // audio out
   output logic [7:0] delay,              // # of 24 kHz cycles
-  output logic delay_valid,
-  output logic [2:0] current_state);
+  output logic delay_valid);
 
   typedef enum {WAITING=1, AWAITING_IMPULSE=2, ANALYZING_RESPONSE=3} system_state;
 
@@ -33,8 +32,6 @@ module sos_dist_calculator #(
 
   logic [31:0] current_window_sum, prev_window_sum, prev_prev_window_sum;    // ## TODO FIGURE OUT WIDTH
   logic [$clog2(WINDOW_SIZE):0] window_ix_counter;
-
-  assign current_state = state;
 
   impulse_generator imp_gen (
   .clk_in(clk_in),

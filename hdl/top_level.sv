@@ -122,8 +122,7 @@ module top_level(
     .trigger(sos_trigger),
     .mic_in(valid_audio_out_1),
     .amp_out(sos_audio_out),
-    .delay(calculated_delay),
-    .current_state(sos_state));
+    .delay(calculated_delay));
 
 
   /// ### SEVEN SEGMENT DISPLAY
