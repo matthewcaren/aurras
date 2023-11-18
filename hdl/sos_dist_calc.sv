@@ -11,8 +11,8 @@
  */
 
 module sos_dist_calculator #(
-  parameter WINDOW_SIZE = 32,     // ~150 for most accurate, lower means less latent
-  parameter MAX_DELAY = 255
+  parameter WINDOW_SIZE = 16,     // ~150 for most accurate, lower means less latent
+  parameter MAX_DELAY = 256
 ) (
   input wire clk_in,
   input wire rst_in,
@@ -23,7 +23,7 @@ module sos_dist_calculator #(
   output logic [7:0] delay,              // # of 24 kHz cycles
   output logic delay_valid);
 
-  typedef enum {WAITING=0, AWAITING_IMPULSE=1, ANALYZING_RESPONSE=2} system_state;
+  typedef enum {WAITING=1, AWAITING_IMPULSE=2, ANALYZING_RESPONSE=3} system_state;
 
   system_state state;
 
@@ -33,7 +33,7 @@ module sos_dist_calculator #(
   logic [31:0] current_window_sum, prev_window_sum, prev_prev_window_sum;    // ## TODO FIGURE OUT WIDTH
   logic [$clog2(WINDOW_SIZE):0] window_ix_counter;
 
-  impulse_generator (
+  impulse_generator imp_gen (
   .clk_in(clk_in),
   .rst_in(rst_in),
   .step_in(step_in),
@@ -41,33 +41,34 @@ module sos_dist_calculator #(
   .impulse_out(impulse_out),
   .amp_out(amp_out));
 
+
   always_ff @(posedge clk_in) begin
     if (rst_in) begin
         delay <= 0;
         delay_valid <= 0;
-        amp_out <= 16'sd0;
         impulse_trigger <= 0;
         delay_cycle_counter <= 0;
         state <= WAITING;
-    end else begin
-        case (state)
+    end else case (state)
             WAITING: begin
                 if (trigger) begin
-                    // kick off an impulse
                     impulse_trigger <= 1;
                     delay_valid <= 0;
                     state <= AWAITING_IMPULSE;
+                end else begin
+                    impulse_trigger <= 0;
                 end
             end
 
             AWAITING_IMPULSE: begin
-                if (impulse_out) begin
-                    impulse_trigger <= 0;
+                impulse_trigger <= 0;
 
+                if (impulse_out) begin
                     // set up variables for transient detection algo
-                    prev_window_sum <= 0;
-                    prev_prev_window_sum <= 0;
+                    prev_window_sum <= 32'hFFFF_FFFF;
+                    prev_prev_window_sum <= 32'hFFFF_FFFF;
                     window_ix_counter <= 0;
+                    delay_cycle_counter <= 0;
 
                     state <= ANALYZING_RESPONSE;
                 end
@@ -75,16 +76,19 @@ module sos_dist_calculator #(
 
             ANALYZING_RESPONSE: begin
                 if (step_in) begin
-                    // if we hit max delay without detecting an onset, try again
+                    // if we hit max delay without detecting an onset, reset
                     if (delay_cycle_counter == MAX_DELAY) begin
-                        impulse_trigger <= 1;
-                        state <= AWAITING_IMPULSE;
+                        delay <= 0;
+                        delay_valid <= 0;
+                        impulse_trigger <= 0;
+                        delay_cycle_counter <= 0;
+                        state <= WAITING;
                     end else begin
                         // end of window
                         if (window_ix_counter == WINDOW_SIZE) begin
                             // check for transient
-                            if ((current_window_sum > prev_window_sum) && (current_window_sum > (prev_prev_window_sum + (prev_prev_window_sum >> 1)))) begin
-                                delay <= delay_cycle_counter - WINDOW_SIZE;
+                            if ((current_window_sum > prev_window_sum) && (current_window_sum > (prev_prev_window_sum + prev_prev_window_sum >> 1))) begin
+                                delay <= delay_cycle_counter;
                                 delay_valid <= 1;
                                 state <= WAITING;
                             end
@@ -104,9 +108,17 @@ module sos_dist_calculator #(
                     end
                 end
             end
+
+            default: begin
+                delay <= 0;
+                delay_valid <= 0;
+                impulse_trigger <= 0;
+                delay_cycle_counter <= 0;
+                state <= WAITING;
+            end
         endcase
     end
-  end
+
 endmodule
 
 `default_nettype wire
