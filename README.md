@@ -27,10 +27,12 @@ Active environmental noise cancellation using an FPGA.
 
 ## controls
 
+- btn0: system reset
+- btn1: run SOS analysis
+
 - sw0: channel 0 output enable
 - sw1: channel 1 output enable
 - sw2: test sine wave output
 - sw3: raw input from mic
 - sw4: downsampled input from mic
 - sw5: SOS output enable
-- sw6: run SOS analysis
