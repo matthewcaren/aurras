@@ -22,16 +22,12 @@ read_verilog -sv [ glob ./hdl/*.sv ]
 read_verilog  [ glob ./hdl/*.v ]
 read_xdc ./xdc/top_level.xdc
 #we'll use this later:
-#read_mem [ glob ./data/*.mem ]
 
 # set the part number so Vivado knows how to build (each FPGA is different)
 set_part $partNum
 
 # I think you need to read in each IP separately. blah oh well.
-read_ip ./ip/fir_compiler_0/fir_compiler_0.xci
-read_ip ./ip/fir_compiler_1/fir_compiler_1.xci
-read_ip ./ip/fir_compiler_4/fir_compiler_4.xci
-read_ip ./ip/fir_compiler_5/fir_compiler_5.xci
+read_ip ./ip/input_anti_alias_fir/input_anti_alias_fir.xci
 
 generate_target all [get_ips]
 synth_ip [get_ips]

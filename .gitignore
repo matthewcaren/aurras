@@ -6,3 +6,4 @@ vivado.log
 obj/
 *.vcd
 *.out
+local_stuff/

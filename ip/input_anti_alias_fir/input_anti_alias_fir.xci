@@ -1,16 +1,17 @@
+
 {
   "schema": "xilinx.com:schema:json_instance:1.0",
   "ip_inst": {
-    "xci_name": "fir_compiler_0",
+    "xci_name": "input_anti_alias_fir",
     "component_reference": "xilinx.com:ip:fir_compiler:7.2",
     "ip_revision": "19",
-    "gen_directory": "./ip/fir_compiler_0",
+    "gen_directory": "./ip/input_anti_alias_fir",
     "parameters": {
       "component_parameters": {
-        "Component_Name": [ { "value": "fir_compiler_0", "resolve_type": "user", "usage": "all" } ],
+        "Component_Name": [ { "value": "input_anti_alias_fir", "resolve_type": "user", "usage": "all" } ],
         "GUI_Behaviour": [ { "value": "Coregen", "resolve_type": "user", "usage": "all" } ],
         "CoefficientSource": [ { "value": "Vector", "resolve_type": "user", "usage": "all" } ],
-        "CoefficientVector": [ { "value": "-73, 218, 69, -341, -89, 606, 115, -1019, -138, 1727, 156, -3251, -167, 10353, 16555, 10353, -167, -3251, 156, 1727, -138, -1019, 115, 606, -89, -341, 69, 218, -73", "value_src": "user", "resolve_type": "user", "usage": "all" } ],
+        "CoefficientVector": [ { "value": "-73,218,69,-341,-89,606,115,-1019,-138,1727,156,-3251,-167,10353,16555,10353,-167,-3251,156,1727,-138, -1019, 115, 606 ,-89, -341, 69, 218, -73", "value_src": "user", "resolve_type": "user", "usage": "all" } ],
         "Coefficient_File": [ { "value": "no_coe_file_loaded", "resolve_type": "user", "usage": "all" } ],
         "Coefficient_Sets": [ { "value": "1", "value_src": "user", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "Coefficient_Reload": [ { "value": "false", "resolve_type": "user", "format": "bool", "usage": "all" } ],
@@ -38,8 +39,8 @@
         "Data_Sign": [ { "value": "Signed", "resolve_type": "user", "usage": "all" } ],
         "Data_Width": [ { "value": "16", "value_src": "user", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "Data_Fractional_Bits": [ { "value": "0", "resolve_type": "user", "format": "long", "usage": "all" } ],
-        "Output_Rounding_Mode": [ { "value": "Full_Precision", "resolve_type": "user", "usage": "all" } ],
-        "Output_Width": [ { "value": "32", "value_src": "user", "resolve_type": "user", "format": "long", "usage": "all" } ],
+        "Output_Rounding_Mode": [ { "value": "Symmetric_Rounding_to_Zero", "value_src": "user", "resolve_type": "user", "usage": "all" } ],
+        "Output_Width": [ { "value": "16", "value_src": "user", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "Filter_Architecture": [ { "value": "Systolic_Multiply_Accumulate", "resolve_type": "user", "usage": "all" } ],
         "Optimization_Goal": [ { "value": "Area", "resolve_type": "user", "usage": "all" } ],
         "Optimization_Selection": [ { "value": "None", "resolve_type": "user", "usage": "all" } ],
@@ -92,8 +93,8 @@
       "model_parameters": {
         "C_XDEVICEFAMILY": [ { "value": "spartan7", "resolve_type": "generated", "usage": "all" } ],
         "C_ELABORATION_DIR": [ { "value": "./", "resolve_type": "generated", "usage": "all" } ],
-        "C_COMPONENT_NAME": [ { "value": "fir_compiler_0", "resolve_type": "generated", "usage": "all" } ],
-        "C_COEF_FILE": [ { "value": "fir_compiler_0.mif", "resolve_type": "generated", "usage": "all" } ],
+        "C_COMPONENT_NAME": [ { "value": "input_anti_alias_fir", "resolve_type": "generated", "usage": "all" } ],
+        "C_COEF_FILE": [ { "value": "input_anti_alias_fir.mif", "resolve_type": "generated", "usage": "all" } ],
         "C_COEF_FILE_LINES": [ { "value": "15", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_FILTER_TYPE": [ { "value": "0", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_INTERP_RATE": [ { "value": "1", "resolve_type": "generated", "format": "long", "usage": "all" } ],
@@ -104,7 +105,7 @@
         "C_NUM_TAPS": [ { "value": "29", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_NUM_CHANNELS": [ { "value": "1", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_CHANNEL_PATTERN": [ { "value": "fixed", "resolve_type": "generated", "usage": "all" } ],
-        "C_ROUND_MODE": [ { "value": "0", "resolve_type": "generated", "format": "long", "usage": "all" } ],
+        "C_ROUND_MODE": [ { "value": "2", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_COEF_RELOAD": [ { "value": "0", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_NUM_RELOAD_SLOTS": [ { "value": "1", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_COL_MODE": [ { "value": "1", "resolve_type": "generated", "format": "long", "usage": "all" } ],
@@ -123,8 +124,8 @@
         "C_DATA_PATH_SIGN": [ { "value": "0", "resolve_type": "generated", "usage": "all" } ],
         "C_COEF_PATH_SIGN": [ { "value": "0", "resolve_type": "generated", "usage": "all" } ],
         "C_ACCUM_PATH_WIDTHS": [ { "value": "32", "resolve_type": "generated", "usage": "all" } ],
-        "C_OUTPUT_WIDTH": [ { "value": "32", "resolve_type": "generated", "format": "long", "usage": "all" } ],
-        "C_OUTPUT_PATH_WIDTHS": [ { "value": "32", "resolve_type": "generated", "usage": "all" } ],
+        "C_OUTPUT_WIDTH": [ { "value": "16", "resolve_type": "generated", "format": "long", "usage": "all" } ],
+        "C_OUTPUT_PATH_WIDTHS": [ { "value": "16", "resolve_type": "generated", "usage": "all" } ],
         "C_ACCUM_OP_PATH_WIDTHS": [ { "value": "32", "resolve_type": "generated", "usage": "all" } ],
         "C_EXT_MULT_CNFG": [ { "value": "none", "resolve_type": "generated", "usage": "all" } ],
         "C_DATA_PATH_PSAMP_SRC": [ { "value": "0", "resolve_type": "generated", "usage": "all" } ],
@@ -143,7 +144,7 @@
         "C_DATA_MEM_PACKING": [ { "value": "0", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_COEF_MEM_PACKING": [ { "value": "0", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_FILTS_PACKED": [ { "value": "0", "resolve_type": "generated", "format": "long", "usage": "all" } ],
-        "C_LATENCY": [ { "value": "22", "resolve_type": "generated", "format": "long", "usage": "all" } ],
+        "C_LATENCY": [ { "value": "23", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_HAS_ARESETn": [ { "value": "0", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_HAS_ACLKEN": [ { "value": "0", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_DATA_HAS_TLAST": [ { "value": "0", "resolve_type": "generated", "format": "long", "usage": "all" } ],
@@ -153,7 +154,7 @@
         "C_S_DATA_TUSER_WIDTH": [ { "value": "1", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_M_DATA_HAS_TREADY": [ { "value": "0", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_M_DATA_HAS_TUSER": [ { "value": "0", "resolve_type": "generated", "format": "long", "usage": "all" } ],
-        "C_M_DATA_TDATA_WIDTH": [ { "value": "32", "resolve_type": "generated", "format": "long", "usage": "all" } ],
+        "C_M_DATA_TDATA_WIDTH": [ { "value": "16", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_M_DATA_TUSER_WIDTH": [ { "value": "1", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_HAS_CONFIG_CHANNEL": [ { "value": "0", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_CONFIG_SYNC_MODE": [ { "value": "0", "resolve_type": "generated", "format": "long", "usage": "all" } ],
@@ -178,7 +179,7 @@
         "IPCONTEXT": [ { "value": "IP_Flow" } ],
         "IPREVISION": [ { "value": "19" } ],
         "MANAGED": [ { "value": "TRUE" } ],
-        "OUTPUTDIR": [ { "value": "./ip/fir_compiler_0" } ],
+        "OUTPUTDIR": [ { "value": "./ip/input_anti_alias_fir" } ],
         "SELECTEDSIMMODEL": [ { "value": "" } ],
         "SHAREDDIR": [ { "value": "." } ],
         "SWVERSION": [ { "value": "2023.1" } ],
@@ -192,7 +193,7 @@
         "s_axis_data_tready": [ { "direction": "out", "driver_value": "0x1" } ],
         "s_axis_data_tdata": [ { "direction": "in", "size_left": "15", "size_right": "0", "driver_value": "0" } ],
         "m_axis_data_tvalid": [ { "direction": "out", "driver_value": "0x0" } ],
-        "m_axis_data_tdata": [ { "direction": "out", "size_left": "31", "size_right": "0", "driver_value": "0" } ]
+        "m_axis_data_tdata": [ { "direction": "out", "size_left": "15", "size_right": "0", "driver_value": "0" } ]
       },
       "interfaces": {
         "event_s_data_tlast_missing_intf": {
@@ -324,7 +325,7 @@
           "abstraction_type": "xilinx.com:interface:axis_rtl:1.0",
           "mode": "master",
           "parameters": {
-            "TDATA_NUM_BYTES": [ { "value": "4", "value_src": "auto", "resolve_type": "generated", "format": "long", "is_ips_inferred": true, "is_static_object": false } ],
+            "TDATA_NUM_BYTES": [ { "value": "2", "value_src": "auto", "resolve_type": "generated", "format": "long", "is_ips_inferred": true, "is_static_object": false } ],
             "TDEST_WIDTH": [ { "value": "0", "value_src": "constant", "resolve_type": "generated", "format": "long", "is_ips_inferred": true, "is_static_object": false } ],
             "TID_WIDTH": [ { "value": "0", "value_src": "constant", "resolve_type": "generated", "format": "long", "is_ips_inferred": true, "is_static_object": false } ],
             "TUSER_WIDTH": [ { "value": "0", "resolve_type": "generated", "format": "long", "is_ips_inferred": true, "is_static_object": false } ],
