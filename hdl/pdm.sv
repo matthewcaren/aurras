@@ -19,14 +19,11 @@ module pdm( input wire clk_in,
   assign pdm_trig = (pdm_counter==0);
 
   always_ff @(posedge clk_in) begin
-    pdm_counter <= pdm_counter + 1;
-  end
-
-  always_ff @(posedge clk_in) begin
     if (rst_in) begin
       stored_value <= 0;
       pdm_counter <= 0;
     end else begin
+      pdm_counter <= pdm_counter + 1;
       if (pdm_trig) begin
         stored_value <= stored_value + level_in - feedback;
       end
