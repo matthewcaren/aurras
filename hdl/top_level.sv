@@ -60,22 +60,29 @@ module top_level(
   assign mic_3_data = pmoda[0];
 
   // Testing prefiltered audio
-  logic [15:0] prefiltered_audio_in_1
+  logic [15:0] prefiltered_audio_in_1;
   always_ff @(posedge audio_clk) begin
       if (mic_data_vaild_1) begin
-          prefiltered_audio_in_1 <= raw_audio_in_1;
+        prefiltered_audio_in_1 <= raw_audio_in_1;
       end
   end
   
   // #### INPUT ANTI-ALIASING
-  logic [15:0] filtered_audio_in_1;
-  logic filter_valid;
+  logic [15:0] filter_output_1, filter_output_2, filter_output_3;
+  logic [15:0] filtered_audio_in_1, filtered_audio_in_2, filtered_audio_in_3;
+  logic filter_valid_1, filter_valid_2, filter_valid_3;
   input_anti_alias_fir anti_alias_filter(.aclk(audio_clk),
                                   .s_axis_data_tvalid(mic_data_vaild_1),
                                   .s_axis_data_tready(1'b1),
                                   .s_axis_data_tdata(raw_audio_in_1),
-                                  .m_axis_data_tvalid(filter_valid),
-                                  .m_axis_data_tdata(filtered_audio_in_1));
+                                  .m_axis_data_tvalid(filter_valid_1),
+                                  .m_axis_data_tdata(filter_output_1));
+
+  always_ff @(posedge audio_clk) begin
+    if (filter_valid_1) begin
+      filtered_audio_in_1 <= filter_output_1;
+    end 
+  end
 
   // ##### SPEED OF SOUND #####
 
