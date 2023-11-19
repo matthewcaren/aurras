@@ -25,9 +25,6 @@ module top_level(
   logic audio_clk;
   audio_clk_wiz macw (.clk_in(clk_100mhz), .clk_out(audio_clk)); 
 
-  logic [15:0] delayed_audio_out, regular_audio_out; 
-
-
   // This triggers at 48kHz for general audio
   logic audio_trigger;
   logic [10:0] counter;
@@ -137,6 +134,7 @@ module top_level(
   // ### SOUND OUTPUT MANAGEMENT
 
   logic signed [15:0] pdm_in;
+  logic [15:0] delayed_audio_out; 
   logic sound_out;
   
   assign pdm_in = sw[2] ? {tone_440[7], tone_440[7], tone_440[7], tone_440[7], 
@@ -159,8 +157,8 @@ module top_level(
     .rst_in(sys_rst),//global reset
     .store_audio_in(1'b1), //button indicating whether to record or not
     .audio_valid_in(filter_valid_1), //12 kHz audio sample valid signal
+    .delay_cycle(16'd48000),
     .audio_in(filtered_audio_in_1), //16 bit signed audio data 
-    .signal_out(regular_audio_out), //played back audio (8 bit signed at 12 kHz)
     .delayed_audio_out(delayed_audio_out) //played back audio (8 bit signed at 12 kHz)
   );
 

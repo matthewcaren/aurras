@@ -6,19 +6,18 @@ module delayed_sound_out (
     input wire rst_in,
     input wire store_audio_in,
     input wire audio_valid_in,
+    input wire [15:0] delay_cycle,  // This is the delay length
     input wire [15:0] audio_in,
-    output wire [15:0] signal_out,
-    output wire [15:0] delayed_audio_out // rename this here and in top_level
+    output wire [15:0] delayed_audio_out 
 );
 
-    parameter DELAY = 16'd48000;  // Define the delay length
     parameter RAM_DEPTH = 16'd48000; 
     logic [15:0] write_data;
     logic [15:0] write_addr = 0;
     logic [15:0] read_addr = 0;
     logic write_enable = 0;
 
-     // Writing Logic
+    // Writing Logic
     always @(posedge clk_in) begin
         if (rst_in) begin
             write_addr <= 0;
@@ -35,7 +34,7 @@ module delayed_sound_out (
     // Reading Logic with Delay
     always @(posedge clk_in) begin
         if (audio_valid_in) begin
-            read_addr <= (write_addr - DELAY) % RAM_DEPTH;
+            read_addr <= (write_addr - delay_cycle) % RAM_DEPTH;
         end
     end
 
@@ -62,7 +61,6 @@ module delayed_sound_out (
         .regceb(1'b1),
         .doutb(delayed_audio_out)
     );
-
 
 endmodule
 
