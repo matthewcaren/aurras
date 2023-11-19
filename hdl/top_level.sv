@@ -154,7 +154,7 @@ module top_level(
   recorder delayed_sound_out(
     .clk_in(audio_clk), //system clock
     .rst_in(sys_rst),//global reset
-    .record_in(record), //button indicating whether to record or not
+    .store_audio_in(1'b1), //button indicating whether to record or not
     .audio_valid_in(filter_valid_1), //12 kHz audio sample valid signal
     .audio_in(filtered_audio_in_1), //16 bit signed audio data 
     .signal_out(regular_audio_out), //played back audio (8 bit signed at 12 kHz)
