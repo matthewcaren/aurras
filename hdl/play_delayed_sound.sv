@@ -12,7 +12,7 @@ module delayed_sound_out (
 );
 
     parameter DELAY = 16'd48000;  // Define the delay length
-    parameter RAM_DEPTH = 16'd48000; 
+    parameter RAM_DEPTH = 16'60000; 
     logic [15:0] write_data;
     logic [15:0] write_addr = 0;
     logic [15:0] read_addr = 0;
@@ -44,7 +44,7 @@ module delayed_sound_out (
 
     xilinx_true_dual_port_read_first_2_clock_ram #(
         .RAM_WIDTH(16),
-        .RAM_DEPTH(60000)
+        .RAM_DEPTH(RAM_DEPTH)
     ) 
     audio_buffer (
         .addra(write_addr),
