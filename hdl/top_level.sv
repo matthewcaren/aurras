@@ -19,6 +19,9 @@ module top_level(
   assign rgb1 = 0;
   assign rgb0 = 0;
 
+
+  // ### CLOCK SETUP
+
   // 98.3MHz
   logic audio_clk;
   audio_clk_wiz macw (.clk_in(clk_100mhz), .clk_out(audio_clk)); 
@@ -31,7 +34,9 @@ module top_level(
   end
   assign audio_trigger = (counter == 0);
 
-  // I2S MIC PIN ASSIGNMENTS
+
+  // ### MIC INPUT
+
   // Mic 1: bclk - i2s_clk - pmodb[3]; dout - mic_1_data - pmoda[3]; lrcl_clk - pmodb[2], sel - grounded
   // Mic 2: bclk - i2s_clk - pmodb[7]; dout - mic_2_data - pmoda[7]; lrcl_clk - pmodb[6], sel - grounded
   // Mic 3: bclk - i2s_clk - pmodb[1]; dout - mic_3_data - pmoda[0]; lrcl_clk - pmodb[0], sel - grounded
@@ -93,8 +98,8 @@ module top_level(
   logic [2:0] sos_state;
 
   always_ff @(posedge audio_clk) begin
-    sos_trigger <= sw[6] & !last_switch_val;
-    last_switch_val <= sw[6];
+    sos_trigger <= btn[1] & !last_switch_val;
+    last_switch_val <= btn[1];
   end
 
   sos_dist_calculator sos_calc(
@@ -104,17 +109,21 @@ module top_level(
     .trigger(sos_trigger),
     .mic_in(prefiltered_audio_in_1),
     .amp_out(sos_audio_out),
-    .delay(calculated_delay),
-    .current_state(sos_state));
+    .delay(calculated_delay));
 
+
+  /// ### SEVEN SEGMENT DISPLAY
   logic [6:0] ss_c;
   assign ss0_c = ss_c; 
   assign ss1_c = ss_c;
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in({14'b0, sos_state, 8'b0, calculated_delay}),
+                              .val_in({24'b0, calculated_delay}),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
+
+
+  // ### TEST SINE WAVE
 
   logic signed [7:0] tone_440; 
   sine_generator sine_440 (
@@ -125,13 +134,12 @@ module top_level(
   ); 
   defparam sine_440.PHASE_INCR = 32'b0000_0100_1011_0001_0111_1110_0100_1011;
 
-  // ############################################################## Set up the sound sources - END 
 
-  
+
+  // ### SOUND OUTPUT MANAGEMENT
+
   logic signed [15:0] pdm_in;
   logic sound_out;
-
-  // select sine wave and sign-extend it to 16 bits
   
   assign pdm_in = sw[2] ? {tone_440[7], tone_440[7], tone_440[7], tone_440[7], 
                     tone_440[7], tone_440[7], tone_440[7], tone_440[7], tone_440[7:0]} <<< 8 : 
