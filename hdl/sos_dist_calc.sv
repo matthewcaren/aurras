@@ -55,7 +55,7 @@ module sos_dist_calculator #(
         impulse_trigger <= 0;
         delay_cycle_counter <= 0;
         delay_counter <= 0;
-        state <= WAITING;
+        state <= WAITING_FOR_FIRST;
     end else case (state)
             WAITING_FOR_FIRST: begin
                 if (trigger) begin
@@ -68,6 +68,7 @@ module sos_dist_calculator #(
                 delay_counter <= delay_counter + 1;
                 if (delay_counter == 26'd40_000_000) begin
                     delay_counter <= 0;
+                    state <= STARTING_IMPULSE;
                 end
             end
             STARTING_IMPULSE: begin
@@ -97,7 +98,7 @@ module sos_dist_calculator #(
                         delay_valid <= 0;
                         impulse_trigger <= 0;
                         delay_cycle_counter <= 0;
-                        state <= WAITING;
+                        state <= WAITING_FOR_FIRST;
                     end else begin
                         // end of window
                         if (window_ix_counter == WINDOW_SIZE) begin
@@ -105,11 +106,13 @@ module sos_dist_calculator #(
                             if ((current_window_sum > prev_window_sum) && (current_window_sum > (prev_prev_window_sum + prev_prev_window_sum >> 1))) begin
                                 two_delays_ago <= last_delay;
                                 last_delay <= delay_cycle_counter;
-																if ((two_delays_ago == last_delay) && (last_delay == delay_cycle_counter)) begin
-																	delay <= delay_cycle_counter;
-																	delay_valid <= 1;
-																	state <= WAITING;
-																end
+                                if ((two_delays_ago == last_delay) && (last_delay == delay_cycle_counter)) begin
+                                    delay <= delay_cycle_counter;
+                                    delay_valid <= 1;
+                                    state <= WAITING_FOR_FIRST;
+                                end else begin
+                                    state <= DELAYING;
+                                end
                             end
 
                             // otherwise keep going
@@ -136,7 +139,7 @@ module sos_dist_calculator #(
                 impulse_trigger <= 0;
                 delay_cycle_counter <= 0;
                 delay_counter <= 0;
-                state <= WAITING;
+                state <= WAITING_FOR_FIRST;
             end
         endcase
     end
