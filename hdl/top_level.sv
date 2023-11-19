@@ -25,6 +25,9 @@ module top_level(
   logic audio_clk;
   audio_clk_wiz macw (.clk_in(clk_100mhz), .clk_out(audio_clk)); 
 
+  logic [15:0] delayed_audio_out, regular_audio_out; 
+
+
   // This triggers at 48kHz for general audio
   logic audio_trigger;
   logic [10:0] counter;
@@ -137,10 +140,12 @@ module top_level(
   logic sound_out;
   
   assign pdm_in = sw[2] ? {tone_440[7], tone_440[7], tone_440[7], tone_440[7], 
-                    tone_440[7], tone_440[7], tone_440[7], tone_440[7], tone_440[7:0]} <<< 8 : 
+                         tone_440[7], tone_440[7], tone_440[7], tone_440[7], tone_440[7:0]} <<< 8 : 
                     (sw[3] ? prefiltered_audio_in_1 : 
                     (sw[4] ? filtered_audio_in_1 : 
-                    (sw[5] ? sos_audio_out : 0)));
+                    (sw[5] ? sos_audio_out : 
+                    (sw[6] ? delayed_audio_out : 0))));
+
 
   pdm pdm(
     .clk_in(audio_clk),
@@ -149,17 +154,15 @@ module top_level(
     .pdm_out(sound_out)
   );
 
-  logic [15:0] delayed_audio_out, regular_audio_out; 
-
-  // recorder delayed_sound_out(
-  //   .clk_in(audio_clk), //system clock
-  //   .rst_in(sys_rst),//global reset
-  //   .store_audio_in(1'b1), //button indicating whether to record or not
-  //   .audio_valid_in(filter_valid_1), //12 kHz audio sample valid signal
-  //   .audio_in(filtered_audio_in_1), //16 bit signed audio data 
-  //   .signal_out(regular_audio_out), //played back audio (8 bit signed at 12 kHz)
-  //   .echo_out(delayed_audio_out) //played back audio (8 bit signed at 12 kHz)
-  // );
+  delayed_sound_out my_delayed_sound_out (
+    .clk_in(audio_clk), //system clock
+    .rst_in(sys_rst),//global reset
+    .store_audio_in(1'b1), //button indicating whether to record or not
+    .audio_valid_in(filter_valid_1), //12 kHz audio sample valid signal
+    .audio_in(filtered_audio_in_1), //16 bit signed audio data 
+    .signal_out(regular_audio_out), //played back audio (8 bit signed at 12 kHz)
+    .echo_out(delayed_audio_out) //played back audio (8 bit signed at 12 kHz)
+  );
 
   assign spkl = sw[0] ? sound_out : 0;
   assign spkr = sw[1] ? sound_out : 0;

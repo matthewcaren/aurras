@@ -1,73 +1,73 @@
-// `timescale 1ns / 1ps
-// `default_nettype none
+`timescale 1ns / 1ps
+`default_nettype none
 
-// module delayed_sound_out (
-//     input clk_in,
-//     input rst_in,
-//     input store_audio_in,
-//     input audio_valid_in,
-//     input [15:0] audio_in,
-//     output [15:0] signal_out,
-//     output [15:0] echo_out
-// );
+module delayed_sound_out (
+    input clk_in,
+    input rst_in,
+    input store_audio_in,
+    input audio_valid_in,
+    input [15:0] audio_in,
+    output [15:0] signal_out,
+    output [15:0] echo_out
+);
 
-//     parameter DELAY = 1024;  // Define the delay length
+    parameter DELAY = 16'd48000;  // Define the delay length
+    parameter RAM_DEPTH = 16'd48000; 
+    logic [15:0] write_data;
+    logic [15:0] write_addr = 0;
+    logic [15:0] read_addr = 0;
+    logic write_enable = 0;
 
-//     logic [15:0] write_data;
-//     logic [15:0] write_addr = 0;
-//     logic [15:0] read_addr = 0;
-//     logic write_enable = 0;
+     // Writing Logic
+    always @(posedge clk_in) begin
+        if (rst_in) begin
+            write_addr <= 0;
+            write_enable <= 0;
+        end else if (audio_valid_in && store_audio_in) begin
+            write_data <= audio_in;
+            write_enable <= 1;
+            write_addr <= write_addr + 1;
+        end else begin
+            write_enable <= 0;
+        end
+    end
 
-//     // Writing Logic
-//     always @(posedge clk_in) begin
-//         if (rst_in) begin
-//             write_addr <= 0;
-//             write_enable <= 0;
-//         end else if (audio_valid_in && store_audio_in) begin
-//             write_data <= audio_in;
-//             write_enable <= 1;
-//             write_addr <= write_addr + 1;
-//         end else begin
-//             write_enable <= 0;
-//         end
-//     end
-
-//     // Reading Logic with Delay
-//     always @(posedge clk_in) begin
-//         if (rst_in) begin
-//             read_addr <= DELAY;
-//         end else if (audio_valid_in) begin
-//             read_addr <= (read_addr + 1) % RAM_DEPTH;
-//         end
-//     end
-
-
-//     xilinx_true_dual_port_read_first_2_clock_ram #(
-//         .RAM_WIDTH(16),
-//         .RAM_DEPTH(2048)
-//     ) 
-//     audio_buffer (
-//         .addra(write_addr),
-//         .clka(clk_in),
-//         .wea(write_enable),
-//         .dina(write_data),
-//         .ena(store_audio_in),
-//         .regcea(1'b1),
-//         .rsta(rst_in),
-//         .douta(),
-//         .addrb(read_addr),
-//         .dinb(16'd0),
-//         .clkb(clk_in),
-//         .web(1'b0),
-//         .enb(1'b1),
-//         .rstb(rst_in),
-//         .regceb(1'b1),
-//         .doutb(echo_out)
-//     );
+    // Reading Logic with Delay
+    always @(posedge clk_in) begin
+        if (rst_in) begin
+            read_addr <= DELAY;
+        end else if (audio_valid_in) begin
+            read_addr <= (read_addr + 1) % RAM_DEPTH;
+        end
+    end
 
 
-// endmodule
+    xilinx_true_dual_port_read_first_2_clock_ram #(
+        .RAM_WIDTH(16),
+        .RAM_DEPTH(48000)
+    ) 
+    audio_buffer (
+        .addra(write_addr),
+        .clka(clk_in),
+        .wea(write_enable),
+        .dina(write_data),
+        .ena(store_audio_in),
+        .regcea(1'b1),
+        .rsta(rst_in),
+        .douta(),
+        .addrb(read_addr),
+        .dinb(16'd0),
+        .clkb(clk_in),
+        .web(1'b0),
+        .enb(1'b1),
+        .rstb(rst_in),
+        .regceb(1'b1),
+        .doutb(echo_out)
+    );
 
 
-// `timescale 1ns / 1ps
-// `default_nettype none
+endmodule
+
+
+`timescale 1ns / 1ps
+`default_nettype wire
