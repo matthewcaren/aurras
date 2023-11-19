@@ -34,6 +34,7 @@ module sos_dist_calculator #(
   logic [$clog2(WINDOW_SIZE):0] window_ix_counter;
 
 	logic [25:0] delay_counter;
+	localparam DELAY_CYCLES = 26'd40_000_000;
   logic [7:0] last_delay;
   logic [7:0] two_delays_ago;
 
@@ -66,7 +67,7 @@ module sos_dist_calculator #(
             end
             DELAYING: begin
                 delay_counter <= delay_counter + 1;
-                if (delay_counter == 26'd40_000_000) begin
+                if (delay_counter == DELAY_CYCLES) begin
                     delay_counter <= 0;
                     state <= STARTING_IMPULSE;
                 end
