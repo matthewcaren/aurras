@@ -23,7 +23,7 @@ module sos_dist_calculator #(
   output logic [7:0] delay,              // # of 24 kHz cycles
   output logic delay_valid);
 
-  typedef enum {WAITING=1, AWAITING_IMPULSE=2, ANALYZING_RESPONSE=3} system_state;
+  typedef enum {WAITING_FOR_FIRST=1, AWAITING_IMPULSE=2, ANALYZING_RESPONSE=3, STARTING_IMPULSE = 4, DELAYING = 5} system_state;
 
   system_state state;
 
@@ -32,6 +32,10 @@ module sos_dist_calculator #(
 
   logic [31:0] current_window_sum, prev_window_sum, prev_prev_window_sum;    // ## TODO FIGURE OUT WIDTH
   logic [$clog2(WINDOW_SIZE):0] window_ix_counter;
+
+	logic [25:0] delay_counter;
+  logic [7:0] last_delay;
+  logic [7:0] two_delays_ago;
 
   impulse_generator imp_gen (
   .clk_in(clk_in),
@@ -45,21 +49,32 @@ module sos_dist_calculator #(
   always_ff @(posedge clk_in) begin
     if (rst_in) begin
         delay <= 0;
+        two_delays_ago <= 0;
+        last_delay <= 0;
         delay_valid <= 0;
         impulse_trigger <= 0;
         delay_cycle_counter <= 0;
+        delay_counter <= 0;
         state <= WAITING;
     end else case (state)
-            WAITING: begin
+            WAITING_FOR_FIRST: begin
                 if (trigger) begin
-                    impulse_trigger <= 1;
-                    delay_valid <= 0;
-                    state <= AWAITING_IMPULSE;
-                end else begin
-                    impulse_trigger <= 0;
+                    state <= STARTING_IMPULSE;
+                end
+                delay_counter <= 0;
+                impulse_trigger <= 0;
+            end
+            DELAYING: begin
+                delay_counter <= delay_counter + 1;
+                if (delay_counter == 26'd40_000_000) begin
+                    delay_counter <= 0;
                 end
             end
-
+            STARTING_IMPULSE: begin
+                impulse_trigger <= 1;
+                delay_valid <= 0;
+                state <= AWAITING_IMPULSE;
+            end
             AWAITING_IMPULSE: begin
                 impulse_trigger <= 0;
 
@@ -88,9 +103,13 @@ module sos_dist_calculator #(
                         if (window_ix_counter == WINDOW_SIZE) begin
                             // check for transient
                             if ((current_window_sum > prev_window_sum) && (current_window_sum > (prev_prev_window_sum + prev_prev_window_sum >> 1))) begin
-                                delay <= delay_cycle_counter;
-                                delay_valid <= 1;
-                                state <= WAITING;
+                                two_delays_ago <= last_delay;
+                                last_delay <= delay_cycle_counter;
+																if ((two_delays_ago == last_delay) && (last_delay == delay_cycle_counter)) begin
+																	delay <= delay_cycle_counter;
+																	delay_valid <= 1;
+																	state <= WAITING;
+																end
                             end
 
                             // otherwise keep going
@@ -111,9 +130,12 @@ module sos_dist_calculator #(
 
             default: begin
                 delay <= 0;
+                two_delays_ago <= 0;
+                last_delay <= 0;
                 delay_valid <= 0;
                 impulse_trigger <= 0;
                 delay_cycle_counter <= 0;
+                delay_counter <= 0;
                 state <= WAITING;
             end
         endcase
