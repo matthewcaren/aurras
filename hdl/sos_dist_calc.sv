@@ -34,7 +34,7 @@ module sos_dist_calculator #(
 	logic [$clog2(WINDOW_SIZE):0] window_ix_counter;
 
 	logic [27:0] delay_counter;
-	localparam DELAY_CYCLES = 28'd48_000_000;
+	localparam DELAY_CYCLES = 28'd98_300_000;
 	logic [7:0] last_delay;
 	logic [7:0] two_delays_ago;
 
