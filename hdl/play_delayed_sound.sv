@@ -6,7 +6,7 @@ module delayed_sound_out(
   input wire clk_in,
   input wire rst_in,
   input wire signed [15:0] audio_in,
-  input wire record_in,
+  input wire store_audio_in,
   input wire audio_valid_in,
   output logic signed [16:0] signal_out,
   output logic signed [16:0] echo_out
@@ -19,7 +19,7 @@ module delayed_sound_out(
   typedef enum {READ_MAIN=0, READ_ECHO1=1, READ_ECHO2=2} states_t;
   states_t major_fsm_state;
 
-  //assign mem_addr = record_in? record_addr : playback_addr; 
+  //assign mem_addr = store_audio_in? record_addr : playback_addr; 
 
   always_ff @(posedge clk_in) begin
       if (rst_in) begin
@@ -43,7 +43,7 @@ module delayed_sound_out(
                       record_addr <= 16'd0; //need this so we don't concatenate different recordings
 
 
-                      if (record_in) begin
+                      if (store_audio_in) begin
                           record_addr <= record_addr + 1'b1;
                           max_record_addr <= record_addr + 1'b1;
                       end
@@ -79,7 +79,7 @@ module delayed_sound_out(
         audio_buffer (
         .addra(mem_addr),
         .clka(clk_in),
-        .wea(record_in && audio_valid_in),
+        .wea(store_audio_in && audio_valid_in),
         .dina(audio_in),
         .ena(1'b1),
         .regcea(1'b1),
