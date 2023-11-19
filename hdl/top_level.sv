@@ -93,13 +93,15 @@ module top_level(
   logic sos_trigger;
   logic last_switch_val;
   logic signed [15:0] sos_audio_out;
-  logic [7:0] calculated_delay;
+  logic [11:0] calculated_delay;
   logic [2:0] sos_state;
 
   always_ff @(posedge audio_clk) begin
     sos_trigger <= btn[1] & !last_switch_val;
     last_switch_val <= btn[1];
   end
+
+  logic [23:0] last_two; 
 
   sos_dist_calculator sos_calc(
     .clk_in(audio_clk),
@@ -108,7 +110,8 @@ module top_level(
     .trigger(sos_trigger),
     .mic_in(prefiltered_audio_in_1),
     .amp_out(sos_audio_out),
-    .delay(calculated_delay));
+    .delay(calculated_delay),
+    .last_two(last_two));
 
   /// ### SEVEN SEGMENT DISPLAY
   logic [6:0] ss_c;
@@ -116,7 +119,7 @@ module top_level(
   assign ss1_c = ss_c;
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in({24'b0, calculated_delay}),
+                              .val_in({8'b0, last_two}),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
 
