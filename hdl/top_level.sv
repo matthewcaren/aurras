@@ -19,7 +19,6 @@ module top_level(
   assign rgb1 = 0;
   assign rgb0 = 0;
 
-
   // ### CLOCK SETUP
 
   // 98.3MHz
@@ -111,7 +110,6 @@ module top_level(
     .amp_out(sos_audio_out),
     .delay(calculated_delay));
 
-
   /// ### SEVEN SEGMENT DISPLAY
   logic [6:0] ss_c;
   assign ss0_c = ss_c; 
@@ -121,7 +119,6 @@ module top_level(
                               .val_in({24'b0, calculated_delay}),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
-
 
   // ### TEST SINE WAVE
 
@@ -133,8 +130,6 @@ module top_level(
     .amp_out(tone_440)
   ); 
   defparam sine_440.PHASE_INCR = 32'b0000_0100_1011_0001_0111_1110_0100_1011;
-
-
 
   // ### SOUND OUTPUT MANAGEMENT
 
