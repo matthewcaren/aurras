@@ -44,7 +44,7 @@ module delayed_sound_out (
 
     xilinx_true_dual_port_read_first_2_clock_ram #(
         .RAM_WIDTH(16),
-        .RAM_DEPTH(48000)
+        .RAM_DEPTH(60000)
     ) 
     audio_buffer (
         .addra(write_addr),
