@@ -12,7 +12,7 @@ module delayed_sound_out (
 );
 
     parameter DELAY = 16'd48000;  // Define the delay length
-    parameter RAM_DEPTH = 16'60000; 
+    parameter RAM_DEPTH = 16'd60000; 
     logic [15:0] write_data;
     logic [15:0] write_addr = 0;
     logic [15:0] read_addr = 0;
@@ -35,7 +35,7 @@ module delayed_sound_out (
     // Reading Logic with Delay
     always @(posedge clk_in) begin
         if (rst_in) begin
-            read_addr <= DELAY;
+            read_addr <= write_addr - DELAY;
         end else if (audio_valid_in) begin
             read_addr <= (read_addr + 1) % RAM_DEPTH;
         end
