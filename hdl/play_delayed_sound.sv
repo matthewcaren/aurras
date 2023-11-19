@@ -2,17 +2,17 @@
 `default_nettype none
 
 module delayed_sound_out (
-    input clk_in,
-    input rst_in,
-    input store_audio_in,
-    input audio_valid_in,
-    input [15:0] audio_in,
-    output [15:0] signal_out,
-    output [15:0] echo_out
+    input wire clk_in,
+    input wire rst_in,
+    input wire store_audio_in,
+    input wire audio_valid_in,
+    input wire [15:0] audio_in,
+    output wire [15:0] signal_out,
+    output wire [15:0] echo_out
 );
 
-    parameter DELAY = 1024;  // Define the delay length
-
+    parameter DELAY = 16'd48000;  // Define the delay length
+    parameter RAM_DEPTH = 16'd48000; 
     logic [15:0] write_data;
     logic [15:0] write_addr = 0;
     logic [15:0] read_addr = 0;
@@ -44,7 +44,7 @@ module delayed_sound_out (
 
     xilinx_true_dual_port_read_first_2_clock_ram #(
         .RAM_WIDTH(16),
-        .RAM_DEPTH(2048)
+        .RAM_DEPTH(48000)
     ) 
     audio_buffer (
         .addra(write_addr),
@@ -70,4 +70,4 @@ endmodule
 
 
 `timescale 1ns / 1ps
-`default_nettype none
+`default_nettype wire
