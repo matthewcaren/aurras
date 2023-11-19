@@ -161,7 +161,7 @@ module top_level(
     .audio_valid_in(filter_valid_1), //12 kHz audio sample valid signal
     .audio_in(filtered_audio_in_1), //16 bit signed audio data 
     .signal_out(regular_audio_out), //played back audio (8 bit signed at 12 kHz)
-    .echo_out(delayed_audio_out) //played back audio (8 bit signed at 12 kHz)
+    .delayed_audio_out(delayed_audio_out) //played back audio (8 bit signed at 12 kHz)
   );
 
   assign spkl = sw[0] ? sound_out : 0;
