@@ -107,7 +107,8 @@ module sos_dist_calculator #(
                         // end of window
                         if (window_ix_counter == WINDOW_SIZE) begin
                             // check for transient
-                            if ((current_window_sum > prev_window_sum) && (current_window_sum > (prev_prev_window_sum + prev_prev_window_sum >> 1))) begin
+                            if ((current_window_sum > (prev_window_sum + prev_window_sum)) &&
+                                (current_window_sum > (prev_prev_window_sum + prev_prev_window_sum))) begin
                                 two_delays_ago <= last_delay;
                                 last_delay <= delay_cycle_counter;
                                 if ((two_delays_ago == last_delay) && (last_delay == delay_cycle_counter)) begin
