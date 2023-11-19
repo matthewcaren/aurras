@@ -50,8 +50,8 @@ module sos_dist_calculator #(
   	always_ff @(posedge clk_in) begin
     if (rst_in) begin
         delay <= 0;
-        two_delays_ago <= 0;
-        last_delay <= 0;
+        two_delays_ago <= 8'hFE;
+        last_delay <= 8'hFF;
         delay_valid <= 0;
         impulse_trigger <= 0;
         delay_cycle_counter <= 0;
@@ -61,14 +61,16 @@ module sos_dist_calculator #(
             WAITING_FOR_FIRST: begin
                 if (trigger) begin
 					delay <= 0;
-					two_delays_ago <= 0;
-					last_delay <= 0;
+                    two_delays_ago <= 8'hFE;
+                    last_delay <= 8'hFF;
                     state <= STARTING_IMPULSE;
                 end
                 delay_counter <= 0;
                 impulse_trigger <= 0;
             end
             DELAYING: begin
+                two_delays_ago <= 8'hFE;
+                last_delay <= 8'hFF;
                 delay_counter <= delay_counter + 1;
                 if (delay_counter == DELAY_CYCLES) begin
                     delay_counter <= 0;
@@ -138,8 +140,8 @@ module sos_dist_calculator #(
 
             default: begin
                 delay <= 0;
-                two_delays_ago <= 0;
-                last_delay <= 0;
+                two_delays_ago <= 8'hFE;
+                last_delay <= 8'hFF;
                 delay_valid <= 0;
                 impulse_trigger <= 0;
                 delay_cycle_counter <= 0;
