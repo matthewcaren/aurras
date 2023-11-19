@@ -156,7 +156,7 @@ module top_level(
 
   logic [15:0] delayed_audio_out, regular_audio_out; 
 
-  recorder my_recorder(
+  recorder delayed_sound_out(
     .clk_in(audio_clk), //system clock
     .rst_in(sys_rst),//global reset
     .record_in(record), //button indicating whether to record or not

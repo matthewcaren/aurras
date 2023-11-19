@@ -2,14 +2,14 @@
 `default_nettype none
 
 
-module recorder(
+module delayed_sound_out(
   input wire clk_in,
   input wire rst_in,
-  input wire signed [7:0] audio_in,
+  input wire signed [15:0] audio_in,
   input wire record_in,
   input wire audio_valid_in,
-  output logic signed [7:0] signal_out,
-  output logic signed [7:0] echo_out
+  output logic signed [16:0] signal_out,
+  output logic signed [16:0] echo_out
   );
 
   logic [15:0] mem_addr, record_addr, playback_addr, echo_addr_1, echo_addr_2, max_record_addr;
@@ -29,7 +29,7 @@ module recorder(
           echo_addr_1 <= 16'd0;
           echo_addr_2 <= 16'd0;
           max_record_addr <= 16'd0;
-          single_out <= 8'd0;
+          signal_out <= 8'd0;
           echo_out <= 8'd0;
       end else begin
           case(major_fsm_state)
@@ -39,7 +39,7 @@ module recorder(
                       playback_addr <= playback_addr + 1'b1;
                       echo_addr_1 <= playback_addr - 16'd1500;
                       echo_addr_2 <= playback_addr - 16'd3000;
-                      single_out <= audio_from_memory_a;
+                      signal_out <= audio_from_memory_a;
                       record_addr <= 16'd0; //need this so we don't concatenate different recordings
 
 
@@ -65,7 +65,7 @@ module recorder(
               READ_ECHO2: begin
                   mem_addr <= echo_addr_2;
                   echo2_sample <= audio_from_memory_a;
-                  echo_out <= single_out + echo1_sample + echo2_sample;
+                  echo_out <= signal_out + echo1_sample + echo2_sample;
                   major_fsm_state <= READ_MAIN;
               end
           endcase
