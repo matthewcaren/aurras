@@ -19,16 +19,15 @@ module top_level(
   assign rgb1 = 0;
   assign rgb0 = 0;
 
-
   // ### CLOCK SETUP
 
   // 98.3MHz
   logic audio_clk;
   audio_clk_wiz macw (.clk_in(clk_100mhz), .clk_out(audio_clk)); 
 
-  // 24kHz for general audio
+  // This triggers at 48kHz for general audio
   logic audio_trigger;
-  logic [11:0] counter;
+  logic [10:0] counter;
   always_ff @(posedge audio_clk) begin
       counter <= counter + 1;
   end
@@ -45,12 +44,12 @@ module top_level(
   logic i2s_clk_1, i2s_clk_2, i2s_clk_3;
   logic lrcl_clk_1, lrcl_clk_2, lrcl_clk_3;
 
-  logic [15:0] audio_out_1, audio_out_2, audio_out_3;
-  logic data_valid_out_1, data_valid_out_2, data_valid_out_3;
+  logic [15:0] raw_audio_in_1, raw_audio_in_2, raw_audio_in_3;
+  logic mic_data_vaild_1, mic_data_valid_2, mic_data_valid_3;
 
-  i2s mic_1(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_1_data), .i2s_clk(i2s_clk_1), .lrcl_clk(lrcl_clk_1), .data_valid_out(data_valid_out_1), .audio_out(audio_out_1));
-  i2s mic_2(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_2_data), .i2s_clk(i2s_clk_2), .lrcl_clk(lrcl_clk_2), .data_valid_out(data_valid_out_2), .audio_out(audio_out_2));
-  i2s mic_3(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_3_data), .i2s_clk(i2s_clk_3), .lrcl_clk(lrcl_clk_3), .data_valid_out(data_valid_out_3), .audio_out(audio_out_3));
+  i2s mic_1(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_1_data), .i2s_clk(i2s_clk_1), .lrcl_clk(lrcl_clk_1), .data_valid_out(mic_data_vaild_1), .audio_out(raw_audio_in_1));
+  i2s mic_2(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_2_data), .i2s_clk(i2s_clk_2), .lrcl_clk(lrcl_clk_2), .data_valid_out(mic_data_valid_2), .audio_out(raw_audio_in_2));
+  i2s mic_3(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_3_data), .i2s_clk(i2s_clk_3), .lrcl_clk(lrcl_clk_3), .data_valid_out(mic_data_valid_3), .audio_out(raw_audio_in_3));
 
   assign pmodb[3] = i2s_clk_1;
   assign pmodb[7] = i2s_clk_2;
@@ -64,45 +63,32 @@ module top_level(
   assign mic_2_data = pmoda[7];
   assign mic_3_data = pmoda[0];
 
-  logic [15:0] valid_audio_out_1, valid_audio_out_2, valid_audio_out_3;
-
+  // Testing prefiltered audio
+  logic [15:0] prefiltered_audio_in_1;
   always_ff @(posedge audio_clk) begin
-      if (data_valid_out_1) begin
-          valid_audio_out_1 <= audio_out_1;
-      end
-      if (data_valid_out_2) begin
-          valid_audio_out_2 <= audio_out_2;
-      end
-      if (data_valid_out_3) begin
-          valid_audio_out_3 <= audio_out_3;
+      if (mic_data_vaild_1) begin
+        prefiltered_audio_in_1 <= raw_audio_in_1;
       end
   end
   
-
-  // ### INPUT ANTI-ALIASING
-
-  logic [15:0] filter_output;
-  logic filter_valid;
+  // #### INPUT ANTI-ALIASING
+  logic [15:0] filter_output_1, filter_output_2, filter_output_3;
+  logic [15:0] filtered_audio_in_1, filtered_audio_in_2, filtered_audio_in_3;
+  logic filter_valid_1, filter_valid_2, filter_valid_3;
   input_anti_alias_fir anti_alias_filter(.aclk(audio_clk),
-                                  .s_axis_data_tvalid(data_valid_out_1),
+                                  .s_axis_data_tvalid(mic_data_vaild_1),
                                   .s_axis_data_tready(1'b1),
-                                  .s_axis_data_tdata(audio_out_1),
-                                  .m_axis_data_tvalid(filter_valid),
-                                  .m_axis_data_tdata(filter_output));
+                                  .s_axis_data_tdata(raw_audio_in_1),
+                                  .m_axis_data_tvalid(filter_valid_1),
+                                  .m_axis_data_tdata(filter_output_1));
 
-  logic down_sampler;
-  logic [15:0] down_sampled_audio;
   always_ff @(posedge audio_clk) begin
-    if (filter_valid) begin
-      down_sampler <= down_sampler + 1;
-      if (down_sampler) begin
-        down_sampled_audio <= filter_output;
-      end
-    end
+    if (filter_valid_1) begin
+      filtered_audio_in_1 <= filter_output_1;
+    end 
   end
 
-
-  // ### SPEED OF SOUND
+  // ##### SPEED OF SOUND #####
 
   logic sos_trigger;
   logic last_switch_val;
@@ -120,10 +106,9 @@ module top_level(
     .rst_in(sys_rst),
     .step_in(audio_trigger),
     .trigger(sos_trigger),
-    .mic_in(valid_audio_out_1),
+    .mic_in(prefiltered_audio_in_1),
     .amp_out(sos_audio_out),
     .delay(calculated_delay));
-
 
   /// ### SEVEN SEGMENT DISPLAY
   logic [6:0] ss_c;
@@ -134,7 +119,6 @@ module top_level(
                               .val_in({24'b0, calculated_delay}),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
-
 
   // ### TEST SINE WAVE
 
@@ -147,24 +131,35 @@ module top_level(
   ); 
   defparam sine_440.PHASE_INCR = 32'b0000_0100_1011_0001_0111_1110_0100_1011;
 
-
-
   // ### SOUND OUTPUT MANAGEMENT
 
   logic signed [15:0] pdm_in;
+  logic [15:0] delayed_audio_out; 
   logic sound_out;
   
   assign pdm_in = sw[2] ? {tone_440[7], tone_440[7], tone_440[7], tone_440[7], 
-                    tone_440[7], tone_440[7], tone_440[7], tone_440[7], tone_440[7:0]} <<< 8 : 
-                    (sw[3] ? valid_audio_out_1 : 
-                    (sw[4] ? down_sampled_audio : 
-                    (sw[5] ? sos_audio_out : 0)));
+                         tone_440[7], tone_440[7], tone_440[7], tone_440[7], tone_440[7:0]} <<< 8 : 
+                    (sw[3] ? prefiltered_audio_in_1 : 
+                    (sw[4] ? filtered_audio_in_1 : 
+                    (sw[5] ? sos_audio_out : 
+                    (sw[6] ? delayed_audio_out : 0))));
+
 
   pdm pdm(
     .clk_in(audio_clk),
     .rst_in(sys_rst),
     .level_in(pdm_in),
     .pdm_out(sound_out)
+  );
+
+  delayed_sound_out my_delayed_sound_out (
+    .clk_in(audio_clk), //system clock
+    .rst_in(sys_rst),//global reset
+    .store_audio_in(1'b1), //button indicating whether to record or not
+    .audio_valid_in(filter_valid_1), //12 kHz audio sample valid signal
+    .delay_cycle(16'd48000),
+    .audio_in(filtered_audio_in_1), //16 bit signed audio data 
+    .delayed_audio_out(delayed_audio_out) //played back audio (8 bit signed at 12 kHz)
   );
 
   assign spkl = sw[0] ? sound_out : 0;
