@@ -35,4 +35,5 @@ sw1: channel 1 output enable\
 sw2: test sine wave output\
 sw3: raw input from mic\
 sw4: downsampled input from mic\
-sw5: SOS output enable
+sw5: SOS output enable\
+sw6: output delayed mic stream
