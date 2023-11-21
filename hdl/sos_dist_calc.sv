@@ -89,7 +89,7 @@ module sos_dist_calculator #(
                     prev_window_sum <= 40'hFF_FFFF_FFFF;
                     prev_prev_window_sum <= 40'hFF_FFFF_FFFF;
                     window_ix_counter <= 0;
-                    delay_cycle_counter <= 0;
+                    delay_cycle_counter <= 1;
 
                     state <= ANALYZING_RESPONSE;
                 end
@@ -106,34 +106,31 @@ module sos_dist_calculator #(
                         state <= DELAYING;
                     end else begin
                         // end of window
-                        if (window_ix_counter == WINDOW_SIZE-1) begin
-                            // check for transient
-                            window_ix_counter <= 0;
-                            if ((current_window_sum > (prev_window_sum)) &&
-                                (current_window_sum > ((prev_prev_window_sum >> 2) + prev_prev_window_sum))) begin
-                                two_delays_ago <= last_delay;
-                                last_delay <= delay_cycle_counter + 1;
-                                if ((two_delays_ago == last_delay) && (last_delay == (delay_cycle_counter + 1))) begin
-                                    delay <= delay_cycle_counter + 1;
-                                    delay_valid <= 1;
-                                    state <= WAITING_FOR_FIRST;
-                                end else begin
-                            
-                                    state <= DELAYING;
-                                end
+                        if ((current_window_sum > (prev_window_sum)) &&
+                            (current_window_sum > ((prev_prev_window_sum >> 2) + prev_prev_window_sum))) begin
+                            two_delays_ago <= last_delay;
+                            last_delay <= delay_cycle_counter + 1;
+                            if ((two_delays_ago == last_delay) && (last_delay == (delay_cycle_counter + 1))) begin
+                                delay <= delay_cycle_counter + 1;
+                                delay_valid <= 1;
+                                state <= WAITING_FOR_FIRST;
+                            end else begin
+                        
+                                state <= DELAYING;
                             end
-
-                            // otherwise keep going
-                            else begin
-                                window_ix_counter <= 0;
-                                current_window_sum <= 0;
-                                prev_window_sum <= current_window_sum;
-                                prev_prev_window_sum <= prev_window_sum;
-                            end
-                        end else begin
-                            window_ix_counter <= window_ix_counter + 1;
-                            current_window_sum <= current_window_sum + (mic_in[31] ? ((~mic_in) + 1) : mic_in);
                         end
+
+                        //     // otherwise keep going
+                        //     else begin
+                        //         window_ix_counter <= 0;
+                        //         current_window_sum <= 0;
+                        //         prev_window_sum <= current_window_sum;
+                        //         prev_prev_window_sum <= prev_window_sum;
+                        //     end
+                        // end else begin
+                        //     window_ix_counter <= window_ix_counter + 1;
+                        //     current_window_sum <= current_window_sum + (mic_in[31] ? ((~mic_in) + 1) : mic_in);
+                        // end
 
                         delay_cycle_counter <= delay_cycle_counter + 1;
                     end
