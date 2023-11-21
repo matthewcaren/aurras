@@ -18,7 +18,7 @@ module sos_dist_calculator #(
   input wire rst_in,
   input wire step_in,
   input wire trigger,
-  input wire [7:0] mic_in,
+  input wire [15:0] mic_in,
   output logic signed [15:0] amp_out,    // audio out
   output logic [11:0] delay,              // # of 24 kHz cycles
   output logic delay_valid,
