@@ -86,7 +86,7 @@ module sos_dist_calculator #(
 
                 if (impulse_out) begin
                     // set up variables for transient detection algo
-                    prev_window_sum <= 40'hFF_FFFF_FFFF;
+                    prev_window_sum <= 40'hFFFF_FFFF;
                     prev_prev_window_sum <= 40'hFF_FFFF_FFFF;
                     window_ix_counter <= 0;
                     delay_cycle_counter <= 1;
@@ -109,7 +109,7 @@ module sos_dist_calculator #(
                         // if ((current_window_sum > (prev_window_sum)) &&
                         //     (current_window_sum > ((prev_prev_window_sum >> 2) + prev_prev_window_sum))) begin
 
-                        if (mic_in[15:10] != 8'hFC)
+                        if (mic_in[15:8] != 8'hFC) begin
                             two_delays_ago <= last_delay;
                             last_delay <= delay_cycle_counter + 1;
                             if ((two_delays_ago == last_delay) && (last_delay == (delay_cycle_counter + 1))) begin
@@ -136,6 +136,7 @@ module sos_dist_calculator #(
                         delay_cycle_counter <= delay_cycle_counter + 1;
                     end
                 end
+            end
             
 
             default: begin
