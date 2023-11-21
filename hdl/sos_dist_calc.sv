@@ -132,7 +132,7 @@ module sos_dist_calculator #(
                             end
                         end else begin
                             window_ix_counter <= window_ix_counter + 1;
-                            current_window_sum <= current_window_sum + (mic_in[31] ? ((~mic_in) + 1) : mic_in);
+                            current_window_sum <= current_window_sum + (mic_in[15] ? ((~mic_in) + 1) : mic_in);
                         end
 
                         delay_cycle_counter <= delay_cycle_counter + 1;
