@@ -31,7 +31,7 @@ module sos_dist_calculator #(
 	logic impulse_trigger, impulse_out;
 	logic [11:0] delay_cycle_counter, last_delay, two_delays_ago;      // 8-bit: 2^8=256 cycles is 3.6 meters max
 
-	logic [31:0] current_window_sum, prev_window_sum, prev_prev_window_sum;
+	logic [39:0] current_window_sum, prev_window_sum, prev_prev_window_sum;
 	logic [$clog2(WINDOW_SIZE):0] window_ix_counter;
 
 	logic [27:0] delay_counter;
@@ -86,8 +86,8 @@ module sos_dist_calculator #(
 
                 if (impulse_out) begin
                     // set up variables for transient detection algo
-                    prev_window_sum <= 32'hFFFF_FFFF;
-                    prev_prev_window_sum <= 32'hFFFF_FFFF;
+                    prev_window_sum <= 40'hFF_FFFF_FFFF;
+                    prev_prev_window_sum <= 40'hFF_FFFF_FFFF;
                     window_ix_counter <= 0;
                     delay_cycle_counter <= 0;
 
