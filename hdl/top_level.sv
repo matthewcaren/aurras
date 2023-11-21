@@ -108,7 +108,7 @@ module top_level(
     .rst_in(sys_rst),
     .step_in(audio_trigger),
     .trigger(sos_trigger),
-    .mic_in(prefiltered_audio_in_1),
+    .mic_in(filtered_audio_in_1),
     .amp_out(sos_audio_out),
     .delay(calculated_delay),
     .last_two(last_two));
@@ -119,7 +119,7 @@ module top_level(
   assign ss1_c = ss_c;
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in({8'b0, last_two}),
+                              .val_in((sw[8] ? {16'b0, filtered_audio_in_1} : {8'b0, last_two})),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
 
