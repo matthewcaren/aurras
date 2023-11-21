@@ -18,7 +18,7 @@ module sos_dist_calculator #(
   input wire rst_in,
   input wire step_in,
   input wire trigger,
-  input wire [7:0] mic_in,
+  input wire [15:0] mic_in,
   output logic signed [15:0] amp_out,    // audio out
   output logic [11:0] delay,              // # of 24 kHz cycles
   output logic delay_valid,
@@ -106,8 +106,10 @@ module sos_dist_calculator #(
                         state <= DELAYING;
                     end else begin
                         // end of window
-                        if ((current_window_sum > (prev_window_sum)) &&
-                            (current_window_sum > ((prev_prev_window_sum >> 2) + prev_prev_window_sum))) begin
+                        // if ((current_window_sum > (prev_window_sum)) &&
+                        //     (current_window_sum > ((prev_prev_window_sum >> 2) + prev_prev_window_sum))) begin
+
+                        if (mic_in[15:10] != 8'hFC)
                             two_delays_ago <= last_delay;
                             last_delay <= delay_cycle_counter + 1;
                             if ((two_delays_ago == last_delay) && (last_delay == (delay_cycle_counter + 1))) begin
@@ -115,7 +117,6 @@ module sos_dist_calculator #(
                                 delay_valid <= 1;
                                 state <= WAITING_FOR_FIRST;
                             end else begin
-                        
                                 state <= DELAYING;
                             end
                         end
@@ -135,7 +136,7 @@ module sos_dist_calculator #(
                         delay_cycle_counter <= delay_cycle_counter + 1;
                     end
                 end
-            end
+            
 
             default: begin
                 delay <= 8'hAAD;
