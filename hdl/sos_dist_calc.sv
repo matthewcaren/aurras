@@ -35,7 +35,7 @@ module sos_dist_calculator #(
 	logic [$clog2(WINDOW_SIZE):0] window_ix_counter;
 
 	logic [27:0] delay_counter;
-	localparam DELAY_CYCLES = 28'd60_000_000;
+	localparam DELAY_CYCLES = 28'd98_300_000;
 
 	impulse_generator imp_gen (
 	.clk_in(clk_in),
@@ -109,8 +109,8 @@ module sos_dist_calculator #(
                         if (window_ix_counter == WINDOW_SIZE-1) begin
                             // check for transient
                             window_ix_counter <= 0;
-                            if ((current_window_sum > (prev_window_sum)) &&
-                                (current_window_sum > ((prev_prev_window_sum >> 2) + prev_prev_window_sum))) begin
+                            if ((current_window_sum > (prev_window_sum + prev_window_sum)) &&
+                                (current_window_sum > (prev_prev_window_sum  + prev_prev_window_sum))) begin
                                 two_delays_ago <= last_delay;
                                 last_delay <= delay_cycle_counter + 1;
                                 if ((two_delays_ago == last_delay) && (last_delay == (delay_cycle_counter + 1))) begin
