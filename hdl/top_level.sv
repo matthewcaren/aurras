@@ -121,7 +121,10 @@ module top_level(
   assign ss1_c = ss_c;
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in((sw[7] ? {16'b0, filtered_audio_in_1} : {8'b0, last_two})),
+                              .val_in((sw[7] ? {16'b0, filtered_audio_in_1} : 
+                              (sw[8] ? {8'b0, last_two} : 
+                              (sw[9] ? {total_values[79:64], total_values[39:24]}: 
+                              0)))),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
 
