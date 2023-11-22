@@ -11,7 +11,7 @@
  */
 
 module sos_dist_calculator #(
-  parameter WINDOW_SIZE = 16,     // ~150 for most accurate, lower means less latent
+  parameter WINDOW_SIZE = 8,     // ~150 for most accurate, lower means less latent
   parameter MAX_DELAY = 512
 ) 
 ( input wire clk_in,
@@ -22,7 +22,8 @@ module sos_dist_calculator #(
   output logic signed [15:0] amp_out,    // audio out
   output logic [11:0] delay,              // # of 24 kHz cycles
   output logic delay_valid,
-  output logic [23:0] last_two);
+  output logic [23:0] last_two,
+  output logic [79:0] windows);
 
 	typedef enum {WAITING_FOR_FIRST=1, AWAITING_IMPULSE=2, ANALYZING_RESPONSE=3, STARTING_IMPULSE = 4, DELAYING = 5} system_state;
 
@@ -109,8 +110,8 @@ module sos_dist_calculator #(
                         if (window_ix_counter == WINDOW_SIZE-1) begin
                             // check for transient
                             window_ix_counter <= 0;
-                            if ((current_window_sum > (prev_window_sum + prev_window_sum >> 1)) &&
-                                (current_window_sum > (prev_prev_window_sum  + prev_prev_window_sum >> 1))) begin
+                            if (current_window_sum > (prev_window_sum + (prev_window_sum >> 1))) begin
+                               // (current_window_sum > (prev_prev_window_sum  + prev_prev_window_sum))) begin
                                 two_delays_ago <= last_delay;
                                 last_delay <= delay_cycle_counter + 1;
                                 if ((two_delays_ago == last_delay) && (last_delay == (delay_cycle_counter + 1))) begin
@@ -118,7 +119,6 @@ module sos_dist_calculator #(
                                     delay_valid <= 1;
                                     state <= WAITING_FOR_FIRST;
                                 end else begin
-                            
                                     state <= DELAYING;
                                 end
                             end

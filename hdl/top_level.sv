@@ -103,6 +103,7 @@ module top_level(
 
   logic [23:0] last_two; 
 
+  logic [79:0] total_values;
   sos_dist_calculator sos_calc(
     .clk_in(audio_clk),
     .rst_in(sys_rst),
@@ -111,7 +112,8 @@ module top_level(
     .mic_in(filtered_audio_in_1),
     .amp_out(sos_audio_out),
     .delay(calculated_delay),
-    .last_two(last_two));
+    .last_two(last_two),
+    .windows(total_values));
 
   /// ### SEVEN SEGMENT DISPLAY
   logic [6:0] ss_c;
@@ -119,7 +121,7 @@ module top_level(
   assign ss1_c = ss_c;
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in((sw[8] ? {16'b0, filtered_audio_in_1} : {8'b0, last_two})),
+                              .val_in((sw[7] ? {16'b0, filtered_audio_in_1} : {8'b0, last_two})),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
 
