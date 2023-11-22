@@ -31,11 +31,9 @@ module sos_dist_calculator #(
 	logic impulse_trigger, impulse_out;
 	logic [11:0] delay_cycle_counter, last_delay, two_delays_ago;      // 8-bit: 2^8=256 cycles is 3.6 meters max
 
-	logic [39:0] current_window_sum, prev_window_sum, prev_prev_window_sum;
-	logic [$clog2(WINDOW_SIZE):0] window_ix_counter;
 
 	logic [27:0] delay_counter;
-	localparam DELAY_CYCLES = 28'd60_000_000;
+	localparam DELAY_CYCLES = 28'd98_300_000;
 
 	impulse_generator imp_gen (
 	.clk_in(clk_in),
@@ -83,33 +81,22 @@ module sos_dist_calculator #(
             end
             AWAITING_IMPULSE: begin
                 impulse_trigger <= 0;
-
                 if (impulse_out) begin
                     // set up variables for transient detection algo
-                    prev_window_sum <= 40'hFFFF_FFFF;
-                    prev_prev_window_sum <= 40'hFF_FFFF_FFFF;
-                    window_ix_counter <= 0;
                     delay_cycle_counter <= 1;
-
                     state <= ANALYZING_RESPONSE;
                 end
             end
 
             ANALYZING_RESPONSE: begin
                 if (step_in) begin
-                    last_two <= {delay_cycle_counter + 1, last_delay};
+                    last_two <= {last_delay, delay_cycle_counter + 1'b1};
                     // if we hit max delay without detecting an onset, reset
                     if (delay_cycle_counter == MAX_DELAY) begin
-                        // impulse_trigger <= 0;
-                        // delay_cycle_counter <= 0;
                         last_two <= 24'hDEAD_BE;
                         state <= DELAYING;
                     end else begin
-                        // end of window
-                        // if ((current_window_sum > (prev_window_sum)) &&
-                        //     (current_window_sum > ((prev_prev_window_sum >> 2) + prev_prev_window_sum))) begin
-
-                        if (mic_in[15:8] != 8'hFC) begin
+                        if (mic_in[15:10] != 6'b111111) begin
                             two_delays_ago <= last_delay;
                             last_delay <= delay_cycle_counter + 1;
                             if ((two_delays_ago == last_delay) && (last_delay == (delay_cycle_counter + 1))) begin
@@ -120,19 +107,6 @@ module sos_dist_calculator #(
                                 state <= DELAYING;
                             end
                         end
-
-                        //     // otherwise keep going
-                        //     else begin
-                        //         window_ix_counter <= 0;
-                        //         current_window_sum <= 0;
-                        //         prev_window_sum <= current_window_sum;
-                        //         prev_prev_window_sum <= prev_window_sum;
-                        //     end
-                        // end else begin
-                        //     window_ix_counter <= window_ix_counter + 1;
-                        //     current_window_sum <= current_window_sum + (mic_in[31] ? ((~mic_in) + 1) : mic_in);
-                        // end
-
                         delay_cycle_counter <= delay_cycle_counter + 1;
                     end
                 end
