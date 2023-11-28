@@ -36,4 +36,9 @@ sw2: test sine wave output\
 sw3: raw input from mic\
 sw4: downsampled input from mic\
 sw5: SOS output enable\
-sw6: output delayed mic stream
+sw6: output delayed mic stream\
+
+sw7-9: display\
+sw7: monitoring live audio in\
+sw8: last two delays calculated (12 bits each)\
+sw9: upper 16 bits of the sum of the second most recent window (40 bits total), upper 16 bits of the sum of the most recent window\
