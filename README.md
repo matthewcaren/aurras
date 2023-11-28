@@ -37,3 +37,4 @@ sw3: raw input from mic\
 sw4: downsampled input from mic\
 sw5: SOS output enable\
 sw6: output delayed mic stream
+sw8: if yes, ssc shows live audio in else it shows last two delays computed by impulse
