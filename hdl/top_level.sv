@@ -157,6 +157,7 @@ module top_level(
     .pdm_out(sound_out)
   );
 
+  //Delayed audio by sw[15:10] w/ two 0s tacked on 
   delayed_sound_out my_delayed_sound_out (
     .clk_in(audio_clk), //system clock
     .rst_in(sys_rst),//global reset
@@ -167,7 +168,7 @@ module top_level(
     .delayed_audio_out(delayed_audio_out) //played back audio (8 bit signed at 12 kHz)
   );
 
-
+  // One second delayed audio
   delayed_sound_out one_second_delayed_sound_out (
     .clk_in(audio_clk), //system clock
     .rst_in(sys_rst),//global reset
