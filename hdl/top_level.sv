@@ -19,6 +19,9 @@ module top_level(
   assign rgb1 = 0;
   assign rgb0 = 0;
 
+  logic [7:0] DELAY_AMOUNT;
+  assign DELAY_AMOUNT = {sw[15:10], 2'b0};
+
   // ### CLOCK SETUP
 
   // 98.3MHz
@@ -135,6 +138,7 @@ module top_level(
 
   logic signed [15:0] pdm_in;
   logic [15:0] delayed_audio_out; 
+  logic [15:0] one_second_delay;
   logic sound_out;
   
   assign pdm_in = sw[2] ? {tone_440[7], tone_440[7], tone_440[7], tone_440[7], 
@@ -142,7 +146,8 @@ module top_level(
                     (sw[3] ? prefiltered_audio_in_1 : 
                     (sw[4] ? filtered_audio_in_1 : 
                     (sw[5] ? sos_audio_out : 
-                    (sw[6] ? delayed_audio_out : 0))));
+                    (sw[6] ? delayed_audio_out : 
+                    (sw[7] ? one_second_delay: 0)))));
 
 
   pdm pdm(
@@ -157,10 +162,22 @@ module top_level(
     .rst_in(sys_rst),//global reset
     .enable_delay(1'b1), //button indicating whether to record or not
     .audio_valid_in(audio_trigger), //48 khz audio sample valid signal
-    .delay_cycle(16'd48000),
+    .delay_cycle(DELAY_AMOUNT),
     .audio_in(filtered_audio_in_1), //16 bit signed audio data 
     .delayed_audio_out(delayed_audio_out) //played back audio (8 bit signed at 12 kHz)
   );
+
+
+  delayed_sound_out one_second_delayed_sound_out (
+    .clk_in(audio_clk), //system clock
+    .rst_in(sys_rst),//global reset
+    .enable_delay(1'b1), //button indicating whether to record or not
+    .audio_valid_in(audio_trigger), //48 khz audio sample valid signal
+    .delay_cycle(16'd48000),
+    .audio_in(filtered_audio_in_1), //16 bit signed audio data 
+    .delayed_audio_out(one_second_delay) //played back audio (8 bit signed at 12 kHz)
+  );
+
 
   assign spkl = sw[0] ? sound_out : 0;
   assign spkr = sw[1] ? sound_out : 0;
