@@ -77,6 +77,7 @@ module top_level(
   // #### INPUT ANTI-ALIASING
   logic [15:0] filter_output_1, filter_output_2, filter_output_3;
   logic [15:0] filtered_audio_in_1, filtered_audio_in_2, filtered_audio_in_3;
+  logic [15:0] final_audio_in_1;
   logic filter_valid_1, filter_valid_2, filter_valid_3;
   input_anti_alias_fir anti_alias_filter(.aclk(audio_clk),
                                   .s_axis_data_tvalid(mic_data_vaild_1),
@@ -90,6 +91,12 @@ module top_level(
       filtered_audio_in_1 <= filter_output_1;
     end 
   end
+
+  dc_blocker dc_block(.clk_in(audio_clk),
+                      .rst_in(sys_rst),
+                      .audio_trigger(audio_trigger),
+                      .signal_in(filtered_audio_in_1),
+                      .signal_out(final_audio_in_1));
 
   // ##### SPEED OF SOUND #####
 
@@ -113,13 +120,20 @@ module top_level(
     .amp_out(sos_audio_out),
     .delay(calculated_delay));
 
+
+  logic [15:0] displayed_audio;
+  always_ff @(posedge audio_clk) begin
+    if (btn[2]) begin
+      displayed_audio <= final_audio_in_1;
+    end 
+  end
   /// ### SEVEN SEGMENT DISPLAY
   logic [6:0] ss_c;
   assign ss0_c = ss_c; 
   assign ss1_c = ss_c;
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in({24'b0, calculated_delay}),
+                              .val_in(DELAY_AMOUNT, 8'h00, displayed_audio),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
 
