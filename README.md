@@ -29,7 +29,7 @@ Active environmental noise cancellation using an FPGA.
 
 btn0: system reset\
 btn1: run SOS analysis\
-btn2: monitor audio\
+btn2: monitor audio
 
 sw0: channel 0 output enable\
 sw1: channel 1 output enable\
@@ -39,4 +39,4 @@ sw4: downsampled input from mic\
 sw5: SOS output enable\
 sw6: delayed based on {sw 15-10, 00} (8 bit delay)\
 sw7: one second delayed audio\
-sw15-10: delay amount\
+sw15-10: delay amount
