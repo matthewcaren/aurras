@@ -23,7 +23,7 @@ module delayed_sound_out (
             write_addr <= 0;
             write_enable <= 0;
         end else if (audio_valid_in && enable_delay) begin
-            write_data <= audio_in;
+            write_data <= (~audio_in) + 1;   // negate sound here
             write_enable <= 1;
             if (write_addr == RAM_DEPTH  - 1) begin
                 write_addr <= 0;
