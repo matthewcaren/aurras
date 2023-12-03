@@ -1,7 +1,5 @@
 `timescale 1ns / 1ps
 `default_nettype none
-
-
 module dc_blocker(  input wire clk_in,
                     input wire rst_in,
                     input wire audio_trigger,
@@ -30,4 +28,6 @@ module dc_blocker(  input wire clk_in,
     end
   end
 endmodule
+
+`timescale 1ns / 1ps
 `default_nettype wire

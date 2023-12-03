@@ -100,33 +100,64 @@ module top_level(
 
   // ##### SPEED OF SOUND #####
 
-  logic sos_trigger;
-  logic last_switch_val;
-  logic signed [15:0] sos_audio_out;
-  logic [7:0] calculated_delay;
-  logic [2:0] sos_state;
+  // logic sos_trigger;
+  // logic last_switch_val;
+  // logic signed [15:0] sos_audio_out;
+  // logic [7:0] calculated_delay;
+  // logic [2:0] sos_state;
 
-  always_ff @(posedge audio_clk) begin
-    sos_trigger <= btn[1] & !last_switch_val;
-    last_switch_val <= btn[1];
-  end
+  // always_ff @(posedge audio_clk) begin
+  //   sos_trigger <= btn[1] & !last_switch_val;
+  //   last_switch_val <= btn[1];
+  // end
 
-  sos_dist_calculator sos_calc(
-    .clk_in(audio_clk),
-    .rst_in(sys_rst),
-    .step_in(audio_trigger),
-    .trigger(sos_trigger),
-    .mic_in(prefiltered_audio_in_1),
-    .amp_out(sos_audio_out),
-    .delay(calculated_delay));
+  // sos_dist_calculator sos_calc(
+  //   .clk_in(audio_clk),
+  //   .rst_in(sys_rst),
+  //   .step_in(audio_trigger),
+  //   .trigger(sos_trigger),
+  //   .mic_in(prefiltered_audio_in_1),
+  //   .amp_out(sos_audio_out),
+  //   .delay(calculated_delay));
 
-
+  // NOT IN USE RIGHT NOW
+  
   logic [15:0] displayed_audio;
   always_ff @(posedge audio_clk) begin
     if (btn[2]) begin
       displayed_audio <= final_audio_in_1;
     end 
   end
+
+  localparam impulse_length = 16'd48000;
+  logic impulse_recorded;
+  logic [15:0] impulse_write_addr;
+  logic signed [15:0] impulse_write_data;
+  logic impulse_write_enable;
+
+  memory_manager #(impulse_length) impulse_memory(
+                                   .audio_clk(audio_clk),
+                                   .rst_in(rst_in),
+                                   .write_addr(impulse_write_addr),
+                                   .write_data(impulse_write_data),
+                                   .write_enable(impulse_write_enable),
+                                   .read_addr(),
+                                   .read_data());
+
+  record_impulse #(impulse_length) impulse_recording(
+                                   .audio_clk(audio_clk),
+                                   .rst_in(rst_in),
+                                   .audio_trigger(audio_trigger),
+                                   .record_impulse_trigger((btn[3] && sw[8])),
+                                   .delay_length(DELAY_AMOUNT),
+                                   .audio_in(final_audio_in_1),
+                                   .impulse_recorded(impulse_recorded),
+                                   .write_addr(impulse_write_addr),
+                                   .write_data(impulse_write_data),
+                                   .write_enable(impulse_write_enable)
+                                   );
+
+
   /// ### SEVEN SEGMENT DISPLAY
   logic [6:0] ss_c;
   assign ss0_c = ss_c; 
@@ -159,9 +190,9 @@ module top_level(
                          tone_440[7], tone_440[7], tone_440[7], tone_440[7], tone_440[7:0]} <<< 8 : 
                     (sw[3] ? prefiltered_audio_in_1 : 
                     (sw[4] ? filtered_audio_in_1 : 
-                    (sw[5] ? sos_audio_out : 
+                  //  (sw[5] ? sos_audio_out : 
                     (sw[6] ? delayed_audio_out : 
-                    (sw[7] ? one_second_delay: 0)))));
+                    (sw[7] ? one_second_delay: 0))));
 
 
   pdm pdm(
@@ -178,7 +209,7 @@ module top_level(
     .enable_delay(1'b1), //button indicating whether to record or not
     .audio_valid_in(audio_trigger), //48 khz audio sample valid signal
     .delay_cycle(DELAY_AMOUNT),
-    .audio_in(filtered_audio_in_1), //16 bit signed audio data 
+    .audio_in(final_audio_in_1), //16 bit signed audio data 
     .delayed_audio_out(delayed_audio_out) //played back audio (8 bit signed at 12 kHz)
   );
 
@@ -189,7 +220,7 @@ module top_level(
     .enable_delay(1'b1), //button indicating whether to record or not
     .audio_valid_in(audio_trigger), //48 khz audio sample valid signal
     .delay_cycle(16'd48000),
-    .audio_in(filtered_audio_in_1), //16 bit signed audio data 
+    .audio_in(final_audio_in_1), //16 bit signed audio data 
     .delayed_audio_out(one_second_delay) //played back audio (8 bit signed at 12 kHz)
   );
 

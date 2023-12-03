@@ -5,9 +5,10 @@ module memory_manager #(parameter impulse_length = 48000)
                     (input wire audio_clk,
                       input wire rst_in,
                       input wire [15:0] write_addr,
-                      input wire [15:0] write_data,
+                      input wire signed [15:0] write_data,
+                      input wire write_enable,
                       input wire [15:0] read_addr,
-                      output logic [15:0] read_data                        
+                      output logic signed [15:0] read_data                        
                       );
 
 
@@ -17,7 +18,7 @@ module memory_manager #(parameter impulse_length = 48000)
     ) impulse_memory (
         .addra(write_addr),
         .clka(audio_clk),
-        .wea(1'b1),
+        .wea(write_enable),
         .dina(write_data),
         .ena(1'b1),
         .regcea(1'b1),
