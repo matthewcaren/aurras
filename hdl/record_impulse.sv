@@ -34,6 +34,8 @@ module record_impulse(
             delayed_so_far <= 0;
             recorded_so_far <=0;
             state <= WAITING_FOR_IMPULSE;
+            impulse_recorded <= 0;
+            write_addr <= 0;
         end else begin
             case (state)
                 WAITING_FOR_IMPULSE: begin
@@ -70,8 +72,10 @@ module record_impulse(
                     end
                 end
                 default: begin
+                    impulse_recorded <= 0;
                     delayed_so_far <= 0;
                     recorded_so_far <= 0;
+                    write_addr <= 0;
                     state <= WAITING_FOR_IMPULSE;
                 end 
             endcase 
