@@ -66,7 +66,7 @@ module record_impulse #(parameter impulse_length = 48000)
                     if (audio_trigger) begin
                         if (recorded_so_far == impulse_length) begin
                             impulse_recorded <= 1;
-                            state <= COMPLETE;
+                            state <= WAITING_FOR_IMPULSE;
                         end else begin
                             write_data <= audio_in;
                             write_addr <= recorded_so_far;
