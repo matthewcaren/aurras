@@ -131,8 +131,9 @@ module top_level(
 
   localparam impulse_length = 16'd48000;
   logic impulse_recorded;
-  logic [15:0] impulse_write_addr;
-  logic signed [15:0] impulse_write_data;
+  logic [15:0] impulse_write_addr, read_addr;
+  logic signed [15:0] impulse_write_data, read_data;
+  logic signed [15:0] final_convolved_audio;
   logic impulse_write_enable;
 
   memory_manager #(impulse_length) impulse_memory(
@@ -141,8 +142,8 @@ module top_level(
                                    .write_addr(impulse_write_addr),
                                    .write_data(impulse_write_data),
                                    .write_enable(impulse_write_enable),
-                                   .read_addr(),
-                                   .read_data());
+                                   .read_addr(read_addr),
+                                   .read_data(read_data));
 
   record_impulse #(impulse_length) impulse_recording(
                                    .audio_clk(audio_clk),
@@ -156,6 +157,18 @@ module top_level(
                                    .write_data(impulse_write_data),
                                    .write_enable(impulse_write_enable)
                                    );
+
+  convolve_audio #(impulse_length) convolving_audio(
+                                   .audio_clk(audio_clk),
+                                   .rst_in(rst_in),
+                                   .audio_trigger(audio_trigger),
+                                   .audio_in(final_audio_in_1),
+                                   .delay_length(DELAY_AMOUNT),
+                                   .impulse_in_memory_complete(impulse_recorded),
+                                   .convolved_audio(final_convolved_audio),
+                                   .read_addr(read_addr),
+                                   .read_data(read_data)
+                                  );
 
 
   /// ### SEVEN SEGMENT DISPLAY
