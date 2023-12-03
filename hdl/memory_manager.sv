@@ -1,13 +1,13 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module memory_manager(input wire audio_clk,
+module memory_manager #(parameter impulse_length = 48000)
+                    (input wire audio_clk,
                       input wire rst_in,
                       input wire [15:0] write_addr,
                       input wire [15:0] write_data,
-                      input wire [15:0] impulse_length,
                       input wire [15:0] read_addr,
-                      output logic [15:0] read_data,                        
+                      output logic [15:0] read_data                        
                       );
 
 
@@ -16,7 +16,7 @@ module memory_manager(input wire audio_clk,
         .RAM_DEPTH(impulse_length)
     ) impulse_memory (
         .addra(write_addr),
-        .clka(clk_in),
+        .clka(audio_clk),
         .wea(1'b1),
         .dina(write_data),
         .ena(1'b1),
@@ -25,7 +25,7 @@ module memory_manager(input wire audio_clk,
         .douta(),
         .addrb(read_addr),
         .dinb(),
-        .clkb(clk_in),
+        .clkb(audio_clk),
         .web(1'b0),
         .enb(1'b1),
         .rstb(rst_in),
