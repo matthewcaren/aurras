@@ -145,7 +145,7 @@ module top_level(
                                    .read_addr(read_addr),
                                    .read_data(read_data));
 
-  record_impulse #(impulse_length) impulse_recording(
+  record_impulse #(impulse_length >> 6) impulse_recording(
                                    .audio_clk(audio_clk),
                                    .rst_in(rst_in),
                                    .audio_trigger(audio_trigger),

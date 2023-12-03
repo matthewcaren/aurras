@@ -2,7 +2,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module record_impulse #(parameter impulse_length = 48000) 
+module record_impulse #(parameter impulse_length = 750) 
     (input wire audio_clk,
      input wire rst_in,
      input wire audio_trigger,
