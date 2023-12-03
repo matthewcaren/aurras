@@ -3,26 +3,21 @@
 `default_nettype none
 
 module record_impulse #(parameter impulse_length = 48000) 
-    (
-    input wire audio_clk,
-    input wire rst_in,
-    input wire audio_trigger,
-    input wire record_impulse_trigger,
-    input wire [15:0] delay_length,
-    input wire [15:0] audio_in,
-    output logic impulse_recorded
-    );
+    (input wire audio_clk,
+     input wire rst_in,
+     input wire audio_trigger,
+     input wire record_impulse_trigger,
+     input wire [15:0] delay_length,
+     input wire [15:0] audio_in,
+     output logic impulse_recorded
+     );
 
-    memory_manager #(impulse_length) 
-                    impulse_memory(.audio_clk(audio_clk),
-                                   .rst_in(rst_in),
-                                   .write_addr(write_addr),
-                                   .write_data(write_data),
-                                   .read_addr(),
-                                   .read_data());
-
-    logic signed [15:0] impulse_amp_out;
+    typedef enum logic [1:0] {WAITING_FOR_IMPULSE = 0, DELAYING = 1, RECORDING = 2} impulse_record_state;
+    logic signed [15:0] impulse_amp_out, write_data;
     logic impulse_completed;
+    logic [15:0] delayed_so_far, recorded_so_far, write_addr;
+    impulse_record_state state;
+
     impulse_generator generate_impulse(.clk_in(audio_clk),
                                         .rst_in(rst_in),
                                         .step_in(audio_trigger),
@@ -30,11 +25,13 @@ module record_impulse #(parameter impulse_length = 48000)
                                         .impulse_out(impulse_completed),
                                         .amp_out(impulse_amp_out));
 
-    typedef enum logic [1:0] {WAITING_FOR_IMPULSE = 0, DELAYING = 1, RECORDING = 2} impulse_record_state;
-    
-    logic [15:0] delayed_so_far, recorded_so_far, write_data, write_addr;
-    impulse_record_state state;
-
+    memory_manager #(impulse_length) impulse_memory(.audio_clk(audio_clk),
+                                   .rst_in(rst_in),
+                                   .write_addr(write_addr),
+                                   .write_data(write_data),
+                                   .read_addr(),
+                                   .read_data());
+ 
     always_ff @(posedge audio_clk) begin
         if (rst_in) begin
             delayed_so_far <= 0;
