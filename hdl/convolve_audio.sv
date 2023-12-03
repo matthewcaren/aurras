@@ -6,6 +6,7 @@ module convolve_audio(input wire audio_clk,
                       input wire audio_trigger,
                       input wire [15:0] audio_in,
                       input wire [15:0] delay_length,
+                      input wire [15:0] impulse_length,
                       input wire impulse_complete,
                       output signed logic [15:0] convolved_audio);
 
@@ -23,12 +24,12 @@ module convolve_audio(input wire audio_clk,
 
     typedef enum logic [1:0] {WAITING_FOR_AUDIO = 0, CONVOLVING = 1, TRANSMITTING = 2} convolving_state;
     convolving_state state;
+    logic [15:0] cycles_completed;
     always_ff @(posedge audio_clk) begin
         if (rst_in) begin
             build_up_sum <= 0;
             state <= WAITING_FOR_AUDIO
         end else begin
-
             case (state)
                 WAITING_FOR_AUDIO: begin
                     build_up_sum <= 0;
@@ -36,17 +37,19 @@ module convolve_audio(input wire audio_clk,
                         state <= CONVOLVING;
                     end 
                 end 
+
                 CONVOLVING: begin
 
                 end
+
                 TRANSMITTING: begin
                     convolved_audio <= build_up_sum[47:32];
                     state <= WAITING_FOR_AUDIO;
                 end
+
                 default: begin
                     state <= WAITING_FOR_AUDIO;
                     build_up_sum <= 0;
-
                 end
             endcase 
 
