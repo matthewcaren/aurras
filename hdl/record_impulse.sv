@@ -10,7 +10,6 @@ module record_impulse #(parameter impulse_length = 48000)
     input wire record_impulse_trigger,
     input wire [15:0] delay_length,
     input wire [15:0] audio_in,
-    input wire redo_impulse,
     output logic impulse_recorded
     );
 
@@ -22,7 +21,7 @@ module record_impulse #(parameter impulse_length = 48000)
                                    .read_addr(),
                                    .read_data());
 
-    logic [15:0] impulse_amp_out;
+    logic signed [15:0] impulse_amp_out;
     logic impulse_completed;
     impulse_generator generate_impulse(.clk_in(audio_clk),
                                         .rst_in(rst_in),
@@ -31,22 +30,24 @@ module record_impulse #(parameter impulse_length = 48000)
                                         .impulse_out(impulse_completed),
                                         .amp_out(impulse_amp_out));
 
-    typedef enum logic [2:0] {WAITING_FOR_IMPULSE = 0, DELAYING = 1, RECORDING = 2, COMPLETE = 3} impulse_record_state;
-    logic [15:0] delayed_so_far;
-    logic [15:0] recorded_so_far;
-    logic [15:0] write_data;
-    logic [15:0] write_addr;
+    typedef enum logic [1:0] {WAITING_FOR_IMPULSE = 0, DELAYING = 1, RECORDING = 2} impulse_record_state;
+    
+    logic [15:0] delayed_so_far, recorded_so_far, write_data, write_addr;
     impulse_record_state state;
+
     always_ff @(posedge audio_clk) begin
         if (rst_in) begin
             delayed_so_far <= 0;
-            recorded_so_far <=0;
-            state <= WAITING_FOR_IMPULSE;
+            recorded_so_far <= 0;
             impulse_recorded <= 0;
             write_addr <= 0;
+            state <= WAITING_FOR_IMPULSE;
         end else begin
             case (state)
                 WAITING_FOR_IMPULSE: begin
+                    write_addr <= 0;
+                    recorded_so_far <=0;
+                    delayed_so_far <= 0;
                     if (impulse_completed) begin
                         state <= DELAYING;
                         delayed_so_far <= 1;
@@ -73,12 +74,6 @@ module record_impulse #(parameter impulse_length = 48000)
                         end
                     end
                 end 
-                COMPLETE: begin
-                    if (redo_impulse) begin
-                        impulse_recorded <= 0;
-                        state <= WAITING_FOR_IMPULSE;
-                    end
-                end
                 default: begin
                     impulse_recorded <= 0;
                     delayed_so_far <= 0;
