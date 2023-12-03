@@ -158,7 +158,7 @@ module top_level(
                                    .write_enable(impulse_write_enable)
                                    );
 
-  convolve_audio #(impulse_length) convolving_audio(
+  convolve_audio #(impulse_length >> 6) convolving_audio(
                                    .audio_clk(audio_clk),
                                    .rst_in(rst_in),
                                    .audio_trigger(audio_trigger),

@@ -20,9 +20,14 @@ module convolve_audio #(parameter impulse_length = 48000) (
                                     .audio_in(convolved_audio_to_memory),
                                     .delayed_audio_out(convolved_audio));
 
+
+    convolve_line line_convolver(.ir_line(ir_line),
+                                .audio_line(audio_line),
+                                .convolved_line(convolved_line));
+
     logic signed [47:0] build_up_sum; 
 
-    typedef enum logic [1:0] {WAITING_FOR_AUDIO = 0, CONVOLVING = 1, TRANSMITTING = 2} convolving_state;
+    typedef enum logic [1:0] {WAITING_FOR_AUDIO = 0, CONVOLVING = 1, TRANSMITTING = 2, BATCH = 3} convolving_state;
     convolving_state state;
     logic [15:0] cycles_completed;
     
@@ -40,6 +45,10 @@ module convolve_audio #(parameter impulse_length = 48000) (
                 end 
 
                 CONVOLVING: begin
+
+                end
+
+                BATCH: begin
 
                 end
 
