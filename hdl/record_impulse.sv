@@ -2,18 +2,26 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module record_impulse(
+module record_impulse #(parameter impulse_length = 48000) 
+    (
     input wire audio_clk,
     input wire rst_in,
     input wire audio_trigger,
     input wire record_impulse_trigger,
-    input wire [15:0] impulse_length,
     input wire [15:0] delay_length,
     input wire [15:0] audio_in,
     input wire redo_impulse,
     output logic impulse_recorded
     );
-    
+
+    memory_manager #(impulse_length) 
+                    impulse_memory(.audio_clk(audio_clk),
+                                   .rst_in(rst_in),
+                                   .write_addr(write_addr),
+                                   .write_data(write_data),
+                                   .read_addr(),
+                                   .read_data());
+
     logic [15:0] impulse_amp_out;
     logic impulse_completed;
     impulse_generator generate_impulse(.clk_in(audio_clk),
