@@ -5,15 +5,15 @@ module memory_manager #(parameter impulse_length = 48000)
                     (input wire audio_clk,
                       input wire rst_in,
                       input wire [15:0] write_addr,
-                      input wire signed [15:0] write_data,
+                      input wire signed [1023:0] write_data,
                       input wire write_enable,
                       input wire [15:0] read_addr,
-                      output logic signed [15:0] read_data                        
+                      output logic signed [1023:0] read_data                        
                       );
 
 
     xilinx_true_dual_port_read_first_2_clock_ram #(
-        .RAM_WIDTH(16),
+        .RAM_WIDTH(1024),
         .RAM_DEPTH(impulse_length)
     ) impulse_memory (
         .addra(write_addr),

@@ -11,7 +11,7 @@ module record_impulse #(parameter impulse_length = 48000)
      input wire signed [15:0] audio_in,
      output logic impulse_recorded,
      output logic [15:0] write_addr,
-     output logic signed [15:0] write_data,
+     output logic [1023:0] write_data,
      output logic write_enable
      );
 
@@ -19,6 +19,8 @@ module record_impulse #(parameter impulse_length = 48000)
     logic signed [15:0] impulse_amp_out;
     logic impulse_completed;
     logic [15:0] delayed_so_far, recorded_so_far;
+    logic [5:0] word;
+    logic [1023:0] build_up_data;
     impulse_record_state state;
 
     impulse_generator generate_impulse(.clk_in(audio_clk),
@@ -36,6 +38,8 @@ module record_impulse #(parameter impulse_length = 48000)
             impulse_recorded <= 0;
             write_addr <= 0;
             write_enable <= 0;
+            word <= 0;
+            build_up_data <= 0;
             state <= WAITING_FOR_IMPULSE;
         end else begin
             case (state)
@@ -44,6 +48,8 @@ module record_impulse #(parameter impulse_length = 48000)
                     recorded_so_far <=0;
                     delayed_so_far <= 0;
                     write_enable <= 0;
+                    word <= 0;
+                    build_up_data <= 0;
                     if (impulse_completed) begin
                         state <= DELAYING;
                         delayed_so_far <= 1;
@@ -65,8 +71,14 @@ module record_impulse #(parameter impulse_length = 48000)
                             impulse_recorded <= 1;
                             state <= WAITING_FOR_IMPULSE;
                         end else begin
-                            write_data <= audio_in;
-                            write_addr <= recorded_so_far;
+                            build_up_data <= {build_up_data, audio_in};
+                            word <= word + 1;
+                            if (word == 6'b111111) begin
+                                write_data <= build_up_data;
+                                write_addr <= (recorded_so_far >> 6);
+                                build_up_data <= 0;
+                            end
+                            word <= word + 1;
                             recorded_so_far <= recorded_so_far + 1;
                         end
                     end
@@ -77,6 +89,8 @@ module record_impulse #(parameter impulse_length = 48000)
                     recorded_so_far <= 0;
                     write_addr <= 0;
                     write_enable <= 0;
+                    word <= 0;
+                    build_up_data <= 0;
                     state <= WAITING_FOR_IMPULSE;
                 end 
             endcase 

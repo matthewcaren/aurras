@@ -132,11 +132,11 @@ module top_level(
   localparam impulse_length = 16'd48000;
   logic impulse_recorded;
   logic [15:0] impulse_write_addr, read_addr;
-  logic signed [15:0] impulse_write_data, read_data;
+  logic signed [1023:0] impulse_write_data, read_data;
   logic signed [15:0] final_convolved_audio;
   logic impulse_write_enable;
 
-  memory_manager #(impulse_length) impulse_memory(
+  memory_manager #(impulse_length >> 6) impulse_memory(
                                    .audio_clk(audio_clk),
                                    .rst_in(rst_in),
                                    .write_addr(impulse_write_addr),
