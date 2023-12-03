@@ -9,8 +9,8 @@ module record_impulse(
     input wire record_impulse_trigger,
     input wire [15:0] impulse_length,
     input wire [15:0] delay_length,
-    input wire [15:0] audio_in;
-    input wire redo_impulse; 
+    input wire [15:0] audio_in,
+    input wire redo_impulse,
     output logic impulse_recorded
     );
     
@@ -27,6 +27,7 @@ module record_impulse(
     logic [15:0] delayed_so_far;
     logic [15:0] recorded_so_far;
     logic [15:0] write_data;
+    logic [15:0] write_addr;
     impulse_record_state state;
     always_ff @(posedge audio_clk) begin
         if (rst_in) begin
@@ -78,28 +79,6 @@ module record_impulse(
 
     end
 
-    xilinx_true_dual_port_read_first_2_clock_ram #(
-        .RAM_WIDTH(16),
-        .RAM_DEPTH(impulse_length)
-    ) 
-    impulse_memory (
-        .addra(write_addr),
-        .clka(clk_in),
-        .wea(1'b1),
-        .dina(write_data),
-        .ena(1'b1),
-        .regcea(1'b1),
-        .rsta(rst_in),
-        .douta(),
-        .addrb(),
-        .dinb(),
-        .clkb(clk_in),
-        .web(1'b0),
-        .enb(1'b1),
-        .rstb(rst_in),
-        .regceb(1'b1),
-        .doutb()
-    );
 endmodule
 
 `timescale 1ns / 1ps
