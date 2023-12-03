@@ -82,7 +82,7 @@ module record_impulse(
         .RAM_WIDTH(16),
         .RAM_DEPTH(impulse_length)
     ) 
-    audio_buffer (
+    impulse_memory (
         .addra(write_addr),
         .clka(clk_in),
         .wea(1'b1),
