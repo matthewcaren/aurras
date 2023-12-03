@@ -153,7 +153,7 @@ module top_level(
                                    .delay_length(DELAY_AMOUNT),
                                    .audio_in(final_audio_in_1),
                                    .impulse_recorded(impulse_recorded),
-                                   .write_addr(impulse_write_addr),
+                                   .write_line_addr(impulse_write_addr),
                                    .write_data(impulse_write_data),
                                    .write_enable(impulse_write_enable)
                                    );

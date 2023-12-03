@@ -10,7 +10,7 @@ module record_impulse #(parameter impulse_length = 48000)
      input wire [15:0] delay_length,
      input wire signed [15:0] audio_in,
      output logic impulse_recorded,
-     output logic [15:0] write_addr,
+     output logic [15:0] write_line_addr,
      output logic [1023:0] write_data,
      output logic write_enable
      );
@@ -36,7 +36,7 @@ module record_impulse #(parameter impulse_length = 48000)
             delayed_so_far <= 0;
             recorded_so_far <= 0;
             impulse_recorded <= 0;
-            write_addr <= 0;
+            write_line_addr <= 0;
             write_enable <= 0;
             word <= 0;
             build_up_data <= 0;
@@ -44,7 +44,7 @@ module record_impulse #(parameter impulse_length = 48000)
         end else begin
             case (state)
                 WAITING_FOR_IMPULSE: begin
-                    write_addr <= 0;
+                    write_line_addr <= 0;
                     recorded_so_far <=0;
                     delayed_so_far <= 0;
                     write_enable <= 0;
@@ -73,9 +73,9 @@ module record_impulse #(parameter impulse_length = 48000)
                         end else begin
                             build_up_data <= {build_up_data, audio_in};
                             word <= word + 1;
-                            if (word == 6'b111111) begin
+                            if (word == 6'd63) begin
                                 write_data <= build_up_data;
-                                write_addr <= (recorded_so_far >> 6);
+                                write_line_addr <= (recorded_so_far >> 6);
                                 build_up_data <= 0;
                             end
                             word <= word + 1;
@@ -87,7 +87,7 @@ module record_impulse #(parameter impulse_length = 48000)
                     impulse_recorded <= 0;
                     delayed_so_far <= 0;
                     recorded_so_far <= 0;
-                    write_addr <= 0;
+                    write_line_addr <= 0;
                     write_enable <= 0;
                     word <= 0;
                     build_up_data <= 0;
