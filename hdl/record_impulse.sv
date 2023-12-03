@@ -43,7 +43,7 @@ module record_impulse(
                 end 
                 DELAYING: begin
                     if (audio_trigger) begin
-                        if (delayed_so_far == (delay_counter - 1)) begin
+                        if (delayed_so_far == (delay_length - 1)) begin
                             state <= RECORDING;
                         end else begin
                             delayed_so_far <= delayed_so_far + 1;
