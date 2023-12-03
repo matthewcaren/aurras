@@ -8,7 +8,7 @@ module record_impulse(
     input wire audio_trigger,
     input wire record_impulse_trigger,
     input wire [15:0] impulse_length,
-    input wire [7:0] delay_length,
+    input wire [15:0] delay_length,
     input wire [15:0] audio_in;
     input wire redo_impulse; 
     output logic impulse_recorded
@@ -24,7 +24,7 @@ module record_impulse(
                                         .amp_out(impulse_amp_out));
 
     typedef enum logic [2:0] {WAITING_FOR_IMPULSE = 0, DELAYING = 1, RECORDING = 2, COMPLETE = 3} impulse_record_state;
-    logic [7:0] delayed_so_far;
+    logic [15:0] delayed_so_far;
     logic [15:0] recorded_so_far;
     logic [15:0] write_data;
     impulse_record_state state;
