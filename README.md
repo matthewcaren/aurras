@@ -17,8 +17,8 @@ Active environmental noise cancellation using an FPGA.
 
 ### memory
 
-- 2s impulse response = 96 kB → ~192 kB required working memory for IR + convolution buffer
-- delay buffer @ 0.5 meters ≈ 560 bits
+- audio buffers are all 1 second, stored in memory as 750 lines of 64 words with 16 bits per word
+- 1s convolution requires ~96k bits required working memory for IR + equal-sized convolution buffer
 
 ### peripherals
 
@@ -39,4 +39,4 @@ sw4: downsampled input from mic\
 sw5: SOS output enable\
 sw6: delayed based on {sw 15-10, 00} (8 bit delay)\
 sw7: one second delayed audio\
-sw15-10: delay amount
+sw10-15: delay amount
