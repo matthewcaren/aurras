@@ -10,7 +10,7 @@ module convolve_line(input wire [1023:0] ir_line,
 
     genvar i;
     generate
-    for (i = 0; i < 63; i=i+1) begin
+    for (i = 0; i < 64; i=i+1) begin
         always_comb begin
             intermediate_products[i] = ir_line[((i << 4) + 15) : (i << 4)] * audio_line[(((63-i) << 4) + 15) : ((63-i) << 4)];
         end
@@ -19,7 +19,7 @@ module convolve_line(input wire [1023:0] ir_line,
 
     genvar j;
     generate
-    for (j = 0; j < 63; j=j+1) begin
+    for (j = 0; j < 64; j=j+1) begin
         always_comb begin
             build_up_sum = build_up_sum + intermediate_products[j];
         end

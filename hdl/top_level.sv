@@ -136,7 +136,7 @@ module top_level(
   logic signed [15:0] final_convolved_audio;
   logic impulse_write_enable;
 
-  memory_manager #(impulse_length >> 6) impulse_memory(
+  ir_memory_manager #(impulse_length >> 6) impulse_memory(
                                    .audio_clk(audio_clk),
                                    .rst_in(rst_in),
                                    .write_addr(impulse_write_addr),
@@ -166,8 +166,8 @@ module top_level(
                                    .delay_length(DELAY_AMOUNT),
                                    .impulse_in_memory_complete(impulse_recorded),
                                    .convolved_audio(final_convolved_audio),
-                                   .read_addr(read_addr),
-                                   .read_data(read_data)
+                                   .ir_read_addr(read_addr),
+                                   .ir_read_data(read_data)
                                   );
 
 

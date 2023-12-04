@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module memory_manager #(parameter impulse_length = 750)
+module ir_memory_manager #(parameter impulse_length = 750)
                     (input wire audio_clk,
                       input wire rst_in,
                       input wire [15:0] write_addr,
