@@ -47,7 +47,7 @@ module top_level(
   logic i2s_clk_1, i2s_clk_2, i2s_clk_3;
   logic lrcl_clk_1, lrcl_clk_2, lrcl_clk_3;
 
-  logic [15:0] raw_audio_in_1, raw_audio_in_2, raw_audio_in_3;
+  logic signed [15:0] raw_audio_in_1, raw_audio_in_2, raw_audio_in_3;
   logic mic_data_vaild_1, mic_data_valid_2, mic_data_valid_3;
 
   i2s mic_1(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_1_data), .i2s_clk(i2s_clk_1), .lrcl_clk(lrcl_clk_1), .data_valid_out(mic_data_vaild_1), .audio_out(raw_audio_in_1));
@@ -74,34 +74,40 @@ module top_level(
       end
   end
 
-  logic [15:0] dc_blocked_audio_in_1;
+   logic signed [15:0] dc_blocked_audio_in_1;
    dc_blocker dc_block(.clk_in(audio_clk),
                       .rst_in(sys_rst),
                       .audio_trigger(audio_trigger),
-                      .signal_in(raw_audio_in_1),
+                      .signal_in(prefiltered_audio_in_1),
                       .signal_out(dc_blocked_audio_in_1));
 
 
   
   // #### INPUT ANTI-ALIASING
-  logic [15:0] filter_output_1, filter_output_2, filter_output_3;
+  logic signed [15:0] anti_alias_audio_in_1, anti_alias_audio_in_2, anti_alias_audio_in_3;
   logic [15:0] final_audio_in_1;
   logic filter_valid_1, filter_valid_2, filter_valid_3;
   input_anti_alias_fir anti_alias_filter(.aclk(audio_clk),
-                                  .s_axis_data_tvalid(mic_data_vaild_1),
+                                  .s_axis_data_tvalid(audio_trigger),
                                   .s_axis_data_tready(1'b1),
                                   .s_axis_data_tdata(dc_blocked_audio_in_1),
                                   .m_axis_data_tvalid(filter_valid_1),
-                                  .m_axis_data_tdata(filter_output_1));
+                                  .m_axis_data_tdata(anti_alias_audio_in_1));
 
-  logic every_other;
+  logic [15:0] fffff;
+  always_ff @(posedge audio_clk) begin
+    if (filter_valid_1) begin
+      fffff <= dc_blocked_audio_in_1;
+    end
+  end 
+  logic every_other; 
   always_ff @(posedge audio_clk) begin
     if (rst_in) begin
       every_other <= 0;
     end
     if (filter_valid_1) begin
       if (every_other == 0) begin
-        final_audio_in_1 <= filter_output_1;
+        final_audio_in_1 <= anti_alias_audio_in_1;
       end 
       every_other <= ~(every_other);
     end
@@ -228,7 +234,7 @@ module top_level(
   assign pdm_in = sw[2] ? {tone_440[7], tone_440[7], tone_440[7], tone_440[7], 
                          tone_440[7], tone_440[7], tone_440[7], tone_440[7], tone_440[7:0]} <<< 8 : 
                     (sw[3] ? prefiltered_audio_in_1 : 
-                    (sw[4] ? final_audio_in_1 : 
+                    (sw[4] ? fffff : 
                   //  (sw[5] ? sos_audio_out : 
                     (sw[6] ? delayed_audio_out : 
                     (sw[7] ? one_second_delay: 0))));
