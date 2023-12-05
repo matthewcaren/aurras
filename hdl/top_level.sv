@@ -182,7 +182,7 @@ module top_level(
                                    .ir_vals(ir_vals)
                                   );
 
-  logic [47:0] displayed_conv_result;
+  logic signed [47:0] displayed_conv_result;
   always_ff @(posedge audio_clk) begin
     if (produced_convolutional_result) begin
       displayed_conv_result <= convolution_result;
