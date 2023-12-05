@@ -2,7 +2,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module record_impulse #(parameter impulse_length = 750) 
+module record_impulse #(parameter IMPULSE_LENGTH = 24000) 
     (input wire audio_clk,
      input wire rst_in,
      input wire audio_trigger,
@@ -10,8 +10,9 @@ module record_impulse #(parameter impulse_length = 750)
      input wire [15:0] delay_length,
      input wire signed [15:0] audio_in,
      output logic impulse_recorded,
-     output logic [15:0] write_line_addr,
-     output logic [1023:0] write_data,
+
+     output logic [15:0] ir_sample_index,
+     output logic signed [15:0] write_data,
      output logic write_enable
      );
 
@@ -36,20 +37,17 @@ module record_impulse #(parameter impulse_length = 750)
             delayed_so_far <= 0;
             recorded_so_far <= 0;
             impulse_recorded <= 0;
-            write_line_addr <= 0;
+            ir_sample_index <= 0;
             write_enable <= 0;
-            word <= 0;
-            build_up_data <= 0;
             state <= WAITING_FOR_IMPULSE;
         end else begin
             case (state)
                 WAITING_FOR_IMPULSE: begin
-                    write_line_addr <= 0;
+                    ir_sample_index <= 0;
                     recorded_so_far <=0;
                     delayed_so_far <= 0;
                     write_enable <= 0;
-                    word <= 0;
-                    build_up_data <= 0;
+                    impulse_recorded <= 0;
                     if (impulse_completed) begin
                         state <= DELAYING;
                         delayed_so_far <= 1;
@@ -67,18 +65,13 @@ module record_impulse #(parameter impulse_length = 750)
                 end
                 RECORDING: begin
                     if (audio_trigger) begin
-                        if (recorded_so_far == impulse_length) begin
+                        if (recorded_so_far == IMPULSE_LENGTH) begin
                             impulse_recorded <= 1;
+                            write_enable <= 0;
                             state <= WAITING_FOR_IMPULSE;
                         end else begin
-                            build_up_data <= {build_up_data, audio_in};
-                            word <= word + 1;
-                            if (word == 6'd63) begin
-                                write_data <= build_up_data;
-                                write_line_addr <= (recorded_so_far >> 6);
-                                build_up_data <= 0;
-                            end
-                            word <= word + 1;
+                            ir_sample_index <= recorded_so_far;
+                            write_data <= audio_in;
                             recorded_so_far <= recorded_so_far + 1;
                         end
                     end
@@ -87,10 +80,8 @@ module record_impulse #(parameter impulse_length = 750)
                     impulse_recorded <= 0;
                     delayed_so_far <= 0;
                     recorded_so_far <= 0;
-                    write_line_addr <= 0;
+                    ir_sample_index <= 0;
                     write_enable <= 0;
-                    word <= 0;
-                    build_up_data <= 0;
                     state <= WAITING_FOR_IMPULSE;
                 end 
             endcase 
