@@ -136,15 +136,22 @@ module top_level(
   logic signed [15:0] final_convolved_audio;
   logic impulse_write_enable;
 
+
+  logic convolving;
+  logic [15:0] first_ir_index, second_ir_index;
+  logic signed [7:0][15:0] ir_vals;
+
   ir_memory_manager #(16'd3000) impulse_memory(
                                    .audio_clk(audio_clk),
                                    .rst_in(rst_in),
                                    .write_addr(impulse_write_addr),
                                    .write_data(impulse_write_data),
                                    .write_enable(impulse_write_enable),
-
-                                   .read_addr(read_addr),
-                                   .read_data(read_data));
+                                   .first_ir_index(first_ir_index),
+                                   .second_ir_index(second_ir_index),
+                                   .convolving(convolving),
+                                   .ir_vals(ir_vals)
+                                   );
 
   record_impulse #(impulse_length) impulse_recording(
                                    .audio_clk(audio_clk),
@@ -167,8 +174,10 @@ module top_level(
                                    .delay_length(DELAY_AMOUNT),
                                    .impulse_in_memory_complete(impulse_recorded),
                                    .convolved_audio(final_convolved_audio),
-                                   .ir_read_addr(read_addr),
-                                   .ir_read_data(read_data)
+                                   .first_ir_index(first_ir_index),
+                                   .second_ir_index(second_ir_index),
+                                   .convolving(convolving),
+                                   .ir_vals(ir_vals)
                                   );
 
 

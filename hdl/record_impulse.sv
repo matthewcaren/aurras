@@ -14,7 +14,7 @@ module record_impulse #(parameter IMPULSE_LENGTH = 24000)
      output logic [15:0] ir_sample_index,
      output logic signed [15:0] write_data,
      output logic write_enable
-     );
+    );
 
     typedef enum logic [1:0] {WAITING_FOR_IMPULSE = 0, DELAYING = 1, RECORDING = 2} impulse_record_state;
     logic signed [15:0] impulse_amp_out;

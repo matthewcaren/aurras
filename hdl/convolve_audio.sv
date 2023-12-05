@@ -1,125 +1,266 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module convolve_audio #(parameter impulse_length = 48000) (
+module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
                       input wire audio_clk,
                       input wire rst_in,
                       input wire audio_trigger,
                       input wire signed [15:0] audio_in,
                       input wire [15:0] delay_length,
                       input wire impulse_in_memory_complete,
-                      output logic signed [15:0] convolved_audio,
-                      output logic [15:0] ir_live_read_addr,
-                      input wire signed [1023:0] ir_live_read_data);
-
-    // delayed_sound_out delayed_audio(.clk_in(audio_clk),
-    //                                 .rst_in(rst_in), 
-    //                                 .audio_valid_in(audio_trigger), 
-    //                                 .enable_delay(impulse_in_memory_complete), 
-    //                                 .delay_cycle(delay_length - 1),
-    //                                 .audio_in(convolved_audio_to_memory),
-    //                                 .delayed_audio_out(convolved_audio));
+                      output logic signed [47:0] convolution_result,
+                      output logic produced_convolutional_result,
+                      
+                      output logic [15:0] first_ir_index,
+                      output logic [15:0] second_ir_index,
+                      output logic convolving,
+                      input wire signed [7:0][15:0] ir_vals);
 
 
-    // convolve_line line_convolver(.ir_line(ir_line),
-    //                              .audio_line(audio_line),
-    //                              .convolved_line(convolved_line));
+    localparam MEMORY_DEPTH = IMPULSE_LENGTH >> 3;
 
-    logic signed [47:0] convolution_result;
-    logic [15:0] live_read_addr, live_write_addr;
-    logic [1023:0] live_read_data, live_write_data;
-    logic live_write_enable;
-
-    typedef enum logic [2:0] {WAITING_FOR_AUDIO = 0, CONVOLVING = 1, TRANSMITTING = 2, CONV_BATCH = 3, READING_AUDIO_BUFFER = 4, WRITING_AUDIO_BUFFER = 5} convolving_state;
+    logic [15:0] live_read_addr;
+    typedef enum logic [2:0] {WAITING_FOR_AUDIO = 0, CONVOLVING = 1, ADDING_FINAL_VALUES = 2, READING_AUDIO_BUFFER = 4, WRITING_AUDIO_BUFFER = 5} convolving_state;
     convolving_state state;
+
     logic [15:0] cycles_completed;
 
-    logic [15:0] audio_buffer_index;
     logic [4:0] fsm_transition_delay_counter;
+
+    // Goes from 0 to 5999
+    logic [11:0] live_audio_start_address;
+    logic [15:0] last_value_brom0, last_value_brom1, last_value_brom2, last_value_brom3;
+    logic [15:0] data_in_brom0, data_in_brom1, data_in_brom2, data_in_brom3;
+    logic live_write_enable;
+
+    logic [7:0][47:0]  intermediate_sums;
+    logic [7:0][15:0] audio_vals;
     
+    logic [3:0] adding_counter;
+    logic [15:0] convolve_counter;
+
+    logic [15:0] first_audio_index, second_audio_index;
+
+    always_comb begin
+        if (convolving) begin
+            audio_vals[0] = last_value_brom0;
+            audio_vals[2] = last_value_brom1;
+            audio_vals[4] = last_value_brom2;
+            audio_vals[6] = last_value_brom3;
+        end 
+    end
+
     always_ff @(posedge audio_clk) begin
         if (rst_in) begin
             convolution_result <= 0;
+            live_audio_start_address <= 0;
+            fsm_transition_delay_counter <= 0;
+            produced_convolutional_result <= 0;
             state <= WAITING_FOR_AUDIO;
+            adding_counter <= 0;
+            convolve_counter <= 0;
+            convolving <= 0;
+            for (integer i = 0; i < 8; i = i + 1) begin
+                intermediate_sums[i] <= 0;
+            end
+
         end else begin
             case (state)
                 WAITING_FOR_AUDIO: begin
+                    for (integer i = 0; i < 8; i = i + 1) begin
+                        intermediate_sums[i] <= 0;
+                    end
                     convolution_result <= 0;
-
+                    fsm_transition_delay_counter <= 0;
+                    adding_counter <= 0;
+                    produced_convolutional_result <= 0;
+                    convolve_counter <= 0;
+                    convolving <= 0;
                     if (audio_trigger) begin
                         state <= READING_AUDIO_BUFFER;
                         fsm_transition_delay_counter <= 0;
                     end 
                 end
 
-                READING_AUDIO_BUFFER: begin
-                    live_read_addr <= (audio_buffer_index >> 6);
-                    
+                READING_AUDIO_BUFFER: begin 
                     if (fsm_transition_delay_counter == 2'd2) begin
                         fsm_transition_delay_counter <= 0;
                         state <= WRITING_AUDIO_BUFFER;
+                        live_write_enable <= 1;
                     end else begin
                         fsm_transition_delay_counter <= fsm_transition_delay_counter + 1;
                     end
                 end
 
                 WRITING_AUDIO_BUFFER: begin
-                    live_write_enable <= 1;
-                    // live_write_data[((audio_buffer_index[5:0]) << 4) + 15 : ((audio_buffer_index[5:0]) << 4)] <= audio_in
-                    live_write_data <= (audio_buffer_index[5:0] == 0) ?
-                        ({audio_in, live_read_data[(((audio_buffer_index[5:0]) << 4) - 1) : 0]}) :
-                        ((audio_buffer_index[5:0] == 63) ?
-                        ({live_read_data[1023 : (((audio_buffer_index[5:0]) << 4) + 16)], audio_in}) :
-                        ({live_read_data[1023 : (((audio_buffer_index[5:0]) << 4) + 16)], audio_in, live_read_data[(((audio_buffer_index[5:0]) << 4) - 1) : 0]}));
-                    
-
+                    data_in_brom0 <= audio_in;
+                    data_in_brom1 <= last_value_brom0;
+                    data_in_brom2 <= last_value_brom1;
+                    data_in_brom3 <= last_value_brom2;
                     if (fsm_transition_delay_counter == 2'd1) begin
                         fsm_transition_delay_counter <= 0;
                         live_write_enable <= 0;
-                        state <= CONV_BATCH;
+                        state <= CONVOLVING;
+                        convolving <= 1;
                     end else begin
                         fsm_transition_delay_counter <= fsm_transition_delay_counter + 1;
                     end
                 end
 
+                CONVOLVING: begin
+                    // iterate i from 0 to 3002
+                    // if i < 3000: read ith "value" (really i, i + 1 from 4 broms)
+                    // if i > 2: convolve "ith-3" value
 
-                CONV_BATCH: begin
-                    
-                    audio_buffer_index <= audio_buffer_index + 1;
-                    convolution_result
-                    for (i )
+                    if (convolve_counter < 16'd3000) begin
+                        first_ir_index <= (convolve_counter << 1);
+                        second_ir_index <= (convolve_counter << 1) + 1; 
+                        
+                        first_audio_index <= (((convolve_counter << 1) + live_audio_start_address) >= 16'd6000) ? 
+                                             (((convolve_counter << 1) + live_audio_start_address) - 16'd6000) : 
+                                             ((convolve_counter << 1) + live_audio_start_address);
+
+                        second_audio_index <= (((convolve_counter << 1) + live_audio_start_address + 1) >= 16'd6000) ?
+                                              (((convolve_counter << 1) + live_audio_start_address + 1) - 16'd6000) :
+                                              ((convolve_counter << 1) + live_audio_start_address + 1);
+                    end
+
+                        
+
+                    // Loop over 3000 
+
+                    if (convolve_counter > 2) begin
+                        intermediate_sums[0] <= intermediate_sums[0] + ir_vals[0] * audio_vals[0];
+                        intermediate_sums[1] <= intermediate_sums[1] + ir_vals[1] * audio_vals[1];
+                        intermediate_sums[2] <= intermediate_sums[2] + ir_vals[2] * audio_vals[2];
+                        intermediate_sums[3] <= intermediate_sums[3] + ir_vals[3] * audio_vals[3];
+                        intermediate_sums[4] <= intermediate_sums[4] + ir_vals[4] * audio_vals[4];
+                        intermediate_sums[5] <= intermediate_sums[5] + ir_vals[5] * audio_vals[5];
+                        intermediate_sums[6] <= intermediate_sums[6] + ir_vals[6] * audio_vals[6];
+                        intermediate_sums[7] <= intermediate_sums[7] + ir_vals[7] * audio_vals[7];
+                    end 
+
+                    if (convolve_counter == 16'd3003) begin
+                        convolving <= 0;
+                        state <= ADDING_FINAL_VALUES;
+                    end
+                    convolve_counter <= convolve_counter + 1;
+                end
+
+                ADDING_FINAL_VALUES : begin
+                    if (adding_counter == 4'd8) begin
+                        live_audio_start_address <= (live_audio_start_address == 16'd5999) ? 0 : (live_audio_start_address + 1);
+                        state <= WAITING_FOR_AUDIO;
+                        produced_convolutional_result <= 1;
+                    end else begin
+                        convolution_result <= convolution_result + intermediate_sums[adding_counter];
+                    end
+                    adding_counter <= adding_counter + 1;
                 end
 
                 default: begin
                     state <= WAITING_FOR_AUDIO;
                     convolution_result <= 0;
+                    fsm_transition_delay_counter <= 0;
+                    live_audio_start_address <= 0;
+                    adding_counter <= 0;
+                    produced_convolutional_result <= 0;
+                    convolve_counter <= 0;
+                    convolving <= 0;
+                    for (integer i = 0; i < 8; i = i + 1) begin
+                        intermediate_sums[i] <= 0;
+                    end
                 end
             endcase 
         end
     end 
 
-
-
     xilinx_true_dual_port_read_first_2_clock_ram #(
-        .RAM_WIDTH(1024),
-        .RAM_DEPTH(impulse_length)
-    ) impulse_memory (
-        .addra(live_write_addr),
+        .RAM_WIDTH(16),
+        .RAM_DEPTH(MEMORY_DEPTH)
+    ) audio_buffer_bram_0 (
+        .addra(convolving ? first_audio_index : live_audio_start_address),
         .clka(audio_clk),
         .wea(live_write_enable),
-        .dina(live_write_data),
+        .dina(data_in_brom0),
         .ena(1'b1),
         .regcea(1'b1),
         .rsta(rst_in),
-        .douta(),
-        .addrb(live_read_addr),
+        .douta(last_value_brom0),
+        .addrb(second_audio_index),
         .dinb(),
         .clkb(audio_clk),
         .web(1'b0),
         .enb(1'b1),
         .rstb(rst_in),
         .regceb(1'b1),
-        .doutb(live_read_data)
+        .doutb(audio_vals[1])
+    );
+
+    xilinx_true_dual_port_read_first_2_clock_ram #(
+        .RAM_WIDTH(16),
+        .RAM_DEPTH(MEMORY_DEPTH)
+    ) audio_buffer_bram_1 (
+        .addra(convolving ? first_audio_index : live_audio_start_address),
+        .clka(audio_clk),
+        .wea(live_write_enable),
+        .dina(data_in_brom1),
+        .ena(1'b1),
+        .regcea(1'b1),
+        .rsta(rst_in),
+        .douta(last_value_brom1),
+        .addrb(second_audio_index),
+        .dinb(),
+        .clkb(audio_clk),
+        .web(1'b0),
+        .enb(1'b1),
+        .rstb(rst_in),
+        .regceb(1'b1),
+        .doutb(audio_vals[3])
+    );
+
+    xilinx_true_dual_port_read_first_2_clock_ram #(
+        .RAM_WIDTH(16),
+        .RAM_DEPTH(MEMORY_DEPTH)
+    ) audio_buffer_bram_2 (
+        .addra(convolving ? first_audio_index : live_audio_start_address),
+        .clka(audio_clk),
+        .wea(live_write_enable),
+        .dina(data_in_brom2),
+        .ena(1'b1),
+        .regcea(1'b1),
+        .rsta(rst_in),
+        .douta(last_value_brom2),
+        .addrb(second_audio_index),
+        .dinb(),
+        .clkb(audio_clk),
+        .web(1'b0),
+        .enb(1'b1),
+        .rstb(rst_in),
+        .regceb(1'b1),
+        .doutb(audio_vals[5])
+    );
+
+    xilinx_true_dual_port_read_first_2_clock_ram #(
+        .RAM_WIDTH(16),
+        .RAM_DEPTH(MEMORY_DEPTH)
+    ) audio_buffer_bram_3 (
+        .addra(convolving ? first_audio_index : live_audio_start_address),
+        .clka(audio_clk),
+        .wea(live_write_enable),
+        .dina(data_in_brom3),
+        .ena(1'b1),
+        .regcea(1'b1),
+        .rsta(rst_in),
+        .douta(last_value_brom3),
+        .addrb(second_audio_index),
+        .dinb(),
+        .clkb(audio_clk),
+        .web(1'b0),
+        .enb(1'b1),
+        .rstb(rst_in),
+        .regceb(1'b1),
+        .doutb(audio_vals[7])
     );
     
 endmodule
