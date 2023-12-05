@@ -1,17 +1,15 @@
 import os
 import subprocess
 
-xvlog = "/opt/Xilinx/Vivado/2023.1/bin/xvlog"
-xelab = "/opt/Xilinx/Vivado/2023.1/bin/xelab"
-xsim = "/opt/Xilinx/Vivado/2023.1/bin/xsim"
+vivado = "/opt/Xilinx/Vivado/2023.1/bin/vivado"
 
 class VivadoBuildError(Exception): pass
 
-if not os.access("xsim_run.tcl", os.R_OK):
+if not os.access("build.tcl", os.R_OK):
 	raise VivadoBuildError("you should pass a build script for us to run!")
 
 print("starting vivado, please wait...")
-proc = subprocess.Popen(f"{xvlog} --sv ./hdl/*",
+proc = subprocess.Popen(f"{vivado} -mode batch -source build.tcl",
 	shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
 while True:
@@ -22,64 +20,29 @@ while True:
 proc.wait()
 
 if proc.returncode != 0:
-  #save("vivado.log")
+  save("vivado.log")
   raise VivadoBuildError(f"vivado exited with code {proc.returncode}")
 else:
-  pass
-  #save("vivado.log")
-
-proc = subprocess.Popen(f"{xelab} -svlog ./sim/recorder_tb.sv --debug wave",
-	shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-
-while True:
-	line = proc.stdout.readline()
-	if not line: break
-	else: print(str(line.rstrip(), encoding='ascii'))
-
-proc.wait()
-
-if proc.returncode != 0:
-  #save("vivado.log")
-  raise VivadoBuildError(f"vivado exited with code {proc.returncode}")
-else:
-  pass
-  #save("vivado.log")
-
-
-proc = subprocess.Popen(f"{xsim} recorder_tb -t xsim_run.tcl",
-	shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-
-while True:
-	line = proc.stdout.readline()
-	if not line: break
-	else: print(str(line.rstrip(), encoding='ascii'))
-
-proc.wait()
-
-if proc.returncode != 0:
-  #save("vivado.log")
-  raise VivadoBuildError(f"vivado exited with code {proc.returncode}")
-else:
-  pass
-  #save("vivado.log")
-
-proc = subprocess.Popen(f"tar -czvf dump.tar.gz dump.vcd",
-	shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-
-while True:
-	line = proc.stdout.readline()
-	if not line: break
-	else: print(str(line.rstrip(), encoding='ascii'))
-
-proc.wait()
+  save("vivado.log")
 
 #files to look for:
-files = [ "dump.tar.gz","dump.vcd"
+files = [ "final.bit",
+          "post_synth_timing_summary.rpt",
+          "post_synth_util.rpt",
+          "post_synth_timing.rpt",
+          "clock_util.rpt",
+          "post_place_util.rpt",
+          "post_place_timing_summary.rpt",
+          "post_place_timing.rpt",
+          "post_route_status.rpt",
+          "post_route_timing_summary.rpt",
+          "post_route_timing.rpt",
+          "post_route_power.rpt",
+          "post_imp_drc.rpt",
 ]
 
 for file in files:
   # look for out.bit, because we've hard coded that for now i guess
-  if not os.access(f"{file}", os.R_OK):
-	  raise VivadoBuildError(f"vivado suite exited successfully, but no {file} generated")
-  save(f"{file}")
-
+  if not os.access(f"obj/{file}", os.R_OK):
+	  raise VivadoBuildError(f"vivado exited successfully, but no {file} generated")
+  save(f"obj/{file}")

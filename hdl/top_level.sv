@@ -185,7 +185,7 @@ module top_level(
   logic signed [47:0] displayed_conv_result;
   always_ff @(posedge audio_clk) begin
     if (produced_convolutional_result) begin
-      displayed_conv_result <= convolution_result;
+      displayed_conv_result <= final_convolved_audio;
     end
 
   end
