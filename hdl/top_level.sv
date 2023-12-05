@@ -133,7 +133,8 @@ module top_level(
   logic impulse_recorded;
   logic [15:0] impulse_write_addr, read_addr;
   logic signed [15:0] impulse_write_data, read_data;
-  logic signed [15:0] final_convolved_audio;
+  logic signed [47:0] final_convolved_audio;
+  logic produced_convolutional_result; 
   logic impulse_write_enable;
 
 
@@ -166,7 +167,7 @@ module top_level(
                                    .write_enable(impulse_write_enable)
                                    );
 
-  convolve_audio #(impulse_length >> 6) convolving_audio(
+  convolve_audio #(impulse_length) convolving_audio(
                                    .audio_clk(audio_clk),
                                    .rst_in(rst_in),
                                    .audio_trigger(audio_trigger),
@@ -174,20 +175,27 @@ module top_level(
                                    .delay_length(DELAY_AMOUNT),
                                    .impulse_in_memory_complete(impulse_recorded),
                                    .convolved_audio(final_convolved_audio),
+                                   .produced_convolutional_result(produced_convolutional_result),
                                    .first_ir_index(first_ir_index),
                                    .second_ir_index(second_ir_index),
                                    .convolving(convolving),
                                    .ir_vals(ir_vals)
                                   );
 
+  logic [47:0] displayed_conv_result;
+  always_ff @(posedge audio_clk) begin
+    if (produced_convolutional_result) begin
+      displayed_conv_result <= convolution_result;
+    end
 
+  end
   /// ### SEVEN SEGMENT DISPLAY
   logic [6:0] ss_c;
   assign ss0_c = ss_c; 
   assign ss1_c = ss_c;
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in({DELAY_AMOUNT, 8'h00, displayed_audio}),
+                              .val_in(sw[9] ? displayed_conv_result[31:0] : {DELAY_AMOUNT, 8'h00, displayed_audio}),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
 

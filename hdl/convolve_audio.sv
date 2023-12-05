@@ -6,6 +6,7 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
                       input wire rst_in,
                       input wire audio_trigger,
                       input wire signed [15:0] audio_in,
+            
                       input wire [15:0] delay_length,
                       input wire impulse_in_memory_complete,
                       output logic signed [47:0] convolution_result,
