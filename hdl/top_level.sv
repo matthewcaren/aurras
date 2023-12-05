@@ -96,6 +96,9 @@ module top_level(
 
   logic every_other;
   always_ff @(posedge audio_clk) begin
+    if (rst_in) begin
+      every_other <= 0;
+    end
     if (filter_valid_1) begin
       if (every_other == 0) begin
         final_audio_in_1 <= filter_output_1;
