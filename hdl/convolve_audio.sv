@@ -20,7 +20,7 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
     localparam MEMORY_DEPTH = IMPULSE_LENGTH >> 3;
 
     logic [15:0] live_read_addr;
-    typedef enum logic [2:0] {WAITING_FOR_AUDIO = 0, CONVOLVING = 1, ADDING_FINAL_VALUES = 2, READING_AUDIO_BUFFER = 4, WRITING_AUDIO_BUFFER = 5} convolving_state;
+    typedef enum logic [2:0] {WAITING_FOR_AUDIO = 0, CONVOLVING = 1, ADDING_FINAL_VALUES = 2, WAITING_FOR_IMPULSE = 3,READING_AUDIO_BUFFER = 4, WRITING_AUDIO_BUFFER = 5} convolving_state;
     convolving_state state;
 
     logic [15:0] cycles_completed;
@@ -33,7 +33,7 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
     logic [15:0] data_in_brom0, data_in_brom1, data_in_brom2, data_in_brom3;
     logic live_write_enable;
 
-    logic [7:0][47:0]  intermediate_sums;
+    logic [7:0][47:0] intermediate_sums;
     logic [7:0][15:0] audio_vals;
     
     logic [3:0] adding_counter;
@@ -56,7 +56,7 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
             live_audio_start_address <= 0;
             fsm_transition_delay_counter <= 0;
             produced_convolutional_result <= 0;
-            state <= WAITING_FOR_AUDIO;
+            state <= WAITING_FOR_IMPULSE;
             adding_counter <= 0;
             convolve_counter <= 0;
             convolving <= 0;
@@ -66,6 +66,12 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
 
         end else begin
             case (state)
+
+                WAITING_FOR_IMPULSE: begin
+                    if (impulse_in_memory_complete) begin
+                        state <= WAITING_FOR_AUDIO;
+                    end
+                end
                 WAITING_FOR_AUDIO: begin
                     for (integer i = 0; i < 8; i = i + 1) begin
                         intermediate_sums[i] <= 0;
@@ -159,7 +165,7 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
                 end
 
                 default: begin
-                    state <= WAITING_FOR_AUDIO;
+                    state <= WAITING_FOR_IMPULSE;
                     convolution_result <= 0;
                     fsm_transition_delay_counter <= 0;
                     live_audio_start_address <= 0;

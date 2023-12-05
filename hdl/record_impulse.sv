@@ -9,8 +9,8 @@ module record_impulse #(parameter IMPULSE_LENGTH = 24000)
      input wire record_impulse_trigger,
      input wire [15:0] delay_length,
      input wire signed [15:0] audio_in,
+     
      output logic impulse_recorded,
-
      output logic [15:0] ir_sample_index,
      output logic signed [15:0] write_data,
      output logic write_enable
@@ -20,8 +20,6 @@ module record_impulse #(parameter IMPULSE_LENGTH = 24000)
     logic signed [15:0] impulse_amp_out;
     logic impulse_completed;
     logic [15:0] delayed_so_far, recorded_so_far;
-    logic [5:0] word;
-    logic [1023:0] build_up_data;
     impulse_record_state state;
 
     impulse_generator generate_impulse(.clk_in(audio_clk),

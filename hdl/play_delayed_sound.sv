@@ -1,17 +1,16 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module delayed_sound_out (
+module delayed_sound_out #(parameter MEMORY_SIZE = 1000) (
     input wire clk_in,
     input wire rst_in,
     input wire enable_delay,
     input wire audio_valid_in,
-    input wire [15:0] delay_cycle,  // This is the delay length
     input wire [15:0] audio_in,
+    input wire [15:0] delay_length,
     output wire [15:0] delayed_audio_out 
 );
 
-    parameter RAM_DEPTH = 16'd12000; 
     logic [15:0] write_data;
     logic [15:0] write_addr = 0;
     logic [15:0] read_addr = 0;
@@ -25,7 +24,7 @@ module delayed_sound_out (
         end else if (audio_valid_in && enable_delay) begin
             write_data <= (~audio_in) + 1;   // negate sound here
             write_enable <= 1;
-            if (write_addr == RAM_DEPTH  - 1) begin
+            if (write_addr == MEMORY_SIZE  - 1) begin
                 write_addr <= 0;
             end else begin
                 write_addr <= write_addr + 1;
@@ -38,10 +37,10 @@ module delayed_sound_out (
     // Reading Logic with Delay
     always @(posedge clk_in) begin
         if (audio_valid_in) begin
-            if (write_addr > delay_cycle) begin
-                read_addr <= write_addr - delay_cycle;
+            if (write_addr > delay_length) begin
+                read_addr <= write_addr - delay_length;
             end else begin
-                read_addr <= RAM_DEPTH - (delay_cycle - write_addr);
+                read_addr <= MEMORY_SIZE - (delay_length - write_addr);
             end
         end
     end
@@ -49,7 +48,7 @@ module delayed_sound_out (
 
     xilinx_true_dual_port_read_first_2_clock_ram #(
         .RAM_WIDTH(16),
-        .RAM_DEPTH(RAM_DEPTH)
+        .RAM_DEPTH(MEMORY_SIZE)
     ) 
     audio_buffer (
         .addra(write_addr),

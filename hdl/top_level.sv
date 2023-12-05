@@ -28,9 +28,9 @@ module top_level(
   logic audio_clk;
   audio_clk_wiz macw (.clk_in(clk_100mhz), .clk_out(audio_clk)); 
 
-  // This triggers at 48kHz for general audio
+  // This triggers at 24kHz for general audio
   logic audio_trigger;
-  logic [10:0] counter;
+  logic [11:0] counter;
   always_ff @(posedge audio_clk) begin
       counter <= counter + 1;
   end
@@ -73,30 +73,36 @@ module top_level(
         prefiltered_audio_in_1 <= raw_audio_in_1;
       end
   end
+
+  logic [15:0] dc_blocked_audio_in_1;
+   dc_blocker dc_block(.clk_in(audio_clk),
+                      .rst_in(sys_rst),
+                      .audio_trigger(audio_trigger),
+                      .signal_in(raw_audio_in_1),
+                      .signal_out(dc_blocked_audio_in_1));
+
+
   
   // #### INPUT ANTI-ALIASING
   logic [15:0] filter_output_1, filter_output_2, filter_output_3;
-  logic [15:0] filtered_audio_in_1, filtered_audio_in_2, filtered_audio_in_3;
   logic [15:0] final_audio_in_1;
   logic filter_valid_1, filter_valid_2, filter_valid_3;
   input_anti_alias_fir anti_alias_filter(.aclk(audio_clk),
                                   .s_axis_data_tvalid(mic_data_vaild_1),
                                   .s_axis_data_tready(1'b1),
-                                  .s_axis_data_tdata(raw_audio_in_1),
+                                  .s_axis_data_tdata(dc_blocked_audio_in_1),
                                   .m_axis_data_tvalid(filter_valid_1),
                                   .m_axis_data_tdata(filter_output_1));
 
+  logic every_other;
   always_ff @(posedge audio_clk) begin
     if (filter_valid_1) begin
-      filtered_audio_in_1 <= filter_output_1;
-    end 
+      if (every_other == 0) begin
+        final_audio_in_1 <= filter_output_1;
+      end 
+      every_other <= ~(every_other);
+    end
   end
-
-  dc_blocker dc_block(.clk_in(audio_clk),
-                      .rst_in(sys_rst),
-                      .audio_trigger(audio_trigger),
-                      .signal_in(filtered_audio_in_1),
-                      .signal_out(final_audio_in_1));
 
   // ##### SPEED OF SOUND #####
 
@@ -219,7 +225,7 @@ module top_level(
   assign pdm_in = sw[2] ? {tone_440[7], tone_440[7], tone_440[7], tone_440[7], 
                          tone_440[7], tone_440[7], tone_440[7], tone_440[7], tone_440[7:0]} <<< 8 : 
                     (sw[3] ? prefiltered_audio_in_1 : 
-                    (sw[4] ? filtered_audio_in_1 : 
+                    (sw[4] ? final_audio_in_1 : 
                   //  (sw[5] ? sos_audio_out : 
                     (sw[6] ? delayed_audio_out : 
                     (sw[7] ? one_second_delay: 0))));
@@ -232,28 +238,28 @@ module top_level(
     .pdm_out(sound_out)
   );
 
+
   //Delayed audio by sw[15:10] w/ two 0s tacked on 
-  delayed_sound_out my_delayed_sound_out (
+  delayed_sound_out #(16'd1000) my_delayed_sound_out (
     .clk_in(audio_clk), //system clock
     .rst_in(sys_rst),//global reset
     .enable_delay(1'b1), //button indicating whether to record or not
+    .delay_length(DELAY_AMOUNT),
     .audio_valid_in(audio_trigger), //48 khz audio sample valid signal
-    .delay_cycle(DELAY_AMOUNT),
     .audio_in(final_audio_in_1), //16 bit signed audio data 
     .delayed_audio_out(delayed_audio_out) //played back audio (8 bit signed at 12 kHz)
   );
 
   // One second delayed audio
-  delayed_sound_out one_second_delayed_sound_out (
+  delayed_sound_out #(16'd24010) one_second_delayed_sound_out (
     .clk_in(audio_clk), //system clock
     .rst_in(sys_rst),//global reset
     .enable_delay(1'b1), //button indicating whether to record or not
+    .delay_length(16'd24000),
     .audio_valid_in(audio_trigger), //48 khz audio sample valid signal
-    .delay_cycle(16'd100),
     .audio_in(final_audio_in_1), //16 bit signed audio data 
     .delayed_audio_out(one_second_delay) //played back audio (8 bit signed at 12 kHz)
   );
-
 
   assign spkl = sw[0] ? sound_out : 0;
   assign spkr = sw[1] ? sound_out : 0;
