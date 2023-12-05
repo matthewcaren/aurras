@@ -249,7 +249,7 @@ module top_level(
     .rst_in(sys_rst),//global reset
     .enable_delay(1'b1), //button indicating whether to record or not
     .audio_valid_in(audio_trigger), //48 khz audio sample valid signal
-    .delay_cycle(16'd48000),
+    .delay_cycle(16'd100),
     .audio_in(final_audio_in_1), //16 bit signed audio data 
     .delayed_audio_out(one_second_delay) //played back audio (8 bit signed at 12 kHz)
   );

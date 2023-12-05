@@ -11,7 +11,7 @@ module delayed_sound_out (
     output wire [15:0] delayed_audio_out 
 );
 
-    parameter RAM_DEPTH = 16'd60000; 
+    parameter RAM_DEPTH = 16'd12000; 
     logic [15:0] write_data;
     logic [15:0] write_addr = 0;
     logic [15:0] read_addr = 0;
