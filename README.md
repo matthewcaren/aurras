@@ -39,4 +39,6 @@ sw4: downsampled input from mic\
 sw5: SOS output enable\
 sw6: delayed based on {sw 15-10, 00} (8 bit delay)\
 sw7: one second delayed audio\
+sw8: enable impulse recording\
+sw9: ssd to convolved audio\
 sw10-15: delay amount

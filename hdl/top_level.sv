@@ -218,8 +218,8 @@ module top_level(
   // ### SOUND OUTPUT MANAGEMENT
 
   logic signed [15:0] pdm_in;
-  logic [15:0] delayed_audio_out; 
-  logic [15:0] one_second_delay;
+  logic signed [15:0] delayed_audio_out; 
+  logic signed [15:0] one_second_delay;
   logic sound_out;
   
   assign pdm_in = sw[2] ? {tone_440[7], tone_440[7], tone_440[7], tone_440[7], 
