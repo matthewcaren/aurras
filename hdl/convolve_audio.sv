@@ -86,7 +86,8 @@ module convolve_audio #(parameter impulse_length = 48000) (
                 CONV_BATCH: begin
                     
                     audio_buffer_index <= audio_buffer_index + 1;
-
+                    convolution_result
+                    for (i )
                 end
 
                 default: begin

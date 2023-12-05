@@ -1,37 +1,109 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module ir_memory_manager #(parameter impulse_length = 750)
+module ir_memory_manager #(parameter MEMORY_DEPTH = 6000)
                     (input wire audio_clk,
                       input wire rst_in,
-                      input wire [15:0] write_addr,
-                      input wire signed [1023:0] write_data,
+                      input wire [15:0] ir_sample_index,
+                      input wire signed [15:0] write_data,
                       input wire write_enable,
+
+
+
                       input wire [15:0] read_addr,
                       output logic signed [1023:0] read_data                        
                       );
 
-
+    // Locations 23999 to 18000
     xilinx_true_dual_port_read_first_2_clock_ram #(
-        .RAM_WIDTH(1024),
-        .RAM_DEPTH(impulse_length)
-    ) impulse_memory (
-        .addra(write_addr),
+        .RAM_WIDTH(16),
+        .RAM_DEPTH(MEMORY_DEPTH)
+    ) ir_buffer_0 (
+        .addra(write_enable ? (16'd23999 - ir_sample_index) : READ_ADDR),
         .clka(audio_clk),
-        .wea(write_enable),
+        .wea(write_enable && (ir_sample_index >= 16'd18000)),
         .dina(write_data),
         .ena(1'b1),
         .regcea(1'b1),
         .rsta(rst_in),
         .douta(),
-        .addrb(read_addr),
+        .addrb(READ_ADDR),
         .dinb(),
         .clkb(audio_clk),
         .web(1'b0),
         .enb(1'b1),
         .rstb(rst_in),
         .regceb(1'b1),
-        .doutb(read_data)
+        .doutb(READ_DATA)
+    );
+
+    //17999 to 12000
+    xilinx_true_dual_port_read_first_2_clock_ram #(
+        .RAM_WIDTH(16),
+        .RAM_DEPTH(MEMORY_DEPTH)
+    ) ir_buffer_0 (
+        .addra(write_enable ? (16'd17999 - ir_sample_index) : READ_ADDR),
+        .clka(audio_clk),
+        .wea(write_enable && (ir_sample_index < 16'd18000) && (ir_sample_index >= 16'd12000)),
+        .dina(write_data),
+        .ena(1'b1),
+        .regcea(1'b1),
+        .rsta(rst_in),
+        .douta(),
+        .addrb(READ_ADDR),
+        .dinb(),
+        .clkb(audio_clk),
+        .web(1'b0),
+        .enb(1'b1),
+        .rstb(rst_in),
+        .regceb(1'b1),
+        .doutb(READ_DATA)
+    );
+
+    //11999 to 6000
+    xilinx_true_dual_port_read_first_2_clock_ram #(
+        .RAM_WIDTH(16),
+        .RAM_DEPTH(MEMORY_DEPTH)
+    ) ir_buffer_0 (
+        .addra(write_enable ? (16'd11999 - ir_sample_index) : READ_ADDR),
+        .clka(audio_clk),
+        .wea(write_enable && (ir_sample_index < 16'd12000) && (ir_sample_index >= 16'd6000)),
+        .dina(write_data),
+        .ena(1'b1),
+        .regcea(1'b1),
+        .rsta(rst_in),
+        .douta(),
+        .addrb(READ_ADDR),
+        .dinb(),
+        .clkb(audio_clk),
+        .web(1'b0),
+        .enb(1'b1),
+        .rstb(rst_in),
+        .regceb(1'b1),
+        .doutb(READ_DATA)
+    );
+
+    //5999 to 0
+    xilinx_true_dual_port_read_first_2_clock_ram #(
+        .RAM_WIDTH(16),
+        .RAM_DEPTH(MEMORY_DEPTH)
+    ) ir_buffer_0 (
+        .addra(write_enable ? (16'd5999 - ir_sample_index) : READ_ADDR),
+        .clka(audio_clk),
+        .wea(write_enable && (ir_sample_index < 6000)),
+        .dina(write_data),
+        .ena(1'b1),
+        .regcea(1'b1),
+        .rsta(rst_in),
+        .douta(),
+        .addrb(READ_ADDR),
+        .dinb(),
+        .clkb(audio_clk),
+        .web(1'b0),
+        .enb(1'b1),
+        .rstb(rst_in),
+        .regceb(1'b1),
+        .doutb(READ_DATA)
     );
 
 endmodule

@@ -9,6 +9,8 @@ module convolve_line(input wire [1023:0] ir_line,
     logic signed [47:0] build_up_sum;
 
     genvar i;
+
+    a[0] * b[7]
     generate
     for (i = 0; i < 64; i=i+1) begin
         always_comb begin
