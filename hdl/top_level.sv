@@ -138,6 +138,7 @@ module top_level(
   logic signed [47:0] final_convolved_audio;
   logic produced_convolutional_result; 
   logic impulse_write_enable;
+  logic signed [15:0] impulse_amp_out;
 
 
   logic [11:0] first_ir_index, second_ir_index;
@@ -158,13 +159,14 @@ module top_level(
                                    .audio_clk(audio_clk),
                                    .rst_in(rst_in),
                                    .audio_trigger(audio_trigger),
-                                   .record_impulse_trigger((btn[3] && sw[8])),
+                                   .record_impulse_trigger((btn[3] && sw[7])),
                                    .delay_length(DELAY_AMOUNT),
                                    .audio_in(processed_audio_in_1),
                                    .impulse_recorded(impulse_recorded),
                                    .ir_sample_index(impulse_write_addr),
                                    .write_data(impulse_write_data),
-                                   .write_enable(impulse_write_enable)
+                                   .write_enable(impulse_write_enable),
+                                   .impulse_amp_out(impulse_amp_out)
                                    );
 
   convolve_audio #(impulse_length) convolving_audio(
@@ -197,7 +199,7 @@ module top_level(
   assign ss1_c = ss_c;
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in(sw[9] ? displayed_conv_result[31:0] : {DELAY_AMOUNT, 8'h00, displayed_audio}),
+                              .val_in(sw[9] ? (displayed_conv_result >> 5'd20): {DELAY_AMOUNT, 8'h00, displayed_audio}),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
 
@@ -224,8 +226,9 @@ module top_level(
                     (sw[3] ? raw_audio_in_1 : 
                     (sw[4] ? processed_audio_in_1 : 
                     (sw[5] ? one_second_delay : 
-                    (sw[6] ? delayed_audio_out: 
-                    (sw[8] ? 16'd0 : 0)))));
+                    (sw[6] ? delayed_audio_out : 
+                    (sw[7] ? impulse_amp_out : 
+                    (sw[8] ? 16'd0 : 0))))));
 
 
   pdm pdm(
