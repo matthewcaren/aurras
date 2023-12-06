@@ -140,6 +140,15 @@ module top_level(
   logic impulse_write_enable;
   logic signed [15:0] impulse_amp_out;
 
+  logic impulse_btn_val;
+  logic impulse_btn_prev_val;
+  logic impulse_trigger;
+
+  always_ff @(posedge audio_clk) begin
+    impulse_btn_val <= btn[3] && sw[7];
+    impulse_btn_prev_val <= impulse_btn_val;
+    impulse_trigger <= impulse_btn_val & ~impulse_btn_prev_val;
+  end
 
   logic [11:0] first_ir_index, second_ir_index;
   logic signed [7:0][15:0] ir_vals;
@@ -159,7 +168,7 @@ module top_level(
                                    .audio_clk(audio_clk),
                                    .rst_in(rst_in),
                                    .audio_trigger(audio_trigger),
-                                   .record_impulse_trigger((btn[3] && sw[7])),
+                                   .record_impulse_trigger(impulse_trigger),
                                    .delay_length(DELAY_AMOUNT),
                                    .audio_in(processed_audio_in_1),
                                    .impulse_recorded(impulse_recorded),
