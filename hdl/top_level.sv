@@ -199,7 +199,7 @@ module top_level(
   assign ss1_c = ss_c;
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in(sw[9] ? (displayed_conv_result >> 5'd20): {DELAY_AMOUNT, 8'h00, displayed_audio}),
+                              .val_in(sw[9] ? (displayed_conv_result >>> 5'd20): {DELAY_AMOUNT, 8'h00, displayed_audio}),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
 
