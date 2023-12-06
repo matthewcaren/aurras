@@ -4,11 +4,11 @@
 module ir_memory_manager #(parameter MEMORY_DEPTH = 6000)
                     (input wire audio_clk,
                     input wire rst_in,
-                    input wire [15:0] ir_sample_index,
+                    input wire [11:0] ir_sample_index,
                     input wire signed [15:0] write_data,
                     input wire write_enable, 
-                    input wire [15:0] first_ir_index,
-                    input wire [15:0] second_ir_index,
+                    input wire [11:0] first_ir_index,
+                    input wire [11:0] second_ir_index,
                     input wire convolving,
                     output logic signed [7:0][15:0] ir_vals
     );

@@ -78,10 +78,15 @@ module top_level(
    dc_blocker dc_block(.clk_in(audio_clk),
                       .rst_in(sys_rst),
                       .audio_trigger(audio_trigger),
-                      .signal_in(prefiltered_audio_in_1),
+                      .signal_in(ggggggg),
                       .signal_out(dc_blocked_audio_in_1));
 
-
+  logic signed [15:0] ggggggg;
+  always_ff @(posedge audio_clk) begin
+    if (filter_valid_1) begin
+      ggggggg <= anti_alias_audio_in_1;
+    end
+  end 
   
   // #### INPUT ANTI-ALIASING
   logic signed [15:0] anti_alias_audio_in_1, anti_alias_audio_in_2, anti_alias_audio_in_3;
@@ -90,13 +95,13 @@ module top_level(
   input_anti_alias_fir anti_alias_filter(.aclk(audio_clk),
                                   .s_axis_data_tvalid(audio_trigger),
                                   .s_axis_data_tready(1'b1),
-                                  .s_axis_data_tdata(dc_blocked_audio_in_1),
+                                  .s_axis_data_tdata(prefiltered_audio_in_1),
                                   .m_axis_data_tvalid(filter_valid_1),
                                   .m_axis_data_tdata(anti_alias_audio_in_1));
 
   logic [15:0] fffff;
   always_ff @(posedge audio_clk) begin
-    if (filter_valid_1) begin
+    if (audio_trigger) begin
       fffff <= dc_blocked_audio_in_1;
     end
   end 
@@ -146,15 +151,15 @@ module top_level(
 
   localparam impulse_length = 16'd24000;
   logic impulse_recorded;
-  logic [15:0] impulse_write_addr, read_addr;
-  logic signed [15:0] impulse_write_data, read_data;
+  logic [11:0] impulse_write_addr;
+  logic signed [15:0] impulse_write_data;
   logic signed [47:0] final_convolved_audio;
   logic produced_convolutional_result; 
   logic impulse_write_enable;
 
 
   logic convolving;
-  logic [15:0] first_ir_index, second_ir_index;
+  logic [11:0] first_ir_index, second_ir_index;
   logic signed [7:0][15:0] ir_vals;
 
   ir_memory_manager #(16'd3000) impulse_memory(
@@ -233,7 +238,7 @@ module top_level(
   
   assign pdm_in = sw[2] ? {tone_440[7], tone_440[7], tone_440[7], tone_440[7], 
                          tone_440[7], tone_440[7], tone_440[7], tone_440[7], tone_440[7:0]} <<< 8 : 
-                    (sw[3] ? prefiltered_audio_in_1 : 
+                    (sw[3] ? ggggggg : 
                     (sw[4] ? fffff : 
                   //  (sw[5] ? sos_audio_out : 
                     (sw[6] ? delayed_audio_out : 

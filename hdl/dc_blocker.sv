@@ -11,8 +11,8 @@ module dc_blocker(  input wire clk_in,
   logic signed [15:0] last_input;
   logic signed [15:0] last_result;
 
-  // Eqn: y(n) = x(n) - x(n-1) + K*y(n-1), with K = 0.984
-  assign signal_out = current_input - last_input + (last_result - (last_result >>> 6));
+  // Eqn: y(n) = x(n) - x(n-1) + K*y(n-1), with K = 0.992
+  assign signal_out = current_input - last_input + (last_result - (last_result >>> 9));
 
   always_ff @(posedge clk_in) begin
     if (rst_in) begin
@@ -21,8 +21,8 @@ module dc_blocker(  input wire clk_in,
       last_result <= 0;
     end else begin
       if (audio_trigger) begin
-        current_input <= signal_in;
         last_input <= current_input;
+        current_input <= signal_in;
         last_result <= signal_out;
       end
     end

@@ -11,19 +11,16 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
                       output logic signed [47:0] convolution_result,
                       output logic produced_convolutional_result,
                       
-                      output logic [15:0] first_ir_index,
-                      output logic [15:0] second_ir_index,
+                      output logic [11:0] first_ir_index,
+                      output logic [11:0] second_ir_index,
                       output logic convolving,
                       input wire signed [7:0][15:0] ir_vals);
 
 
     localparam MEMORY_DEPTH = IMPULSE_LENGTH >> 3;
 
-    logic [15:0] live_read_addr;
     typedef enum logic [2:0] {WAITING_FOR_AUDIO = 0, CONVOLVING = 1, ADDING_FINAL_VALUES = 2, WAITING_FOR_IMPULSE = 3,READING_AUDIO_BUFFER = 4, WRITING_AUDIO_BUFFER = 5} convolving_state;
     convolving_state state;
-
-    logic [15:0] cycles_completed;
 
     logic [4:0] fsm_transition_delay_counter;
 
@@ -39,16 +36,12 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
     logic [3:0] adding_counter;
     logic [15:0] convolve_counter;
 
-    logic [15:0] first_audio_index, second_audio_index;
+    logic [11:0] first_audio_index, second_audio_index;
 
-    always_comb begin
-        if (convolving) begin
-            audio_vals[0] = last_value_brom0;
-            audio_vals[2] = last_value_brom1;
-            audio_vals[4] = last_value_brom2;
-            audio_vals[6] = last_value_brom3;
-        end 
-    end
+    assign audio_vals[0] = last_value_brom0;
+    assign audio_vals[2] = last_value_brom1;
+    assign audio_vals[4] = last_value_brom2;
+    assign audio_vals[6] = last_value_brom3;
 
     always_ff @(posedge audio_clk) begin
         if (rst_in) begin
