@@ -23,15 +23,15 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
 
     logic [4:0] fsm_transition_delay_counter;
     logic convolving;
-    
+
     // Goes from 0 to 5999
     logic [11:0] live_audio_start_address;
     logic [15:0] last_value_brom0, last_value_brom1, last_value_brom2, last_value_brom3;
     logic [15:0] data_in_brom0, data_in_brom1, data_in_brom2, data_in_brom3;
     logic live_write_enable;
 
-    logic [7:0][47:0] intermediate_sums;
-    logic [7:0][15:0] audio_vals;
+    logic signed [7:0][47:0] intermediate_sums;
+    logic signed [7:0][15:0] audio_vals;
     
     logic [3:0] adding_counter;
     logic [15:0] convolve_counter;
