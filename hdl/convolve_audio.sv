@@ -13,7 +13,6 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
                       
                       output logic [11:0] first_ir_index,
                       output logic [11:0] second_ir_index,
-                      output logic convolving,
                       input wire signed [7:0][15:0] ir_vals);
 
 
@@ -23,7 +22,8 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
     convolving_state state;
 
     logic [4:0] fsm_transition_delay_counter;
-
+    logic convolving;
+    
     // Goes from 0 to 5999
     logic [11:0] live_audio_start_address;
     logic [15:0] last_value_brom0, last_value_brom1, last_value_brom2, last_value_brom3;

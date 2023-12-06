@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module ir_memory_manager #(parameter MEMORY_DEPTH = 6000)
+module ir_buffer #(parameter MEMORY_DEPTH = 6000)
                     (input wire audio_clk,
                     input wire rst_in,
                     input wire [11:0] ir_sample_index,
@@ -9,7 +9,6 @@ module ir_memory_manager #(parameter MEMORY_DEPTH = 6000)
                     input wire write_enable, 
                     input wire [11:0] first_ir_index,
                     input wire [11:0] second_ir_index,
-                    input wire convolving,
                     output logic signed [7:0][15:0] ir_vals
     );
 

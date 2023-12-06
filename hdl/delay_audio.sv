@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module delayed_sound_out #(parameter MEMORY_SIZE = 1000) (
+module delay_audio #(parameter MEMORY_SIZE = 1000) (
     input wire clk_in,
     input wire rst_in,
     input wire enable_delay,
@@ -12,9 +12,9 @@ module delayed_sound_out #(parameter MEMORY_SIZE = 1000) (
 );
 
     logic [15:0] write_data;
-    logic [15:0] write_addr = 0;
-    logic [15:0] read_addr = 0;
-    logic write_enable = 0;
+    logic [15:0] write_addr;
+    logic [15:0] read_addr;
+    logic write_enable;
 
     // Writing Logic
     always @(posedge clk_in) begin

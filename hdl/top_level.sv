@@ -30,91 +30,79 @@ module top_level(
 
   // This triggers at 24kHz for general audio
   logic audio_trigger;
-  logic [11:0] counter;
+  logic [11:0] audio_trigger_counter;
   always_ff @(posedge audio_clk) begin
-      counter <= counter + 1;
+      audio_trigger_counter <= audio_trigger_counter + 1;
   end
-  assign audio_trigger = (counter == 0);
+  assign audio_trigger = (audio_trigger_counter == 0);
 
 
   // ### MIC INPUT
 
   // Mic 1: bclk - i2s_clk - pmodb[3]; dout - mic_1_data - pmoda[3]; lrcl_clk - pmodb[2], sel - grounded
   // Mic 2: bclk - i2s_clk - pmodb[7]; dout - mic_2_data - pmoda[7]; lrcl_clk - pmodb[6], sel - grounded
-  // Mic 3: bclk - i2s_clk - pmodb[1]; dout - mic_3_data - pmoda[0]; lrcl_clk - pmodb[0], sel - grounded
 
-  logic mic_1_data, mic_2_data, mic_3_data;
-  logic i2s_clk_1, i2s_clk_2, i2s_clk_3;
-  logic lrcl_clk_1, lrcl_clk_2, lrcl_clk_3;
+  logic mic_1_data, mic_2_data;
+  logic i2s_clk_1, i2s_clk_2;
+  logic lrcl_clk_1, lrcl_clk_2;
+  logic signed [15:0] raw_audio_in_1_singlecycle, raw_audio_in_2_singlecycle;
+  logic mic_data_vaild_1, mic_data_valid_2;
 
-  logic signed [15:0] raw_audio_in_1, raw_audio_in_2, raw_audio_in_3;
-  logic mic_data_vaild_1, mic_data_valid_2, mic_data_valid_3;
-
-  i2s mic_1(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_1_data), .i2s_clk(i2s_clk_1), .lrcl_clk(lrcl_clk_1), .data_valid_out(mic_data_vaild_1), .audio_out(raw_audio_in_1));
-  i2s mic_2(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_2_data), .i2s_clk(i2s_clk_2), .lrcl_clk(lrcl_clk_2), .data_valid_out(mic_data_valid_2), .audio_out(raw_audio_in_2));
-  i2s mic_3(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_3_data), .i2s_clk(i2s_clk_3), .lrcl_clk(lrcl_clk_3), .data_valid_out(mic_data_valid_3), .audio_out(raw_audio_in_3));
+  i2s mic_1(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_1_data), .i2s_clk(i2s_clk_1), .lrcl_clk(lrcl_clk_1), .data_valid_out(mic_data_vaild_1), .audio_out(raw_audio_in_1_singlecycle));
+  i2s mic_2(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_2_data), .i2s_clk(i2s_clk_2), .lrcl_clk(lrcl_clk_2), .data_valid_out(mic_data_valid_2), .audio_out(raw_audio_in_2_singlecycle));
 
   assign pmodb[3] = i2s_clk_1;
   assign pmodb[7] = i2s_clk_2;
-  assign pmodb[1] = i2s_clk_3;
-
   assign pmodb[2] = lrcl_clk_1;
   assign pmodb[6] = lrcl_clk_2;
-  assign pmodb[0] = lrcl_clk_3;
-
   assign mic_1_data = pmoda[3];
   assign mic_2_data = pmoda[7];
-  assign mic_3_data = pmoda[0];
 
-  // Testing prefiltered audio
-  logic [15:0] prefiltered_audio_in_1;
+  // #### INPUT FILTERING (FIR/DC)
+  logic signed [15:0] raw_audio_in_1;
   always_ff @(posedge audio_clk) begin
       if (mic_data_vaild_1) begin
-        prefiltered_audio_in_1 <= raw_audio_in_1;
+        raw_audio_in_1 <= raw_audio_in_1_singlecycle;
       end
   end
 
-   logic signed [15:0] dc_blocked_audio_in_1;
-   dc_blocker dc_block(.clk_in(audio_clk),
-                      .rst_in(sys_rst),
-                      .audio_trigger(audio_trigger),
-                      .signal_in(ggggggg),
-                      .signal_out(dc_blocked_audio_in_1));
-
-  logic signed [15:0] ggggggg;
-  always_ff @(posedge audio_clk) begin
-    if (filter_valid_1) begin
-      ggggggg <= anti_alias_audio_in_1;
-    end
-  end 
-  
-  // #### INPUT ANTI-ALIASING
-  logic signed [15:0] anti_alias_audio_in_1, anti_alias_audio_in_2, anti_alias_audio_in_3;
-  logic [15:0] final_audio_in_1;
-  logic filter_valid_1, filter_valid_2, filter_valid_3;
+  // FIR Filter
+  logic signed [15:0] anti_alias_audio_in_1_singlecycle, anti_alias_audio_in_2_singlecycle;
+  logic filter_valid_1, filter_valid_2;
   input_anti_alias_fir anti_alias_filter(.aclk(audio_clk),
                                   .s_axis_data_tvalid(audio_trigger),
                                   .s_axis_data_tready(1'b1),
-                                  .s_axis_data_tdata(prefiltered_audio_in_1),
+                                  .s_axis_data_tdata(raw_audio_in_1),
                                   .m_axis_data_tvalid(filter_valid_1),
-                                  .m_axis_data_tdata(anti_alias_audio_in_1));
+                                  .m_axis_data_tdata(anti_alias_audio_in_1_singlecycle));
 
-  logic [15:0] fffff;
+  logic signed [15:0] anti_alias_audio_in_1;
   always_ff @(posedge audio_clk) begin
-    if (audio_trigger) begin
-      fffff <= dc_blocked_audio_in_1;
+    if (filter_valid_1) begin
+      anti_alias_audio_in_1 <= anti_alias_audio_in_1_singlecycle;
     end
   end 
-  logic every_other; 
+
+  // DC Blocker
+  logic signed [15:0] dc_blocked_audio_in_1;
+  dc_blocker dc_block(.clk_in(audio_clk),
+                      .rst_in(sys_rst),
+                      .audio_trigger(audio_trigger),
+                      .signal_in(anti_alias_audio_in_1),
+                      .signal_out(dc_blocked_audio_in_1));
+
+  // 48k to 24k decimation
+  logic signed [15:0] processed_audio_in_1;
+  logic decimation_counter; 
   always_ff @(posedge audio_clk) begin
     if (rst_in) begin
-      every_other <= 0;
+      decimation_counter <= 0;
     end
     if (filter_valid_1) begin
-      if (every_other == 0) begin
-        final_audio_in_1 <= anti_alias_audio_in_1;
+      if (decimation_counter == 0) begin
+        processed_audio_in_1 <= dc_blocked_audio_in_1;
       end 
-      every_other <= ~(every_other);
+      decimation_counter <= ~(decimation_counter);
     end
   end
 
@@ -136,18 +124,12 @@ module top_level(
   //   .rst_in(sys_rst),
   //   .step_in(audio_trigger),
   //   .trigger(sos_trigger),
-  //   .mic_in(prefiltered_audio_in_1),
+  //   .mic_in(raw_audio_in_1),
   //   .amp_out(sos_audio_out),
   //   .delay(calculated_delay));
 
   // NOT IN USE RIGHT NOW
-  
-  logic [15:0] displayed_audio;
-  always_ff @(posedge audio_clk) begin
-    if (btn[2]) begin
-      displayed_audio <= final_audio_in_1;
-    end 
-  end
+
 
   localparam impulse_length = 16'd24000;
   logic impulse_recorded;
@@ -158,11 +140,10 @@ module top_level(
   logic impulse_write_enable;
 
 
-  logic convolving;
   logic [11:0] first_ir_index, second_ir_index;
   logic signed [7:0][15:0] ir_vals;
 
-  ir_memory_manager #(16'd3000) impulse_memory(
+  ir_buffer #(16'd3000) impulse_memory(
                                    .audio_clk(audio_clk),
                                    .rst_in(rst_in),
                                    .ir_sample_index(impulse_write_addr),
@@ -170,7 +151,6 @@ module top_level(
                                    .write_enable(impulse_write_enable),
                                    .first_ir_index(first_ir_index),
                                    .second_ir_index(second_ir_index),
-                                   .convolving(convolving),
                                    .ir_vals(ir_vals)
                                    );
 
@@ -180,7 +160,7 @@ module top_level(
                                    .audio_trigger(audio_trigger),
                                    .record_impulse_trigger((btn[3] && sw[8])),
                                    .delay_length(DELAY_AMOUNT),
-                                   .audio_in(final_audio_in_1),
+                                   .audio_in(processed_audio_in_1),
                                    .impulse_recorded(impulse_recorded),
                                    .ir_sample_index(impulse_write_addr),
                                    .write_data(impulse_write_data),
@@ -191,24 +171,27 @@ module top_level(
                                    .audio_clk(audio_clk),
                                    .rst_in(rst_in),
                                    .audio_trigger(audio_trigger),
-                                   .audio_in(final_audio_in_1),
+                                   .audio_in(processed_audio_in_1),
                                    .impulse_in_memory_complete(impulse_recorded),
                                    .convolution_result(final_convolved_audio),
                                    .produced_convolutional_result(produced_convolutional_result),
                                    .first_ir_index(first_ir_index),
                                    .second_ir_index(second_ir_index),
-                                   .convolving(convolving),
                                    .ir_vals(ir_vals)
                                   );
 
+  /// ### SEVEN SEGMENT DISPLAY
   logic signed [47:0] displayed_conv_result;
+  logic signed [15:0] displayed_audio;
   always_ff @(posedge audio_clk) begin
     if (produced_convolutional_result) begin
       displayed_conv_result <= final_convolved_audio;
     end
-
+    if (btn[2]) begin
+      displayed_audio <= processed_audio_in_1;
+    end
   end
-  /// ### SEVEN SEGMENT DISPLAY
+
   logic [6:0] ss_c;
   assign ss0_c = ss_c; 
   assign ss1_c = ss_c;
@@ -238,11 +221,11 @@ module top_level(
   
   assign pdm_in = sw[2] ? {tone_440[7], tone_440[7], tone_440[7], tone_440[7], 
                          tone_440[7], tone_440[7], tone_440[7], tone_440[7], tone_440[7:0]} <<< 8 : 
-                    (sw[3] ? ggggggg : 
-                    (sw[4] ? fffff : 
-                  //  (sw[5] ? sos_audio_out : 
-                    (sw[6] ? delayed_audio_out : 
-                    (sw[7] ? one_second_delay: 0))));
+                    (sw[3] ? raw_audio_in_1 : 
+                    (sw[4] ? processed_audio_in_1 : 
+                    (sw[5] ? one_second_delay : 
+                    (sw[6] ? delayed_audio_out: 
+                    (sw[8] ? 16'd0 : 0)))));
 
 
   pdm pdm(
@@ -254,24 +237,24 @@ module top_level(
 
 
   //Delayed audio by sw[15:10] w/ two 0s tacked on 
-  delayed_sound_out #(16'd1000) my_delayed_sound_out (
+  delay_audio #(16'd1000) my_delayed_sound_out (
     .clk_in(audio_clk), //system clock
     .rst_in(sys_rst),//global reset
     .enable_delay(1'b1), //button indicating whether to record or not
     .delay_length(DELAY_AMOUNT),
     .audio_valid_in(audio_trigger), //48 khz audio sample valid signal
-    .audio_in(final_audio_in_1), //16 bit signed audio data 
+    .audio_in(processed_audio_in_1), //16 bit signed audio data 
     .delayed_audio_out(delayed_audio_out) //played back audio (8 bit signed at 12 kHz)
   );
 
   // One second delayed audio
-  delayed_sound_out #(16'd24010) one_second_delayed_sound_out (
+  delay_audio #(16'd24010) one_second_delayed_sound_out (
     .clk_in(audio_clk), //system clock
     .rst_in(sys_rst),//global reset
     .enable_delay(1'b1), //button indicating whether to record or not
     .delay_length(16'd24000),
     .audio_valid_in(audio_trigger), //48 khz audio sample valid signal
-    .audio_in(final_audio_in_1), //16 bit signed audio data 
+    .audio_in(processed_audio_in_1), //16 bit signed audio data 
     .delayed_audio_out(one_second_delay) //played back audio (8 bit signed at 12 kHz)
   );
 
