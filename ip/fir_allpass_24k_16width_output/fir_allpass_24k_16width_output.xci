@@ -4,7 +4,7 @@
     "xci_name": "fir_allpass_24k_16width_output",
     "component_reference": "xilinx.com:ip:fir_compiler:7.2",
     "ip_revision": "19",
-    "gen_directory": "../../../../aurras.gen/sources_1/ip/fir_allpass_24k_16width_output",
+    "gen_directory": "./ip/fir_allpass_24k_16width_output",
     "parameters": {
       "component_parameters": {
         "Component_Name": [ { "value": "fir_allpass_24k_16width_output", "resolve_type": "user", "usage": "all" } ],
@@ -183,7 +183,7 @@
         "IPCONTEXT": [ { "value": "IP_Flow" } ],
         "IPREVISION": [ { "value": "19" } ],
         "MANAGED": [ { "value": "TRUE" } ],
-        "OUTPUTDIR": [ { "value": "../../../../aurras.gen/sources_1/ip/fir_allpass_24k_16width_output" } ],
+        "OUTPUTDIR": [ { "value": "./ip/fir_allpass_24k_16width_output" } ],
         "SELECTEDSIMMODEL": [ { "value": "" } ],
         "SHAREDDIR": [ { "value": "." } ],
         "SWVERSION": [ { "value": "2023.1" } ],

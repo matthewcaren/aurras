@@ -66,13 +66,42 @@ module top_level(
       end
   end
 
+  // DC Offset correction
+  logic signed [15:0] processed_audio_in_1, OFFSET, offset_singlecycle, dc_blocked_audio_in_1;
+  logic offset_produced, offset_produced_singlecycle, offset_button_val, prev_offset_button_val, offset_trigger;
+  always_ff @(posedge audio_clk) begin
+    offset_button_val <= btn[1];
+    prev_offset_button_val <= offset_button_val;
+    offset_trigger <= offset_button_val && ~(prev_offset_button_val);
+  end
+
+  calculate_offset offset_calculator(.audio_clk(audio_clk),
+                                     .rst_in(rst_in),
+                                     .audio_trigger(audio_trigger),
+                                     .offset_trigger(offset_trigger),
+                                     .audio_in(raw_audio_in_1),
+                                     .offset_produced(offset_produced_singlecycle),
+                                     .offset(offset_singlecycle));
+
+  always_ff @(posedge audio_clk) begin
+    if (rst_in) begin
+      offset_produced <= 0;
+    end else if (offset_produced_singlecycle) begin
+      offset_produced <= 1;
+      OFFSET <= offset_singlecycle;
+    end 
+  end 
+
+  assign dc_blocked_audio_in_1 = offset_produced ? (raw_audio_in_1 - OFFSET) : raw_audio_in_1;
+
+
   // FIR Filter
   logic signed [15:0] anti_alias_audio_in_1_singlecycle, anti_alias_audio_in_2_singlecycle;
   logic filter_valid_1, filter_valid_2;
-  anti_alias_fir_24k_16width_output anti_alias_filter(.aclk(audio_clk),
+  anti_alias_fir_24k anti_alias_filter(.aclk(audio_clk),
                                   .s_axis_data_tvalid(mic_data_vaild_1),
                                   .s_axis_data_tready(1'b1),
-                                  .s_axis_data_tdata(raw_audio_in_1),
+                                  .s_axis_data_tdata(dc_blocked_audio_in_1),
                                   .m_axis_data_tvalid(filter_valid_1),
                                   .m_axis_data_tdata(anti_alias_audio_in_1_singlecycle));
 
@@ -93,38 +122,28 @@ module top_level(
     if (filter_valid_1) begin
       if (decimation_counter == 0) begin
         decimated_audio_in_1 <= anti_alias_audio_in_1;
+        processed_audio_in_1 <= anti_alias_audio_in_1;
       end 
       decimation_counter <= ~(decimation_counter);
     end
   end
 
-  // DC Offset correction
-  logic signed [15:0] processed_audio_in_1, OFFSET, offset_singlecycle;
-  logic offset_produced, offset_produced_singlecycle, offset_button_val, prev_offset_button_val, offset_trigger;
+  logic all_pass_valid;
+  logic signed [15:0] all_pass_audio_in_1_singlecycle, all_pass_audio_in_1;
+  fir_allpass_24k_16width_output all_pass(.aclk(audio_clk),
+                                          .s_axis_data_tvalid(audio_trigger),
+                                          .s_axis_data_tready(1'b1),
+                                          .s_axis_data_tdata(decimated_audio_in_1),
+                                          .m_axis_data_tvalid(all_pass_valid),
+                                          .m_axis_data_tdata(all_pass_audio_in_1_singlecycle));
+
   always_ff @(posedge audio_clk) begin
-    offset_button_val <= btn[1];
-    prev_offset_button_val <= offset_button_val;
-    offset_trigger <= offset_button_val && ~(prev_offset_button_val);
+    if (all_pass_valid) begin
+      all_pass_audio_in_1 <= all_pass_audio_in_1_singlecycle;
+    end 
   end
 
-  calculate_offset offset_calculator(.audio_clk(audio_clk),
-                                     .rst_in(rst_in),
-                                     .audio_trigger(audio_trigger),
-                                     .offset_trigger(offset_trigger),
-                                     .audio_in(decimated_audio_in_1),
-                                     .offset_produced(offset_produced_singlecycle),
-                                     .offset(offset_singlecycle));
 
-  always_ff @(posedge audio_clk) begin
-    if (rst_in) begin
-      offset_produced <= 0;
-    end else if (offset_produced_singlecycle) begin
-      offset_produced <= 1;
-      OFFSET <= offset_singlecycle;
-    end 
-  end 
-
-  assign processed_audio_in_1 = offset_produced ? (decimated_audio_in_1 - OFFSET) : decimated_audio_in_1;
   
   // ##### SPEED OF SOUND #####
 
@@ -255,9 +274,9 @@ module top_level(
   assign pdm_in = sw[2] ? {tone_440[7], tone_440[7], tone_440[7], tone_440[7], 
                          tone_440[7], tone_440[7], tone_440[7], tone_440[7], tone_440[7:0]} <<< 8 : 
                     (sw[3] ? raw_audio_in_1 : 
-                    (sw[4] ? anti_alias_audio_in_1 : 
-                    (sw[5] ? one_second_delay : 
-                    (sw[6] ? delayed_audio_out : 
+                    (sw[4] ? dc_blocked_audio_in_1 : 
+                    (sw[5] ? anti_alias_audio_in_1 : 
+                    (sw[6] ? processed_audio_in_1 : 
                     (sw[7] ? impulse_amp_out : 
                     (sw[8] ? displayed_conv_result[27:12]: 0))))));
 

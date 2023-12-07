@@ -1,14 +1,13 @@
-
 {
   "schema": "xilinx.com:schema:json_instance:1.0",
   "ip_inst": {
-    "xci_name": "anti_alias_fir_24k_16width_output",
+    "xci_name": "anti_alias_fir_24k",
     "component_reference": "xilinx.com:ip:fir_compiler:7.2",
     "ip_revision": "19",
-    "gen_directory": "./ip/anti_alias_fir_24k_16width_output",
+    "gen_directory": "./ip/anti_alias_fir_24k",
     "parameters": {
       "component_parameters": {
-        "Component_Name": [ { "value": "anti_alias_fir_24k_16width_output", "resolve_type": "user", "usage": "all" } ],
+        "Component_Name": [ { "value": "anti_alias_fir_24k", "resolve_type": "user", "usage": "all" } ],
         "GUI_Behaviour": [ { "value": "Coregen", "resolve_type": "user", "usage": "all" } ],
         "CoefficientSource": [ { "value": "Vector", "resolve_type": "user", "usage": "all" } ],
         "CoefficientVector": [ { "value": "18,379,348,-46,-342,-26,432,175,-511,-406,538,728,-474,-1162,254,1772,269,-2796,-1666,5846,13617,13617,5846,-1666,-2796,269,1772,254,-1162,-474,728,538,-406,-511,175,432,-26,-342,-46,348,379,18", "value_src": "user", "resolve_type": "user", "usage": "all" } ],
@@ -93,8 +92,8 @@
       "model_parameters": {
         "C_XDEVICEFAMILY": [ { "value": "spartan7", "resolve_type": "generated", "usage": "all" } ],
         "C_ELABORATION_DIR": [ { "value": "./", "resolve_type": "generated", "usage": "all" } ],
-        "C_COMPONENT_NAME": [ { "value": "anti_alias_fir_24k_16width_output", "resolve_type": "generated", "usage": "all" } ],
-        "C_COEF_FILE": [ { "value": "anti_alias_fir_24k_16width_output.mif", "resolve_type": "generated", "usage": "all" } ],
+        "C_COMPONENT_NAME": [ { "value": "anti_alias_fir_24k", "resolve_type": "generated", "usage": "all" } ],
+        "C_COEF_FILE": [ { "value": "anti_alias_fir_24k.mif", "resolve_type": "generated", "usage": "all" } ],
         "C_COEF_FILE_LINES": [ { "value": "21", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_FILTER_TYPE": [ { "value": "0", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_INTERP_RATE": [ { "value": "1", "resolve_type": "generated", "format": "long", "usage": "all" } ],
@@ -179,7 +178,7 @@
         "IPCONTEXT": [ { "value": "IP_Flow" } ],
         "IPREVISION": [ { "value": "19" } ],
         "MANAGED": [ { "value": "TRUE" } ],
-        "OUTPUTDIR": [ { "value": "./ip/anti_alias_fir_24k_16width_output" } ],
+        "OUTPUTDIR": [ { "value": "./ip/anti_alias_fir_24k" } ],
         "SELECTEDSIMMODEL": [ { "value": "" } ],
         "SHAREDDIR": [ { "value": "." } ],
         "SWVERSION": [ { "value": "2023.1" } ],

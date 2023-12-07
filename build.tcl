@@ -27,7 +27,8 @@ read_xdc ./xdc/top_level.xdc
 set_part $partNum
 
 # I think you need to read in each IP separately. blah oh well.
-read_ip ./ip/input_anti_alias_fir/input_anti_alias_fir.xci
+read_ip ./ip/anti_alias_fir_24k/anti_alias_fir_24k.xci
+read_ip ./ip/fir_allpass_24k_16width_output/fir_allpass_24k_16width_output.xci
 
 generate_target all [get_ips]
 synth_ip [get_ips]
