@@ -69,8 +69,8 @@ module top_level(
   // FIR Filter
   logic signed [15:0] anti_alias_audio_in_1_singlecycle, anti_alias_audio_in_2_singlecycle;
   logic filter_valid_1, filter_valid_2;
-  input_anti_alias_fir anti_alias_filter(.aclk(audio_clk),
-                                  .s_axis_data_tvalid(audio_trigger),
+  anti_alias_fir_24k_16width_output anti_alias_filter(.aclk(audio_clk),
+                                  .s_axis_data_tvalid(mic_data_vaild_1),
                                   .s_axis_data_tready(1'b1),
                                   .s_axis_data_tdata(raw_audio_in_1),
                                   .m_axis_data_tvalid(filter_valid_1),
@@ -230,7 +230,7 @@ module top_level(
   assign ss1_c = ss_c;
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in(sw[9] ? (displayed_conv_result >>> 6'd24): {displayed_audio_2, OFFSET}),
+                              .val_in(sw[9] ? (displayed_conv_result >>> 6'd24): {displayed_audio_2, displayed_audio}),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
 
@@ -255,7 +255,7 @@ module top_level(
   assign pdm_in = sw[2] ? {tone_440[7], tone_440[7], tone_440[7], tone_440[7], 
                          tone_440[7], tone_440[7], tone_440[7], tone_440[7], tone_440[7:0]} <<< 8 : 
                     (sw[3] ? raw_audio_in_1 : 
-                    (sw[4] ? decimated_audio_in_1 : 
+                    (sw[4] ? anti_alias_audio_in_1 : 
                     (sw[5] ? one_second_delay : 
                     (sw[6] ? delayed_audio_out : 
                     (sw[7] ? impulse_amp_out : 
