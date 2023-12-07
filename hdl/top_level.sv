@@ -99,10 +99,34 @@ module top_level(
     end
   end
 
-  logic signed [15:0] OFFSET, processed_audio_in_1;
-  assign OFFSET = 16'shFC80;
+  logic signed [15:0] OFFSET;
+  logic signed [15:0] processed_audio_in_1;
+  logic offset_produced, offset_produced_singlecycle;
 
-  assign processed_audio_in_1 = (decimated_audio_in_1 - OFFSET);
+  logic offset_button_val, prev_offset_button_val, offset_trigger;
+  always_ff @(posedge audio_clk) begin
+    offset_button_val <= btn[1];
+    prev_offset_button_val <= offset_button_val;
+    offset_trigger <= offset_button_val && ~(prev_offset_button_val);
+  end
+
+  calculate_offset offset_calculator(.audio_clk(audio_clk),
+                                     .rst_in(rst_in),
+                                     .audio_trigger(audio_trigger),
+                                     .offset_trigger(offset_trigger),
+                                     .audio_in(decimated_audio_in_1),
+                                     .offset_produced(offset_produced_singlecycle),
+                                     .offset(OFFSET));
+
+  always_ff @(posedge audio_clk) begin
+    if (rst_in) begin
+      offset_produced <= 0;
+    end else if (offset_produced_singlecycle) begin
+      offset_produced <= 1;
+    end 
+  end 
+
+  assign processed_audio_in_1 = offset_produced ? (decimated_audio_in_1 - OFFSET) : decimated_audio_in_1;
   
    // DC Blocker
   // logic signed [15:0] dc_blocked_audio_in_1, processed_audio_in_1;
@@ -153,7 +177,7 @@ module top_level(
   always_ff @(posedge audio_clk) begin
     impulse_btn_val <= btn[3] && sw[7];
     impulse_btn_prev_val <= impulse_btn_val;
-    impulse_trigger <= impulse_btn_val & ~impulse_btn_prev_val;
+    impulse_trigger <= impulse_btn_val && ~impulse_btn_prev_val;
   end
 
   logic [11:0] first_ir_index, second_ir_index;
@@ -216,7 +240,7 @@ module top_level(
   assign ss1_c = ss_c;
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in(sw[9] ? (displayed_conv_result >>> 6'd24): {displayed_audio_2, displayed_audio}),
+                              .val_in(sw[9] ? (displayed_conv_result >>> 6'd24): {displayed_audio_2, OFFSET}),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
 
