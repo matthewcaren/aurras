@@ -83,7 +83,6 @@ module top_level(
     end
   end 
 
-
   // 48k to 24k decimation
   logic signed [15:0] decimated_audio_in_1;
   logic decimation_counter; 
@@ -99,11 +98,9 @@ module top_level(
     end
   end
 
-  logic signed [15:0] OFFSET, offset_singlecycle;
-  logic signed [15:0] processed_audio_in_1;
-  logic offset_produced, offset_produced_singlecycle;
-
-  logic offset_button_val, prev_offset_button_val, offset_trigger;
+  // DC Offset correction
+  logic signed [15:0] processed_audio_in_1, OFFSET, offset_singlecycle;
+  logic offset_produced, offset_produced_singlecycle, offset_button_val, prev_offset_button_val, offset_trigger;
   always_ff @(posedge audio_clk) begin
     offset_button_val <= btn[1];
     prev_offset_button_val <= offset_button_val;
@@ -129,8 +126,6 @@ module top_level(
 
   assign processed_audio_in_1 = offset_produced ? (decimated_audio_in_1 - OFFSET) : decimated_audio_in_1;
   
-   // DC Blocker
-
   // ##### SPEED OF SOUND #####
 
   // logic sos_trigger;

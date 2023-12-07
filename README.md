@@ -28,7 +28,7 @@ Active environmental noise cancellation using an FPGA.
 ## controls
 
 btn0: system reset\
-btn1: run SOS analysis\
+btn1: calculate DC offset\
 btn2: monitor audio\
 btn3: record impulse\
 
