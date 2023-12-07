@@ -83,16 +83,9 @@ module top_level(
     end
   end 
 
-  // DC Blocker
-  logic signed [15:0] dc_blocked_audio_in_1;
-  dc_blocker dc_block(.clk_in(audio_clk),
-                      .rst_in(sys_rst),
-                      .audio_trigger(audio_trigger),
-                      .signal_in(anti_alias_audio_in_1),
-                      .signal_out(dc_blocked_audio_in_1));
 
   // 48k to 24k decimation
-  logic signed [15:0] processed_audio_in_1;
+  logic signed [15:0] decimated_audio_in_1;
   logic decimation_counter; 
   always_ff @(posedge audio_clk) begin
     if (rst_in) begin
@@ -100,11 +93,24 @@ module top_level(
     end
     if (filter_valid_1) begin
       if (decimation_counter == 0) begin
-        processed_audio_in_1 <= dc_blocked_audio_in_1;
+        decimated_audio_in_1 <= anti_alias_audio_in_1;
       end 
       decimation_counter <= ~(decimation_counter);
     end
   end
+
+  logic signed [15:0] OFFSET, processed_audio_in_1;
+  assign OFFSET = 16'shFC80;
+
+  assign processed_audio_in_1 = (decimated_audio_in_1 - OFFSET);
+  
+   // DC Blocker
+  // logic signed [15:0] dc_blocked_audio_in_1, processed_audio_in_1;
+  // dc_blocker dc_block(.clk_in(audio_clk),
+  //                     .rst_in(sys_rst),
+  //                     .audio_trigger(audio_trigger),
+  //                     .signal_in(decimated_audio_in_1),
+  //                     .signal_out(processed_audio_in_1));
 
   // ##### SPEED OF SOUND #####
 
@@ -194,12 +200,14 @@ module top_level(
   /// ### SEVEN SEGMENT DISPLAY
   logic signed [47:0] displayed_conv_result;
   logic signed [15:0] displayed_audio;
+  logic signed [15:0] displayed_audio_2;
   always_ff @(posedge audio_clk) begin
     if (produced_convolutional_result) begin
       displayed_conv_result <= final_convolved_audio;
     end
     if (btn[2]) begin
       displayed_audio <= processed_audio_in_1;
+      displayed_audio_2 <= decimated_audio_in_1;
     end
   end
 
@@ -208,7 +216,7 @@ module top_level(
   assign ss1_c = ss_c;
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in(sw[9] ? (displayed_conv_result >>> 5'd20): {DELAY_AMOUNT, 8'h00, displayed_audio}),
+                              .val_in(sw[9] ? (displayed_conv_result >>> 6'd24): {displayed_audio_2, displayed_audio}),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
 
@@ -233,11 +241,11 @@ module top_level(
   assign pdm_in = sw[2] ? {tone_440[7], tone_440[7], tone_440[7], tone_440[7], 
                          tone_440[7], tone_440[7], tone_440[7], tone_440[7], tone_440[7:0]} <<< 8 : 
                     (sw[3] ? raw_audio_in_1 : 
-                    (sw[4] ? processed_audio_in_1 : 
+                    (sw[4] ? decimated_audio_in_1 : 
                     (sw[5] ? one_second_delay : 
                     (sw[6] ? delayed_audio_out : 
                     (sw[7] ? impulse_amp_out : 
-                    (sw[8] ? 16'd0 : 0))))));
+                    (sw[8] ? displayed_conv_result[27:12]: 0))))));
 
 
   pdm pdm(
