@@ -99,7 +99,7 @@ module top_level(
     end
   end
 
-  logic signed [15:0] OFFSET;
+  logic signed [15:0] OFFSET, offset_singlecycle;
   logic signed [15:0] processed_audio_in_1;
   logic offset_produced, offset_produced_singlecycle;
 
@@ -116,25 +116,20 @@ module top_level(
                                      .offset_trigger(offset_trigger),
                                      .audio_in(decimated_audio_in_1),
                                      .offset_produced(offset_produced_singlecycle),
-                                     .offset(OFFSET));
+                                     .offset(offset_singlecycle));
 
   always_ff @(posedge audio_clk) begin
     if (rst_in) begin
       offset_produced <= 0;
     end else if (offset_produced_singlecycle) begin
       offset_produced <= 1;
+      OFFSET <= offset_singlecycle;
     end 
   end 
 
   assign processed_audio_in_1 = offset_produced ? (decimated_audio_in_1 - OFFSET) : decimated_audio_in_1;
   
    // DC Blocker
-  // logic signed [15:0] dc_blocked_audio_in_1, processed_audio_in_1;
-  // dc_blocker dc_block(.clk_in(audio_clk),
-  //                     .rst_in(sys_rst),
-  //                     .audio_trigger(audio_trigger),
-  //                     .signal_in(decimated_audio_in_1),
-  //                     .signal_out(processed_audio_in_1));
 
   // ##### SPEED OF SOUND #####
 

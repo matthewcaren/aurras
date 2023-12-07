@@ -10,7 +10,7 @@ module calculate_offset (input wire audio_clk,
                         output logic offset_produced);
 
     logic signed [25:0] sum_of_offsets;
-    logic [9:0] cycle_counter;
+    logic [10:0] cycle_counter;
     typedef enum logic [1:0] {WAITING_FOR_TRIGGER = 0, ACCUMULATING = 1, COMPUTING = 2} offset_state;
     offset_state state;
     always_ff @(posedge audio_clk) begin
@@ -19,6 +19,7 @@ module calculate_offset (input wire audio_clk,
             sum_of_offsets <= 0;
             cycle_counter <= 0;
             offset_produced <= 0;
+            state <= WAITING_FOR_TRIGGER;
         end else begin
             case (state)
                 WAITING_FOR_TRIGGER : begin
@@ -26,10 +27,13 @@ module calculate_offset (input wire audio_clk,
                     sum_of_offsets <= 0;
                     cycle_counter <= 0;
                     offset_produced <= 0;
+                    if (offset_trigger) begin
+                        state <= ACCUMULATING;
+                    end
                 end 
                 ACCUMULATING : begin
                     if (audio_trigger) begin
-                         if (cycle_counter == 10'd512) begin
+                         if (cycle_counter == 11'd1024) begin
                             state <= COMPUTING;
                          end else begin
                             sum_of_offsets <= sum_of_offsets + audio_in;
@@ -40,13 +44,14 @@ module calculate_offset (input wire audio_clk,
                 COMPUTING : begin
                     state <= WAITING_FOR_TRIGGER;
                     offset_produced <= 1;
-                    offset <= (sum_of_offsets >>> 9);
+                    offset <= (sum_of_offsets >>> 4'd10);
                 end 
                 default : begin
                     offset <= 0;
                     sum_of_offsets <= 0;
                     cycle_counter <= 0;
                     offset_produced <= 0;
+                    state <= WAITING_FOR_TRIGGER;
                 end
             endcase
         end
