@@ -11,23 +11,24 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
                       output logic signed [47:0] convolution_result,
                       output logic produced_convolutional_result,
                       
-                      output logic [11:0] first_ir_index,
-                      output logic [11:0] second_ir_index,
-                      input wire signed [7:0][15:0] ir_vals);
+                      output logic [12:0] first_ir_index,
+                      output logic [12:0] second_ir_index,
+                      input wire signed [7:0][15:0] ir_vals,
+                      output logic [2:0] output_state);
 
 
     localparam MEMORY_DEPTH = IMPULSE_LENGTH >> 3;
 
     typedef enum logic [2:0] {WAITING_FOR_AUDIO = 0, CONVOLVING = 1, ADDING_FINAL_VALUES = 2, WAITING_FOR_IMPULSE = 3,READING_AUDIO_BUFFER = 4, WRITING_AUDIO_BUFFER = 5} convolving_state;
     convolving_state state;
-
+    assign output_state = state;
     logic [4:0] fsm_transition_delay_counter;
     logic convolving;
 
     // Goes from 0 to 5999
-    logic [11:0] live_audio_start_address;
-    logic [15:0] last_value_brom0, last_value_brom1, last_value_brom2, last_value_brom3;
-    logic [15:0] data_in_brom0, data_in_brom1, data_in_brom2, data_in_brom3;
+    logic [12:0] live_audio_start_address;
+    logic signed [15:0] last_value_brom0, last_value_brom1, last_value_brom2, last_value_brom3;
+    logic signed [15:0] data_in_brom0, data_in_brom1, data_in_brom2, data_in_brom3;
     logic live_write_enable;
 
     logic signed [7:0][47:0] intermediate_sums;
@@ -36,7 +37,7 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
     logic [3:0] adding_counter;
     logic [15:0] convolve_counter;
 
-    logic [11:0] first_audio_index, second_audio_index;
+    logic [12:0] first_audio_index, second_audio_index;
 
     assign audio_vals[0] = last_value_brom0;
     assign audio_vals[2] = last_value_brom1;
@@ -137,6 +138,14 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
                         intermediate_sums[5] <= intermediate_sums[5] + ir_vals[5] * audio_vals[5];
                         intermediate_sums[6] <= intermediate_sums[6] + ir_vals[6] * audio_vals[6];
                         intermediate_sums[7] <= intermediate_sums[7] + ir_vals[7] * audio_vals[7];
+                        // intermediate_sums[0] <= intermediate_sums[0] + ir_vals[0] * 1;
+                        // intermediate_sums[1] <= intermediate_sums[1] + ir_vals[1] * 1;
+                        // intermediate_sums[2] <= intermediate_sums[2] + ir_vals[2] * 1;
+                        // intermediate_sums[3] <= intermediate_sums[3] + ir_vals[3] * 1;
+                        // intermediate_sums[4] <= intermediate_sums[4] + ir_vals[4] * 1;
+                        // intermediate_sums[5] <= intermediate_sums[5] + ir_vals[5] * 1;
+                        // intermediate_sums[6] <= intermediate_sums[6] + ir_vals[6] * 1;
+                        // intermediate_sums[7] <= intermediate_sums[7] + ir_vals[7] * 1;
                     end 
 
                     if (convolve_counter == 16'd3003) begin
