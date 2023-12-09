@@ -1,3 +1,4 @@
+
 {
   "schema": "xilinx.com:schema:json_instance:1.0",
   "ip_inst": {
@@ -10,7 +11,7 @@
         "Component_Name": [ { "value": "anti_alias_fir_24k", "resolve_type": "user", "usage": "all" } ],
         "GUI_Behaviour": [ { "value": "Coregen", "resolve_type": "user", "usage": "all" } ],
         "CoefficientSource": [ { "value": "Vector", "resolve_type": "user", "usage": "all" } ],
-        "CoefficientVector": [ { "value": "18,379,348,-46,-342,-26,432,175,-511,-406,538,728,-474,-1162,254,1772,269,-2796,-1666,5846,13617,13617,5846,-1666,-2796,269,1772,254,-1162,-474,728,538,-406,-511,175,432,-26,-342,-46,348,379,18", "value_src": "user", "resolve_type": "user", "usage": "all" } ],
+        "CoefficientVector": [ { "value": "36, 758, 696, -92, -684, -52, 864, 350, -1022, -812, 1076, 1456, -948, -2324, 508, 3544, 538, -5592, -3332, 11692, 27234, 27234, 11692, -3332, -5592, 538, 3544, 508, -2324, -948, 1456, 1076, -812, -1022, 350, 864, -52, -684, -92, 696, 758, 36", "value_src": "user", "resolve_type": "user", "usage": "all" } ],
         "Coefficient_File": [ { "value": "no_coe_file_loaded", "resolve_type": "user", "usage": "all" } ],
         "Coefficient_Sets": [ { "value": "1", "value_src": "user", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "Coefficient_Reload": [ { "value": "false", "resolve_type": "user", "format": "bool", "usage": "all" } ],

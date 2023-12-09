@@ -249,7 +249,7 @@ module top_level(
   assign ss1_c = ss_c;
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in(sw[9] ? (displayed_conv_result >>> 6'd24): {displayed_audio_2, displayed_audio}),
+                              .val_in(sw[9] ? (displayed_conv_result[31:0]): {displayed_audio_2, displayed_audio}),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
 
@@ -277,7 +277,7 @@ module top_level(
                     (sw[4] ? dc_blocked_audio_in_1 : 
                     (sw[5] ? anti_alias_audio_in_1 : 
                     (sw[6] ? processed_audio_in_1 : 
-                    (sw[7] ? impulse_amp_out : 
+                    (sw[7] ? all_pass_audio_in_1 : 
                     (sw[8] ? displayed_conv_result[27:12]: 0))))));
 
 
