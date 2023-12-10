@@ -58,7 +58,7 @@ module top_level(
   assign mic_1_data = pmoda[3];
   assign mic_2_data = pmoda[7];
 
-  // #### INPUT FILTERING (FIR/DC)
+  // #### INPUT FILTERING (antialiasing / DC-blocked)
   logic signed [15:0] raw_audio_in_1;
   always_ff @(posedge audio_clk) begin
       if (mic_data_vaild_1) begin
@@ -95,7 +95,7 @@ module top_level(
   assign dc_blocked_audio_in_1 = offset_produced ? (raw_audio_in_1 - OFFSET) : raw_audio_in_1;
 
 
-  // FIR Filter
+  // Antialiasing Filter
   logic signed [15:0] anti_alias_audio_in_1_singlecycle, anti_alias_audio_in_2_singlecycle;
   logic filter_valid_1, filter_valid_2;
   anti_alias_fir_24k anti_alias_filter(.aclk(audio_clk),
@@ -128,22 +128,6 @@ module top_level(
     end
   end
 
-  logic all_pass_valid;
-  logic signed [15:0] all_pass_audio_in_1_singlecycle, all_pass_audio_in_1;
-  fir_allpass_24k_16width_output all_pass(.aclk(audio_clk),
-                                          .s_axis_data_tvalid(audio_trigger),
-                                          .s_axis_data_tready(1'b1),
-                                          .s_axis_data_tdata(decimated_audio_in_1),
-                                          .m_axis_data_tvalid(all_pass_valid),
-                                          .m_axis_data_tdata(all_pass_audio_in_1_singlecycle));
-
-  always_ff @(posedge audio_clk) begin
-    if (all_pass_valid) begin
-      all_pass_audio_in_1 <= all_pass_audio_in_1_singlecycle;
-    end 
-  end
-
-
   
   // ##### SPEED OF SOUND #####
 
@@ -174,7 +158,7 @@ module top_level(
   logic impulse_recorded;
   logic [15:0] impulse_write_addr;
   logic signed [15:0] impulse_write_data;
-  logic signed [47:0] final_convolved_audio;
+  logic signed [47:0] convolved_audio_singlecycle;
   logic produced_convolutional_result; 
   logic impulse_write_enable;
   logic signed [15:0] impulse_amp_out;
@@ -184,7 +168,7 @@ module top_level(
   logic impulse_trigger;
 
   always_ff @(posedge audio_clk) begin
-    impulse_btn_val <= btn[3] && sw[7];
+    impulse_btn_val <= btn[3];
     impulse_btn_prev_val <= impulse_btn_val;
     impulse_trigger <= impulse_btn_val && ~impulse_btn_prev_val;
   end
@@ -227,33 +211,46 @@ module top_level(
                                    .audio_trigger(audio_trigger),
                                    .audio_in(processed_audio_in_1),
                                    .impulse_in_memory_complete(impulse_recorded),
-                                   .convolution_result(final_convolved_audio),
+                                   .convolution_result(convolved_audio_singlecycle),
                                    .produced_convolutional_result(produced_convolutional_result),
                                    .first_ir_index(first_ir_index),
                                    .second_ir_index(second_ir_index),
                                    .ir_vals(ir_vals)
-                                  );
-  /// ### SEVEN SEGMENT DISPLAY
-  logic signed [47:0] displayed_conv_result;
-  logic signed [47:0] fuck_me;
-  logic signed [15:0] displayed_audio;
-  logic signed [15:0] displayed_audio_2;
+                                  );  
+  
+  logic signed [15:0] convolved_audio;
   always_ff @(posedge audio_clk) begin
     if (produced_convolutional_result) begin
-      displayed_conv_result <= final_convolved_audio;
-    end
-    if (btn[2]) begin
-      displayed_audio <= processed_audio_in_1;
-      displayed_audio_2 <= decimated_audio_in_1;
+      convolved_audio <= convolved_audio_singlecycle[28:13];
     end
   end
 
+
+  // ### Allpass speaker phase correction
+  logic allpassed_valid;
+  logic signed [15:0] allpassed_singlecycle, allpassed;
+  fir_allpass_24k_16width_output allpass(.aclk(audio_clk),
+                                          .s_axis_data_tvalid(audio_trigger),
+                                          .s_axis_data_tready(1'b1),
+                                          .s_axis_data_tdata(convolved_audio),
+                                          .m_axis_data_tvalid(allpassed_valid),
+                                          .m_axis_data_tdata(allpassed_singlecycle));
+
+  always_ff @(posedge audio_clk) begin
+    if (allpassed_valid) begin
+      allpassed <= allpassed_singlecycle;
+    end 
+  end
+
+
+
+  /// ### SEVEN SEGMENT DISPLAY
   logic [6:0] ss_c;
   assign ss0_c = ss_c; 
   assign ss1_c = ss_c;
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in(sw[9] ? ({displayed_conv_result}): {displayed_audio_2, displayed_audio}),
+                              .val_in(pdm_in),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
 
@@ -278,11 +275,11 @@ module top_level(
   assign pdm_in = sw[2] ? {tone_440[7], tone_440[7], tone_440[7], tone_440[7], 
                          tone_440[7], tone_440[7], tone_440[7], tone_440[7], tone_440[7:0]} <<< 8 : 
                     (sw[3] ? raw_audio_in_1 : 
-                    (sw[4] ? dc_blocked_audio_in_1 : 
-                    (sw[5] ? anti_alias_audio_in_1 : 
-                    (sw[6] ? processed_audio_in_1 : 
-                    (sw[7] ? impulse_amp_out : 
-                    (sw[8] ? displayed_conv_result[29:14]: 0))))));
+                    (sw[4] ? processed_audio_in_1 : 
+                    (sw[5] ? impulse_amp_out : 
+                    (sw[6] ? -16'sd1 * convolved_audio:
+                    (sw[7] ? -16'sd1 * allpassed
+                    (sw[8] ? -16'sd1 * delayed_audio_out): 0)))));
 
 
   pdm pdm(
@@ -300,7 +297,7 @@ module top_level(
     .enable_delay(1'b1), //button indicating whether to record or not
     .delay_length(DELAY_AMOUNT),
     .audio_valid_in(audio_trigger), //48 khz audio sample valid signal
-    .audio_in(processed_audio_in_1), //16 bit signed audio data 
+    .audio_in(allpassed), //16 bit signed audio data 
     .delayed_audio_out(delayed_audio_out) //played back audio (8 bit signed at 12 kHz)
   );
 
