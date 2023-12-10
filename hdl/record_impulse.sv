@@ -80,7 +80,7 @@ module record_impulse #(parameter IMPULSE_LENGTH = 16'd24000)
                             //     write_data <= 0;
                             // end
                             ir_sample_index <= recorded_so_far;
-                            write_data <= -16'sd2;
+                            write_data <= audio_in;
                             recorded_so_far <= recorded_so_far + 1;
                         end
                     end else begin

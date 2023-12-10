@@ -282,7 +282,7 @@ module top_level(
                     (sw[5] ? anti_alias_audio_in_1 : 
                     (sw[6] ? processed_audio_in_1 : 
                     (sw[7] ? impulse_amp_out : 
-                    (sw[8] ? displayed_conv_result[47:32]: 0))))));
+                    (sw[8] ? displayed_conv_result[29:14]: 0))))));
 
 
   pdm pdm(
