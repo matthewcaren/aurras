@@ -172,7 +172,7 @@ module top_level(
 
   localparam impulse_length = 16'd24000;
   logic impulse_recorded;
-  logic [12:0] impulse_write_addr;
+  logic [15:0] impulse_write_addr;
   logic signed [15:0] impulse_write_data;
   logic signed [47:0] final_convolved_audio;
   logic produced_convolutional_result; 
@@ -190,7 +190,7 @@ module top_level(
   end
 
   logic [12:0] first_ir_index, second_ir_index;
-  logic signed [7:0][15:0] ir_vals;
+  logic signed [15:0] ir_vals [7:0] ;
 
   logic ir_data_in_valid;
 
@@ -206,7 +206,6 @@ module top_level(
                                    .ir_vals(ir_vals)
                                    );
 
-  logic [1:0] rec_state;
   record_impulse #(impulse_length) impulse_recording(
                                    .audio_clk(audio_clk),
                                    .rst_in(rst_in),
@@ -219,8 +218,7 @@ module top_level(
                                    .ir_data_in_valid(ir_data_in_valid),
                                    .write_data(impulse_write_data),
                                    .write_enable(impulse_write_enable),
-                                   .impulse_amp_out(impulse_amp_out),
-                                   .rec_state(rec_state)
+                                   .impulse_amp_out(impulse_amp_out)
                                    );
 
   convolve_audio #(impulse_length) convolving_audio(
@@ -233,12 +231,11 @@ module top_level(
                                    .produced_convolutional_result(produced_convolutional_result),
                                    .first_ir_index(first_ir_index),
                                    .second_ir_index(second_ir_index),
-                                   .ir_vals(ir_vals),
-                                   .output_state(output_state)
+                                   .ir_vals(ir_vals)
                                   );
-  logic [2:0] output_state;
   /// ### SEVEN SEGMENT DISPLAY
   logic signed [47:0] displayed_conv_result;
+  logic signed [47:0] fuck_me;
   logic signed [15:0] displayed_audio;
   logic signed [15:0] displayed_audio_2;
   always_ff @(posedge audio_clk) begin
@@ -256,7 +253,7 @@ module top_level(
   assign ss1_c = ss_c;
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in(sw[9] ? ({1'b0, output_state, 3'b0, impulse_recorded, 2'b0, rec_state, displayed_conv_result[19:0]}): {displayed_audio_2, displayed_audio}),
+                              .val_in(sw[9] ? ({displayed_conv_result}): {displayed_audio_2, displayed_audio}),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
 

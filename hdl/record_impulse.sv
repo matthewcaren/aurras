@@ -2,7 +2,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module record_impulse #(parameter IMPULSE_LENGTH = 24000) 
+module record_impulse #(parameter IMPULSE_LENGTH = 16'd24000) 
     (input wire audio_clk,
      input wire rst_in,
      input wire audio_trigger,
@@ -15,16 +15,11 @@ module record_impulse #(parameter IMPULSE_LENGTH = 24000)
      output logic signed [15:0] write_data,
      output logic write_enable,
      output logic ir_data_in_valid,
-     output logic signed [15:0] impulse_amp_out,
-     output logic [1:0] rec_state
+     output logic signed [15:0] impulse_amp_out
     );
 
     typedef enum logic [1:0] {WAITING_FOR_IMPULSE = 0, DELAYING = 1, RECORDING = 2} impulse_record_state;
-    logic signed [15:0] impulse_amp_out;
-    logic [1:0] rec_state;
-    assign rec_state = state;
     logic impulse_completed;
-    logic ir_data_in_valid;
     logic [15:0] delayed_so_far, recorded_so_far;
     impulse_record_state state;
 
@@ -56,6 +51,7 @@ module record_impulse #(parameter IMPULSE_LENGTH = 24000)
                     impulse_recorded <= 0;
                     if (impulse_completed) begin
                         state <= DELAYING;
+                        
                         delayed_so_far <= 1;
                     end 
                 end 
@@ -78,13 +74,13 @@ module record_impulse #(parameter IMPULSE_LENGTH = 24000)
                             state <= WAITING_FOR_IMPULSE;
                             ir_data_in_valid <= 0;
                         end else begin
-                            // if ((recorded_so_far >= 16'd18000) && (recorded_so_far <= 16'd23999)) begin
-                            //     write_data <= 16'h1;
+                            // if ((recorded_so_far >= 16'd18000) && (recorded_so_far < 16'd18002)) begin
+                            //     write_data <= recorded_so_far - 15000;
                             // end else begin
                             //     write_data <= 0;
                             // end
                             ir_sample_index <= recorded_so_far;
-                            write_data <= audio_in;
+                            write_data <= -16'sd2;
                             recorded_so_far <= recorded_so_far + 1;
                         end
                     end else begin
