@@ -112,19 +112,19 @@ module convolve_audio_tb();
       //write_data = i % 512;
       write_data = (i >= 12000);
       audio_trigger = 1;
-      #10;
+      #1;
       ir_data_in_valid = 1;
       audio_trigger = 0;
-      #4000;
+      #400;
       ir_data_in_valid = 0;
     end 
 
-    #10;
+    #1;
     write_enable = 0;
     impulse_in_memory_complete = 1;
-    #100;
-    audio_trigger = 1;
     #10;
+    audio_trigger = 1;
+    #1;
     audio_trigger = 0;
 
     // for (integer i = 0; i < 3003; i = i + 1) begin
@@ -134,7 +134,7 @@ module convolve_audio_tb();
     //   end
     //   #10;
     // end 
-    #50000
+    #5000
     
     // // Build the IR values 
     // for (int i = 0; i < 8; i++) begin
