@@ -37,6 +37,27 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
 
     logic [12:0] first_audio_index, second_audio_index;
 
+
+    logic signed [15:0] audio_vals_0;
+    logic signed [15:0] audio_vals_1;
+    logic signed [15:0] audio_vals_2;
+    logic signed [15:0] audio_vals_3;
+    logic signed [15:0] audio_vals_4;
+    logic signed [15:0] audio_vals_5;
+    logic signed [15:0] audio_vals_6;
+    logic signed [15:0] audio_vals_7;
+
+    assign audio_vals_0 = audio_vals[0];
+    assign audio_vals_1 = audio_vals[1];
+    assign audio_vals_2 = audio_vals[2];
+    assign audio_vals_3 = audio_vals[3];
+    assign audio_vals_4 = audio_vals[4];
+    assign audio_vals_5 = audio_vals[5];
+    assign audio_vals_6 = audio_vals[6];
+    assign audio_vals_7 = audio_vals[7];
+
+
+
     assign audio_vals[0] = last_value_brom0;
     assign audio_vals[2] = last_value_brom1;
     assign audio_vals[4] = last_value_brom2;
@@ -58,7 +79,6 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
 
         end else begin
             case (state)
-
                 WAITING_FOR_IMPULSE: begin
                     if (impulse_in_memory_complete) begin
                         state <= WAITING_FOR_AUDIO;
@@ -123,8 +143,6 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
                                               ((convolve_counter << 1) + live_audio_start_address + 1);
                     end
 
-                        
-
                     // Loop over 3000 
                     if (convolve_counter == 16'd3003) begin
                         convolving <= 0;
@@ -147,8 +165,6 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
                         // intermediate_sums[6] <= intermediate_sums[6] + ir_vals[6] * 16'sd1;
                         // intermediate_sums[7] <= intermediate_sums[7] + ir_vals[7] * 16'sd1;
                     end 
-
-      
                     convolve_counter <= convolve_counter + 1;
                 end
 

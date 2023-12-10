@@ -74,13 +74,13 @@ module record_impulse #(parameter IMPULSE_LENGTH = 16'd24000)
                             state <= WAITING_FOR_IMPULSE;
                             ir_data_in_valid <= 0;
                         end else begin
-                            // if ((recorded_so_far >= 16'd18000) && (recorded_so_far < 16'd18002)) begin
-                            //     write_data <= recorded_so_far - 15000;
-                            // end else begin
-                            //     write_data <= 0;
-                            // end
+                            if ((recorded_so_far >= 16'd6000) && (recorded_so_far < 16'd12000)) begin
+                                write_data <= 1;
+                            end else begin
+                                write_data <= 0;
+                            end
                             ir_sample_index <= recorded_so_far;
-                            write_data <= audio_in;
+                           // write_data <= 1;
                             recorded_so_far <= recorded_so_far + 1;
                         end
                     end else begin
