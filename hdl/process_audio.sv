@@ -39,6 +39,7 @@ module process_audio (input wire audio_clk,
     always_ff @(posedge audio_clk) begin
         if (rst_in) begin
             offset_produced <= 0;
+            OFFSET <= 0;
         end else if (offset_produced_singlecycle) begin
             offset_produced <= 1;
             OFFSET <= offset_singlecycle;
