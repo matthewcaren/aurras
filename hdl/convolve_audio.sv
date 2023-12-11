@@ -6,15 +6,12 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
                       input wire rst_in,
                       input wire audio_trigger,
                       input wire signed [15:0] audio_in,
-            
                       input wire impulse_in_memory_complete,
                       output logic signed [47:0] convolution_result,
                       output logic produced_convolutional_result,
-                    
                       output logic [12:0] first_ir_index,
                       output logic [12:0] second_ir_index,
                       input wire signed [15:0] ir_vals [7:0]);
-
 
     localparam MEMORY_DEPTH = IMPULSE_LENGTH >> 2;
 
@@ -36,24 +33,6 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
     logic [15:0] convolve_counter;
 
     logic [12:0] first_audio_index, second_audio_index;
-
-    // logic signed [15:0] audio_vals_0;
-    // logic signed [15:0] audio_vals_1;
-    // logic signed [15:0] audio_vals_2;
-    // logic signed [15:0] audio_vals_3;
-    // logic signed [15:0] audio_vals_4;
-    // logic signed [15:0] audio_vals_5;
-    // logic signed [15:0] audio_vals_6;
-    // logic signed [15:0] audio_vals_7;
-
-    // assign audio_vals_0 = audio_vals[0];
-    // assign audio_vals_1 = audio_vals[1];
-    // assign audio_vals_2 = audio_vals[2];
-    // assign audio_vals_3 = audio_vals[3];
-    // assign audio_vals_4 = audio_vals[4];
-    // assign audio_vals_5 = audio_vals[5];
-    // assign audio_vals_6 = audio_vals[6];
-    // assign audio_vals_7 = audio_vals[7];
 
     assign audio_vals[0] = last_value_brom0;
     assign audio_vals[2] = last_value_brom1;
@@ -153,14 +132,6 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
                         intermediate_sums[5] <= intermediate_sums[5] + ir_vals[5] * audio_vals[5];
                         intermediate_sums[6] <= intermediate_sums[6] + ir_vals[6] * audio_vals[6];
                         intermediate_sums[7] <= intermediate_sums[7] + ir_vals[7] * audio_vals[7];
-                        // intermediate_sums[0] <= intermediate_sums[0] + ir_vals[0] * 16'sd1;
-                        // intermediate_sums[1] <= intermediate_sums[1] + ir_vals[1] * 16'sd1;
-                        // intermediate_sums[2] <= intermediate_sums[2] + ir_vals[2] * 16'sd1;
-                        // intermediate_sums[3] <= intermediate_sums[3] + ir_vals[3] * 16'sd1;
-                        // intermediate_sums[4] <= intermediate_sums[4] + ir_vals[4] * 16'sd1;
-                        // intermediate_sums[5] <= intermediate_sums[5] + ir_vals[5] * 16'sd1;
-                        // intermediate_sums[6] <= intermediate_sums[6] + ir_vals[6] * 16'sd1;
-                        // intermediate_sums[7] <= intermediate_sums[7] + ir_vals[7] * 16'sd1;
                     end 
                     convolve_counter <= convolve_counter + 1;
                 end

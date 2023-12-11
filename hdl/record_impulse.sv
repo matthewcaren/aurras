@@ -19,14 +19,15 @@ module record_impulse #(parameter IMPULSE_LENGTH = 16'd24000)
     );
 
     typedef enum logic [1:0] {WAITING_FOR_IMPULSE = 0, DELAYING = 1, RECORDING = 2} impulse_record_state;
-    logic impulse_completed;
-    logic [15:0] delayed_so_far, recorded_so_far;
     impulse_record_state state;
+    logic impulse_completed, able_to_impulse;
+    logic [15:0] delayed_so_far, recorded_so_far;
+    assign able_to_impulse = (state == WAITING_FOR_IMPULSE);
 
     impulse_generator generate_impulse(.clk_in(audio_clk),
                                         .rst_in(rst_in),
                                         .step_in(audio_trigger),
-                                        .impulse_in(record_impulse_trigger),
+                                        .impulse_in(record_impulse_trigger && able_to_impulse),
                                         .impulse_out(impulse_completed),
                                         .amp_out(impulse_amp_out));
 
@@ -51,7 +52,6 @@ module record_impulse #(parameter IMPULSE_LENGTH = 16'd24000)
                     impulse_recorded <= 0;
                     if (impulse_completed) begin
                         state <= DELAYING;
-                        
                         delayed_so_far <= 1;
                     end 
                 end 
@@ -74,11 +74,6 @@ module record_impulse #(parameter IMPULSE_LENGTH = 16'd24000)
                             state <= WAITING_FOR_IMPULSE;
                             ir_data_in_valid <= 0;
                         end else begin
-                            // if ((recorded_so_far >= 16'd10000) && (recorded_so_far < 16'd15000)) begin
-                            //     write_data <= 1;
-                            // end else begin
-                            //     write_data <= 0;
-                            // end
                             ir_sample_index <= recorded_so_far;
                             write_data <= audio_in;
                             recorded_so_far <= recorded_so_far + 1;

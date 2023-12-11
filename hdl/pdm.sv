@@ -10,6 +10,8 @@ module pdm( input wire clk_in,
 
   logic signed [16:0] stored_value;
   logic signed [15:0] feedback;
+  logic silence;
+
 
   assign pdm_out = rst_in ? silence : ~(stored_value[16]);
   assign feedback = stored_value[16] ? -'sd32768 : 'sd32767;
@@ -18,7 +20,6 @@ module pdm( input wire clk_in,
   logic pdm_trig;
   assign pdm_trig = (pdm_counter==0);
 
-  logic silence;
 
   always_ff @(posedge clk_in) begin
     if (rst_in) begin

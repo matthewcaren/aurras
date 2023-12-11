@@ -68,15 +68,17 @@ module top_level(
 
   // DC Offset correction
   logic signed [15:0] processed_audio_in_1, OFFSET, offset_singlecycle, dc_blocked_audio_in_1;
-  logic offset_produced, offset_produced_singlecycle, offset_button_val, prev_offset_button_val, offset_trigger;
+  logic offset_produced, offset_produced_singlecycle, offset_trigger;
   always_ff @(posedge audio_clk) begin
-    offset_button_val <= btn[1];
-    prev_offset_button_val <= offset_button_val;
-    offset_trigger <= offset_button_val && ~(prev_offset_button_val);
+    if (sys_rst) begin
+      offset_trigger <= 1;
+    end else begin
+      offset_trigger <= 0;
+    end   
   end
 
   calculate_offset offset_calculator(.audio_clk(audio_clk),
-                                     .rst_in(rst_in),
+                                     .rst_in(sys_rst),
                                      .audio_trigger(audio_trigger),
                                      .offset_trigger(offset_trigger),
                                      .audio_in(raw_audio_in_1),
@@ -84,7 +86,7 @@ module top_level(
                                      .offset(offset_singlecycle));
 
   always_ff @(posedge audio_clk) begin
-    if (rst_in) begin
+    if (sys_rst) begin
       offset_produced <= 0;
     end else if (offset_produced_singlecycle) begin
       offset_produced <= 1;
@@ -113,15 +115,13 @@ module top_level(
   end 
 
   // 48k to 24k decimation
-  logic signed [15:0] decimated_audio_in_1;
   logic decimation_counter; 
   always_ff @(posedge audio_clk) begin
-    if (rst_in) begin
+    if (sys_rst) begin
       decimation_counter <= 0;
     end
     if (filter_valid_1) begin
       if (decimation_counter == 0) begin
-        decimated_audio_in_1 <= anti_alias_audio_in_1;
         processed_audio_in_1 <= anti_alias_audio_in_1;
       end 
       decimation_counter <= ~(decimation_counter);
@@ -153,34 +153,19 @@ module top_level(
 
   // NOT IN USE RIGHT NOW
 
-
   localparam impulse_length = 16'd24000;
-  logic impulse_recorded;
+  logic impulse_recorded, able_to_impulse, produced_convolutional_result, impulse_write_enable;
   logic [15:0] impulse_write_addr;
   logic signed [15:0] impulse_write_data;
   logic signed [47:0] convolved_audio_singlecycle;
-  logic produced_convolutional_result; 
-  logic impulse_write_enable;
   logic signed [15:0] impulse_amp_out;
-
-  logic impulse_btn_val;
-  logic impulse_btn_prev_val;
-  logic impulse_trigger;
-
-  always_ff @(posedge audio_clk) begin
-    impulse_btn_val <= btn[3];
-    impulse_btn_prev_val <= impulse_btn_val;
-    impulse_trigger <= impulse_btn_val && ~impulse_btn_prev_val;
-  end
-
   logic [12:0] first_ir_index, second_ir_index;
-  logic signed [15:0] ir_vals [7:0] ;
-
+  logic signed [15:0] ir_vals [7:0];
   logic ir_data_in_valid;
 
   ir_buffer #(16'd6000) impulse_memory(
                                    .audio_clk(audio_clk),
-                                   .rst_in(rst_in),
+                                   .rst_in(sys_rst),
                                    .ir_sample_index(impulse_write_addr),
                                    .write_data(impulse_write_data),
                                    .write_enable(impulse_write_enable),
@@ -192,9 +177,9 @@ module top_level(
 
   record_impulse #(impulse_length) impulse_recording(
                                    .audio_clk(audio_clk),
-                                   .rst_in(rst_in),
+                                   .rst_in(sys_rst),
                                    .audio_trigger(audio_trigger),
-                                   .record_impulse_trigger(impulse_trigger),
+                                   .record_impulse_trigger(btn[3]),
                                    .delay_length(DELAY_AMOUNT),
                                    .audio_in(processed_audio_in_1),
                                    .impulse_recorded(impulse_recorded),
@@ -207,7 +192,7 @@ module top_level(
 
   convolve_audio #(impulse_length) convolving_audio(
                                    .audio_clk(audio_clk),
-                                   .rst_in(rst_in),
+                                   .rst_in(sys_rst),
                                    .audio_trigger(audio_trigger),
                                    .audio_in(processed_audio_in_1),
                                    .impulse_in_memory_complete(impulse_recorded),
@@ -218,13 +203,15 @@ module top_level(
                                    .ir_vals(ir_vals)
                                   );  
   
-  logic signed [15:0] convolved_audio;
+  logic signed [15:0] displayed_audio, convolved_audio;
   always_ff @(posedge audio_clk) begin
     if (produced_convolutional_result) begin
-      convolved_audio <= convolved_audio_singlecycle[28:13];
+      convolved_audio <= (-16'sd1 * convolved_audio_singlecycle[28:13]);
+    end
+    if (btn[2]) begin
+      displayed_audio <= processed_audio_in_1;
     end
   end
-
 
   // ### Allpass speaker phase correction
   logic allpassed_valid;
@@ -242,15 +229,13 @@ module top_level(
     end 
   end
 
-
-
   /// ### SEVEN SEGMENT DISPLAY
   logic [6:0] ss_c;
   assign ss0_c = ss_c; 
   assign ss1_c = ss_c;
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in(pdm_in),
+                              .val_in({16'b0, (sw[9] ? (convolved_audio): displayed_audio)}),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
 
@@ -268,8 +253,6 @@ module top_level(
   // ### SOUND OUTPUT MANAGEMENT
 
   logic signed [15:0] pdm_in;
-  logic signed [15:0] delayed_audio_out; 
-  logic signed [15:0] one_second_delay;
   logic sound_out;
   
   assign pdm_in = sw[2] ? {tone_440[7], tone_440[7], tone_440[7], tone_440[7], 
@@ -277,10 +260,9 @@ module top_level(
                     (sw[3] ? raw_audio_in_1 : 
                     (sw[4] ? processed_audio_in_1 : 
                     (sw[5] ? impulse_amp_out : 
-                    (sw[6] ? -16'sd1 * convolved_audio:
-                    (sw[7] ? -16'sd1 * allpassed
-                    (sw[8] ? -16'sd1 * delayed_audio_out): 0)))));
-
+                    (sw[6] ? convolved_audio : 
+                    (sw[7] ? allpassed : 
+                    (sw[8] ? delayed_audio_out : 0))))));
 
   pdm pdm(
     .clk_in(audio_clk),
@@ -289,6 +271,7 @@ module top_level(
     .pdm_out(sound_out)
   );
 
+  logic signed [15:0] delayed_audio_out, one_second_delay;
 
   //Delayed audio by sw[15:10] w/ two 0s tacked on 
   delay_audio #(16'd1000) my_delayed_sound_out (
