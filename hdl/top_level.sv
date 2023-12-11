@@ -47,6 +47,7 @@ module top_level(
   logic lrcl_clk_1, lrcl_clk_2;
   logic signed [15:0] raw_audio_in_1_singlecycle, raw_audio_in_2_singlecycle;
   logic mic_data_valid_1, mic_data_valid_2;
+  logic signed [15:0] processed_audio_in_1, processed_audio_in_2;
 
   i2s mic_1(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_1_data), .i2s_clk(i2s_clk_1), .lrcl_clk(lrcl_clk_1), .data_valid_out(mic_data_valid_1), .audio_out(raw_audio_in_1_singlecycle));
   i2s mic_2(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_2_data), .i2s_clk(i2s_clk_2), .lrcl_clk(lrcl_clk_2), .data_valid_out(mic_data_valid_2), .audio_out(raw_audio_in_2_singlecycle));
@@ -58,7 +59,6 @@ module top_level(
   assign mic_1_data = pmoda[3];
   assign mic_2_data = pmoda[7];
 
-  logic signed [15:0] processed_audio_in_1;
   process_audio process_mic_1(.audio_clk(audio_clk),
                               .rst_in(sys_rst),
                               .audio_trigger(audio_trigger),
@@ -66,6 +66,12 @@ module top_level(
                               .raw_audio_single_cycle(raw_audio_in_1_singlecycle),
                               .processed_audio(processed_audio_in_1));
 
+  process_audio process_mic_1(.audio_clk(audio_clk),
+                              .rst_in(sys_rst),
+                              .audio_trigger(audio_trigger),
+                              .mic_data_valid(mic_data_valid_2),
+                              .raw_audio_single_cycle(raw_audio_in_2_singlecycle),
+                              .processed_audio(processed_audio_in_2));
 
   localparam impulse_length = 16'd24000;
   logic impulse_recorded, able_to_impulse, produced_convolutional_result, impulse_write_enable;
