@@ -6,12 +6,12 @@ module process_audio (input wire audio_clk,
                       input wire audio_trigger,
                       input wire mic_data_valid,
                       input wire signed [15:0] raw_audio_single_cycle,
+                      output logic signed [15:0] raw_audio_in,
                       output logic signed [15:0] processed_audio
                       );
 
 
     // DC Offset correction
-    logic signed [15:0] raw_audio_in;
     always_ff @(posedge audio_clk) begin
         if (mic_data_valid) begin
             raw_audio_in <= raw_audio_single_cycle;

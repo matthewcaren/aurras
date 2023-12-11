@@ -59,18 +59,21 @@ module top_level(
   assign mic_1_data = pmoda[3];
   assign mic_2_data = pmoda[7];
 
+  logic signed [15:0] raw_audio_in_1, raw_audio_in_2;
   process_audio process_mic_1(.audio_clk(audio_clk),
                               .rst_in(sys_rst),
                               .audio_trigger(audio_trigger),
                               .mic_data_valid(mic_data_valid_1),
                               .raw_audio_single_cycle(raw_audio_in_1_singlecycle),
+                              .raw_audio_in(raw_audio_in_1),
                               .processed_audio(processed_audio_in_1));
 
-  process_audio process_mic_1(.audio_clk(audio_clk),
+  process_audio process_mic_2(.audio_clk(audio_clk),
                               .rst_in(sys_rst),
                               .audio_trigger(audio_trigger),
                               .mic_data_valid(mic_data_valid_2),
                               .raw_audio_single_cycle(raw_audio_in_2_singlecycle),
+                              .raw_audio_in(raw_audio_in_2),
                               .processed_audio(processed_audio_in_2));
 
   localparam impulse_length = 16'd24000;
@@ -138,8 +141,7 @@ module top_level(
   assign ss1_c = ss_c;
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in(ssc_val),
-                              //.val_in({16'b0, (sw[9] ? (convolved_audio): displayed_audio)}),
+                              .val_in({16'b0, (sw[9] ? (convolved_audio): displayed_audio)}),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
 
@@ -195,25 +197,31 @@ module top_level(
 
   // ### SOUND OUTPUT MANAGEMENT
 
-  logic signed [15:0] pdm_in;
-  logic sound_out;
+  logic signed [15:0] pdm_out_2;
+  logic sound_out_1, sound_out_2;
   
-  assign pdm_in = sw[2] ? {{8{tone_440[7]}}, tone_440[7:0]} <<< 8 : 
+  assign pdm_out_2 = sw[2] ? {{8{tone_440[7]}}, tone_440[7:0]} <<< 8 : 
                     (sw[3] ? raw_audio_in_1 : 
                     (sw[4] ? processed_audio_in_1 : 
-                    (sw[5] ? impulse_amp_out : 
-                    (sw[6] ? convolved_audio : 
-                    (sw[7] ? allpassed : 
-                    (sw[8] ? delayed_audio_out : 0))))));
+                    (sw[5] ? convolved_audio : 
+                    (sw[6] ? allpassed : 
+                    (sw[7] ? delayed_audio_out : 0)))));
 
-  pdm pdm(
+  pdm pdm1(
     .clk_in(audio_clk),
     .rst_in(sys_rst),
-    .level_in(pdm_in),
-    .pdm_out(sound_out)
+    .level_in(impulse_amp_out),
+    .pdm_out(sound_out_1)
   );
 
-  assign spkl = sw[0] ? sound_out : 0;
-  assign spkr = sw[1] ? sound_out : 0;
+  pdm pdm2(
+    .clk_in(audio_clk),
+    .rst_in(sys_rst),
+    .level_in(pdm_out_2),
+    .pdm_out(sound_out_2)
+  );
+
+  assign spkl = sw[0] ? sound_out_1 : 0;
+  assign spkr = sw[1] ? sound_out_2 : 0;
 
 endmodule // top_level
