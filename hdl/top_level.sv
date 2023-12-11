@@ -46,11 +46,24 @@ module top_level(
   logic i2s_clk_1, i2s_clk_2;
   logic lrcl_clk_1, lrcl_clk_2;
   logic signed [15:0] raw_audio_in_1_singlecycle, raw_audio_in_2_singlecycle;
+  logic signed [15:0] raw_audio_in_1, raw_audio_in_2, processed_audio_in_1, processed_audio_in_2;
   logic mic_data_valid_1, mic_data_valid_2;
-  logic signed [15:0] processed_audio_in_1, processed_audio_in_2;
 
-  i2s mic_1(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_1_data), .i2s_clk(i2s_clk_1), .lrcl_clk(lrcl_clk_1), .data_valid_out(mic_data_valid_1), .audio_out(raw_audio_in_1_singlecycle));
-  i2s mic_2(.audio_clk(audio_clk), .rst_in(sys_rst), .mic_data(mic_2_data), .i2s_clk(i2s_clk_2), .lrcl_clk(lrcl_clk_2), .data_valid_out(mic_data_valid_2), .audio_out(raw_audio_in_2_singlecycle));
+  i2s mic_1(.audio_clk(audio_clk),
+            .rst_in(sys_rst), 
+            .mic_data(mic_1_data), 
+            .i2s_clk(i2s_clk_1), 
+            .lrcl_clk(lrcl_clk_1), 
+            .data_valid_out(mic_data_valid_1), 
+            .audio_out(raw_audio_in_1_singlecycle));
+
+  i2s mic_2(.audio_clk(audio_clk), 
+            .rst_in(sys_rst),
+            .mic_data(mic_2_data),
+            .i2s_clk(i2s_clk_2),
+            .lrcl_clk(lrcl_clk_2),
+            .data_valid_out(mic_data_valid_2),
+            .audio_out(raw_audio_in_2_singlecycle));
 
   assign pmodb[3] = i2s_clk_1;
   assign pmodb[7] = i2s_clk_2;
@@ -59,7 +72,6 @@ module top_level(
   assign mic_1_data = pmoda[3];
   assign mic_2_data = pmoda[7];
 
-  logic signed [15:0] raw_audio_in_1, raw_audio_in_2;
   process_audio process_mic_1(.audio_clk(audio_clk),
                               .rst_in(sys_rst),
                               .audio_trigger(audio_trigger),
@@ -75,6 +87,7 @@ module top_level(
                               .raw_audio_single_cycle(raw_audio_in_2_singlecycle),
                               .raw_audio_in(raw_audio_in_2),
                               .processed_audio(processed_audio_in_2));
+
 
   localparam impulse_length = 16'd24000;
   logic impulse_recorded, able_to_impulse, produced_convolutional_result, impulse_write_enable;
@@ -116,7 +129,7 @@ module top_level(
                                    .audio_clk(audio_clk),
                                    .rst_in(sys_rst),
                                    .audio_trigger(audio_trigger),
-                                   .audio_in(processed_audio_in_1),
+                                   .audio_in(processed_audio_in_2),
                                    .impulse_in_memory_complete(impulse_recorded),
                                    .convolution_result(convolved_audio_singlecycle),
                                    .produced_convolutional_result(produced_convolutional_result),
@@ -125,13 +138,14 @@ module top_level(
                                    .ir_vals(ir_vals)
                                   );  
   
-  logic signed [15:0] displayed_audio, convolved_audio;
+  logic signed [15:0] displayed_audio_1, displayed_audio_2, convolved_audio;
   always_ff @(posedge audio_clk) begin
     if (produced_convolutional_result) begin
       convolved_audio <= (-16'sd1 * convolved_audio_singlecycle[28:13]);
     end
     if (btn[2]) begin
-      displayed_audio <= processed_audio_in_1;
+      displayed_audio_1 <= processed_audio_in_1;
+      displayed_audio_2 <= processed_audio_in_2;
     end
   end
 
@@ -139,9 +153,10 @@ module top_level(
   logic [6:0] ss_c;
   assign ss0_c = ss_c; 
   assign ss1_c = ss_c;
+
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in({16'b0, (sw[9] ? (convolved_audio): displayed_audio)}),
+                              .val_in(sw[9] ? (convolved_audio): {displayed_audio_1, displayed_audio_2}),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
 
@@ -175,24 +190,24 @@ module top_level(
   logic signed [15:0] delayed_audio_out, one_second_delay;
   //Delayed audio by sw[15:10] w/ two 0s tacked on 
   delay_audio #(16'd1000) my_delayed_sound_out (
-    .clk_in(audio_clk), //system clock
-    .rst_in(sys_rst),//global reset
-    .enable_delay(1'b1), //button indicating whether to record or not
-    .delay_length(DELAY_AMOUNT),
-    .audio_valid_in(audio_trigger), //48 khz audio sample valid signal
-    .audio_in(allpassed), //16 bit signed audio data 
-    .delayed_audio_out(delayed_audio_out) //played back audio (8 bit signed at 12 kHz)
+        .clk_in(audio_clk), 
+        .rst_in(sys_rst),
+        .enable_delay(1'b1), 
+        .delay_length(DELAY_AMOUNT),
+        .audio_valid_in(audio_trigger), 
+        .audio_in(allpassed), 
+        .delayed_audio_out(delayed_audio_out) 
   );
 
   // One second delayed audio
   delay_audio #(16'd24010) one_second_delayed_sound_out (
-    .clk_in(audio_clk), //system clock
-    .rst_in(sys_rst),//global reset
-    .enable_delay(1'b1), //button indicating whether to record or not
-    .delay_length(16'd24000),
-    .audio_valid_in(audio_trigger), //48 khz audio sample valid signal
-    .audio_in(processed_audio_in_1), //16 bit signed audio data 
-    .delayed_audio_out(one_second_delay) //played back audio (8 bit signed at 12 kHz)
+        .clk_in(audio_clk),
+        .rst_in(sys_rst),
+        .enable_delay(1'b1), 
+        .delay_length(16'd24000),
+        .audio_valid_in(audio_trigger),
+        .audio_in(processed_audio_in_2),
+        .delayed_audio_out(one_second_delay) 
   );
 
   // ### SOUND OUTPUT MANAGEMENT
@@ -205,7 +220,8 @@ module top_level(
                     (sw[4] ? processed_audio_in_1 : 
                     (sw[5] ? convolved_audio : 
                     (sw[6] ? allpassed : 
-                    (sw[7] ? delayed_audio_out : 0)))));
+                    (sw[7] ? delayed_audio_out :
+                    (sw[8] ? processed_audio_in_2 : 0))))));
 
   pdm pdm1(
     .clk_in(audio_clk),

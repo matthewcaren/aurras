@@ -57,6 +57,15 @@ module process_audio (input wire audio_clk,
                                         .m_axis_data_tvalid(filter_valid),
                                         .m_axis_data_tdata(anti_alias_audio_in_singlecycle));
 
+
+    logic signed [15:0] anti_alias_audio_in_1;
+    always_ff @(posedge audio_clk) begin
+        if (filter_valid) begin
+            anti_alias_audio_in_1 <= anti_alias_audio_in_singlecycle;
+        end
+    end 
+
+
     // 48k to 24k decimation
     logic decimation_counter; 
     always_ff @(posedge audio_clk) begin
@@ -65,7 +74,7 @@ module process_audio (input wire audio_clk,
         end
         if (filter_valid) begin
             if (decimation_counter == 0) begin
-                processed_audio <= anti_alias_audio_in_singlecycle;
+                processed_audio <= anti_alias_audio_in_1;
             end 
             decimation_counter <= ~(decimation_counter);
         end

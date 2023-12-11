@@ -4,28 +4,15 @@
 module ir_buffer #(parameter MEMORY_DEPTH = 16'd6000)
                     (input wire audio_clk,
                     input wire rst_in,
-
                     input wire [15:0] ir_sample_index,
                     input wire signed [15:0] write_data,
                     input wire write_enable, 
                     input wire ir_data_in_valid,
-                    
                     input wire [12:0] first_ir_index,
                     input wire [12:0] second_ir_index,
-
-                    // output logic signed [15:0] ir_val_0,
-                    // output logic signed [15:0] ir_val_1,
-                    // output logic signed [15:0] ir_val_2,
-                    // output logic signed [15:0] ir_val_3,
-                    // output logic signed [15:0] ir_val_4,
-                    // output logic signed [15:0] ir_val_5,
-                    // output logic signed [15:0] ir_val_6,
-                    // output logic signed [15:0] ir_val_7,
-
                     output logic signed [15:0] ir_vals [7:0]
     );
 
-    // assign writing =write_enable && ir_data_in_valid && (ir_sample_index < 16'd18000) && (ir_sample_index >= 16'd12000);
 
     // Locations 23999 to 18000
     xilinx_true_dual_port_read_first_2_clock_ram #(
