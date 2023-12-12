@@ -6,11 +6,9 @@ module top_level(
     input wire [3:0] btn,
     output logic [6:0] ss0_c, ss1_c,
     output logic [3:0] ss0_an, ss1_an,
-    output logic [2:0] rgb0, rgb1, //rgb led
-    output logic spkl, spkr, //speaker outputs
-    output logic [15:0] led, // led outputs
-    output logic uart_txd, // if we want to use Manta
-    input wire uart_rxd
+    output logic [2:0] rgb0, rgb1, 
+    output logic spkl, spkr, 
+    output logic [15:0] led
 );
 
   assign led = sw;
@@ -19,8 +17,8 @@ module top_level(
   assign rgb1 = 0;
   assign rgb0 = 0;
 
-  logic [7:0] DELAY_AMOUNT;
-  assign DELAY_AMOUNT = {sw[15:10], 2'b0};
+  logic [5:0] DELAY_AMOUNT;
+  assign DELAY_AMOUNT = {sw[15:10]};
 
   // ### CLOCK SETUP
 
@@ -123,7 +121,7 @@ module top_level(
         .audio_trigger(audio_trigger),
         .record_impulse_trigger(btn[3]),
         .delay_length(DELAY_AMOUNT),
-        .audio_in(processed_audio_in_system),
+        .audio_in(processed_audio_in_calibrate),
         .impulse_recorded(impulse_recorded),
         .ir_sample_index(impulse_write_addr),
         .ir_data_in_valid(ir_data_in_valid),
@@ -135,7 +133,7 @@ module top_level(
         .audio_clk(audio_clk),
         .rst_in(sys_rst),
         .audio_trigger(audio_trigger),
-        .audio_in(processed_audio_in_calibrate),
+        .audio_in(processed_audio_in_system),
         .impulse_in_memory_complete(impulse_recorded),
         .convolution_result(convolved_audio_system_singlecycle),
         .produced_convolutional_result(produced_convolutional_result),
@@ -162,7 +160,7 @@ module top_level(
   seven_segment_controller mssc(
         .clk_in(audio_clk),
         .rst_in(sys_rst),
-        .val_in(sw[9] ? (convolved_audio_system): {displayed_audio_system, displayed_audio_calibrate}),
+        .val_in(sw[3] ? (convolved_audio_system): {displayed_audio_system, displayed_audio_calibrate}),
         .cat_out(ss_c),
         .an_out({ss0_an, ss1_an}));
 
@@ -225,7 +223,7 @@ module top_level(
         .enable_delay(1'b1), 
         .delay_length(DELAY_AMOUNT),
         .audio_valid_in(audio_trigger), 
-        .audio_in(allpassed_system_convolved), 
+        .audio_in(allpassed_system_unconvolved), 
         .delayed_audio_out(delayed_unconvolved_audio_out_system));
 
   // One second delayed audio
@@ -235,7 +233,7 @@ module top_level(
         .enable_delay(1'b1), 
         .delay_length(16'd24000),
         .audio_valid_in(audio_trigger),
-        .audio_in(processed_audio_in_calibrate),
+        .audio_in(processed_audio_in_system),
         .delayed_audio_out(one_second_delay) 
   );
 
@@ -249,7 +247,8 @@ module top_level(
                     (sw[6] ? processed_audio_in_system : 
                     (sw[7] ? processed_audio_in_calibrate :
                     (sw[8] ? delayed_convolved_audio_out_system : 
-                    (sw[9] ? delayed_unconvolved_audio_out_system : 0)))));
+                    (sw[9] ? delayed_unconvolved_audio_out_system : 
+                    (sw[2] ? one_second_delay : 0))))));
 
   pdm pdm_calibrate(
         .clk_in(audio_clk),
@@ -266,4 +265,4 @@ module top_level(
   assign spkl = sw[0] ? sound_out_calibrate : 0;
   assign spkr = sw[1] ? sound_out_system : 0;
 
-endmodule // top_level
+endmodule

@@ -68,7 +68,8 @@ module process_audio (input wire audio_clk,
         end
         if (filter_valid) begin
             if (decimation_counter == 0) begin
-                processed_audio <= anti_alias_audio_in;
+                // processed_audio <= anti_alias_audio_in;
+                processed_audio <= dc_blocked_audio_in;
             end 
             decimation_counter <= ~(decimation_counter);
         end
