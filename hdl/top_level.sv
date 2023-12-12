@@ -73,14 +73,16 @@ module top_level(
   assign mic_2_data = pmoda[7];
 
   process_audio process_mic_1(.audio_clk(audio_clk),
-                              .rst_in(btn[1]),
+                              .rst_in(sys_rst),
+                              .offset_trigger(btn[1]),
                               .mic_data_valid(mic_data_valid_1),
                               .raw_audio_single_cycle(raw_audio_in_1_singlecycle),
                               .raw_audio_in(raw_audio_in_1),
                               .processed_audio(processed_audio_in_1));
 
   process_audio process_mic_2(.audio_clk(audio_clk),
-                              .rst_in(btn[1]),
+                              .rst_in(sys_rst),
+                              .offset_trigger(btn[1]),
                               .mic_data_valid(mic_data_valid_2),
                               .raw_audio_single_cycle(raw_audio_in_2_singlecycle),
                               .raw_audio_in(raw_audio_in_2),
