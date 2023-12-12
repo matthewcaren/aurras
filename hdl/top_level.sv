@@ -13,7 +13,9 @@ module top_level(
     input wire uart_rxd
 );
 
-  assign led = sw;
+  assign led[13:0] = sw[13:0];
+  assign led[14] = computing_1;
+  assign led[15] = computing_2;
   logic sys_rst;
   assign sys_rst = btn[0];
   assign rgb1 = 0;
@@ -72,21 +74,28 @@ module top_level(
   assign mic_1_data = pmoda[3];
   assign mic_2_data = pmoda[7];
 
+  logic computing_1, computing_2;
+  logic signed [15:0] offset1, offset2;
+
   process_audio process_mic_1(.audio_clk(audio_clk),
-                              .rst_in(sys_rst),
+                              .rst_in(btn[1]),
                               .audio_trigger(audio_trigger),
                               .mic_data_valid(mic_data_valid_1),
                               .raw_audio_single_cycle(raw_audio_in_1_singlecycle),
                               .raw_audio_in(raw_audio_in_1),
-                              .processed_audio(processed_audio_in_1));
+                              .processed_audio(processed_audio_in_1),
+                              .computing(computing_1),
+                              .OFFSET(offset1));
 
   process_audio process_mic_2(.audio_clk(audio_clk),
-                              .rst_in(sys_rst),
+                              .rst_in(btn[1]),
                               .audio_trigger(audio_trigger),
                               .mic_data_valid(mic_data_valid_2),
                               .raw_audio_single_cycle(raw_audio_in_2_singlecycle),
                               .raw_audio_in(raw_audio_in_2),
-                              .processed_audio(processed_audio_in_2));
+                              .processed_audio(processed_audio_in_2),
+                              .computing(computing_2),
+                              .OFFSET(offset2));
 
 
   localparam impulse_length = 16'd24000;
@@ -144,8 +153,10 @@ module top_level(
       convolved_audio <= (-16'sd1 * convolved_audio_singlecycle[28:13]);
     end
     if (btn[2]) begin
-      displayed_audio_1 <= processed_audio_in_1;
-      displayed_audio_2 <= processed_audio_in_2;
+      // displayed_audio_1 <= processed_audio_in_1;
+      // displayed_audio_2 <= processed_audio_in_2;
+      displayed_audio_1 <= raw_audio_in_1;
+      displayed_audio_2 <= raw_audio_in_2;
     end
   end
 
@@ -156,7 +167,8 @@ module top_level(
 
   seven_segment_controller mssc(.clk_in(audio_clk),
                               .rst_in(sys_rst),
-                              .val_in(sw[9] ? (convolved_audio): {displayed_audio_1, displayed_audio_2}),
+                             // .val_in(sw[9] ? (convolved_audio): {displayed_audio_1, displayed_audio_2}),
+                              .val_in(sw[9] ? {offset1, displayed_audio_1}: {offset2, displayed_audio_2}),
                               .cat_out(ss_c),
                               .an_out({ss0_an, ss1_an}));
 
@@ -215,9 +227,9 @@ module top_level(
   logic signed [15:0] pdm_out_2;
   logic sound_out_1, sound_out_2;
   
-  assign pdm_out_2 = sw[2] ? {{8{tone_440[7]}}, tone_440[7:0]} <<< 8 : 
+  assign pdm_out_2 = sw[4] ? {{8{tone_440[7]}}, tone_440[7:0]} <<< 8 : 
                     (sw[3] ? raw_audio_in_1 : 
-                    (sw[4] ? processed_audio_in_1 : 
+                    (sw[2] ? processed_audio_in_1 : 
                     (sw[5] ? convolved_audio : 
                     (sw[6] ? allpassed : 
                     (sw[7] ? delayed_audio_out :

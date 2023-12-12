@@ -3,22 +3,22 @@
 
 module process_audio (input wire audio_clk,
                       input wire rst_in,
-                      input wire audio_trigger,
                       input wire mic_data_valid,
                       input wire signed [15:0] raw_audio_single_cycle,
                       output logic signed [15:0] raw_audio_in,
-                      output logic signed [15:0] processed_audio
+                      output logic signed [15:0] processed_audio,
                       );
 
 
     // DC Offset correction
+
     always_ff @(posedge audio_clk) begin
         if (mic_data_valid) begin
             raw_audio_in <= raw_audio_single_cycle;
         end
     end
 
-    logic signed [15:0] OFFSET, offset_singlecycle, dc_blocked_audio_in;
+    logic signed [15:0] offset_singlecycle, dc_blocked_audio_in;
     logic offset_produced, offset_produced_singlecycle, offset_trigger;
     always_ff @(posedge audio_clk) begin
         if (rst_in) begin
@@ -30,7 +30,7 @@ module process_audio (input wire audio_clk,
 
     calculate_offset offset_calculator(.audio_clk(audio_clk),
                                         .rst_in(rst_in),
-                                        .audio_trigger(audio_trigger),
+                                        .audio_trigger(mic_data_valid),
                                         .offset_trigger(offset_trigger),
                                         .audio_in(raw_audio_in),
                                         .offset_produced(offset_produced_singlecycle),
