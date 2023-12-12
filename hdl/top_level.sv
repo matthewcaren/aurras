@@ -93,6 +93,9 @@ module top_level(
         .raw_audio_in(raw_audio_in_calibrate),
         .processed_audio(processed_audio_in_calibrate));
 
+  logic signed [15:0] unconvolved_audio_system;
+  assign unconvolved_audio_system = (-16'sd1 * processed_audio_in_system);
+
 
   localparam impulse_length = 16'd24000;
   logic impulse_recorded, able_to_impulse, produced_convolutional_result, impulse_write_enable;
@@ -174,32 +177,56 @@ module top_level(
   defparam sine_440.PHASE_INCR = 32'b0000_0100_1011_0001_0111_1110_0100_1011;
 
   // ### Allpass speaker phase correction
-  logic allpassed_system_valid;
-  logic signed [15:0] allpassed_system_singlecycle, allpassed_system;
-  fir_allpass_24k_16width_output allpass_system (
+  logic allpassed_system_valid_convolved;
+  logic signed [15:0] allpassed_system_singlecycle_convolved, allpassed_system_convolved;
+  fir_allpass_24k_16width_output allpass_system_convolved (
         .aclk(audio_clk),
         .s_axis_data_tvalid(audio_trigger),
         .s_axis_data_tready(1'b1),
         .s_axis_data_tdata(convolved_audio_system),
-        .m_axis_data_tvalid(allpassed_system_valid),
-        .m_axis_data_tdata(allpassed_system_singlecycle));
-
+        .m_axis_data_tvalid(allpassed_system_valid_convolved),
+        .m_axis_data_tdata(allpassed_system_singlecycle_convolved));
   always_ff @(posedge audio_clk) begin
-    if (allpassed_system_valid) begin
-      allpassed_system <= allpassed_system_singlecycle;
+    if (allpassed_system_valid_convolved) begin
+      allpassed_system_convolved <= allpassed_system_singlecycle_convolved;
     end 
   end
 
-  logic signed [15:0] delayed_audio_out, one_second_delay;
+  logic allpassed_system_valid_unconvolved;
+  logic signed [15:0] allpassed_system_singlecycle_unconvolved, allpassed_system_unconvolved;
+  fir_allpass_24k_16width_output allpass_system_unconvolved (
+        .aclk(audio_clk),
+        .s_axis_data_tvalid(audio_trigger),
+        .s_axis_data_tready(1'b1),
+        .s_axis_data_tdata(unconvolved_audio_system),
+        .m_axis_data_tvalid(allpassed_system_valid_unconvolved),
+        .m_axis_data_tdata(allpassed_system_singlecycle_unconvolved));
+  always_ff @(posedge audio_clk) begin
+    if (allpassed_system_valid_unconvolved) begin
+      allpassed_system_unconvolved <= allpassed_system_singlecycle_unconvolved;
+    end 
+  end
+
+  logic signed [15:0] delayed_convolved_audio_out_system, delayed_unconvolved_audio_out_system, one_second_delay;
   //Delayed audio by sw[15:10] w/ two 0s tacked on 
-  delay_audio #(16'd1000) delay_audio_system (
+  delay_audio #(16'd1000) delay_convolved_audio_system (
+        .clk_in(audio_clk), 
+        .rst_in(sys_rst),
+        .enable_delay(1'b1), 
+        .delay_length(DELAY_AMOUNT - 3'd1),
+        .audio_valid_in(audio_trigger), 
+        .audio_in(allpassed_system_convolved), 
+        .delayed_audio_out(delayed_convolved_audio_out_system));
+
+  //Delayed audio by sw[15:10] w/ two 0s tacked on 
+  delay_audio #(16'd1000) delay_unconvolved_audio_system (
         .clk_in(audio_clk), 
         .rst_in(sys_rst),
         .enable_delay(1'b1), 
         .delay_length(DELAY_AMOUNT),
         .audio_valid_in(audio_trigger), 
-        .audio_in(allpassed_system), 
-        .delayed_audio_out(delayed_audio_out));
+        .audio_in(allpassed_system_convolved), 
+        .delayed_audio_out(delayed_unconvolved_audio_out_system));
 
   // One second delayed audio
   delay_audio #(16'd24010) one_second_delayed_sound_out (
@@ -218,20 +245,19 @@ module top_level(
   logic sound_out_system, sound_out_calibrate;
   
   assign pdm_out_system = sw[4] ? {{8{tone_440[7]}}, tone_440[7:0]} <<< 8 : 
-                    (sw[3] ? raw_audio_in_system : 
-                    (sw[2] ? processed_audio_in_system : 
-                    (sw[5] ? convolved_audio_system : 
-                    (sw[6] ? allpassed_system : 
-                    (sw[7] ? delayed_audio_out :
-                    (sw[8] ? processed_audio_in_calibrate : 0))))));
+                    (sw[5] ? raw_audio_in_system : 
+                    (sw[6] ? processed_audio_in_system : 
+                    (sw[7] ? processed_audio_in_calibrate :
+                    (sw[8] ? delayed_convolved_audio_out_system : 
+                    (sw[9] ? delayed_unconvolved_audio_out_system : 0)))));
 
-  pdm pdm1(
+  pdm pdm_calibrate(
         .clk_in(audio_clk),
         .rst_in(sys_rst),
         .level_in(impulse_amp_out),
         .pdm_out(sound_out_calibrate));
 
-  pdm pdm2(
+  pdm pdm_system(
         .clk_in(audio_clk),
         .rst_in(sys_rst),
         .level_in(pdm_out_system),
