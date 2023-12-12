@@ -73,22 +73,32 @@ module top_level(
   assign mic_data_system = pmoda[3];
   assign mic_data_calibrate = pmoda[7];
 
+  logic signed [15:0] intermediate_audio_val_system, intermediate_audio_val_calibrate;
+
+
+
+  logic debounced_btn_1;
+  debouncer debouncer_system(.clk_in(audio_clk), .rst_in(sys_rst), .dirty_in(btn[1]), .clean_out(debounced_btn_1));
+
+
   process_audio process_mic_system(
         .audio_clk(audio_clk),
         .rst_in(sys_rst),
-        .offset_trigger(btn[1]),
+        .offset_trigger(debounced_btn_1),
         .mic_data_valid(mic_data_valid_system),
         .raw_audio_single_cycle(raw_audio_in_system_singlecycle),
         .raw_audio_in(raw_audio_in_system),
+        .intermediate_audio_val(intermediate_audio_val_system),
         .processed_audio(processed_audio_in_system));
 
   process_audio process_mic_calibrate(
         .audio_clk(audio_clk),
         .rst_in(sys_rst),
-        .offset_trigger(btn[1]),
+        .offset_trigger(debounced_btn_1),
         .mic_data_valid(mic_data_valid_calibrate),
         .raw_audio_single_cycle(raw_audio_in_calibrate_singlecycle),
         .raw_audio_in(raw_audio_in_calibrate),
+        .intermediate_audio_val(intermediate_audio_val_calibrate),
         .processed_audio(processed_audio_in_calibrate));
 
   logic signed [15:0] unconvolved_audio_system;
@@ -245,7 +255,8 @@ module top_level(
   assign pdm_out_system = sw[4] ? {{8{tone_440[7]}}, tone_440[7:0]} <<< 8 : 
                     (sw[5] ? raw_audio_in_system : 
                     (sw[6] ? processed_audio_in_system : 
-                    (sw[7] ? processed_audio_in_calibrate :
+                    (sw[7] ? intermediate_audio_val_system :
+                  //   (sw[7] ? processed_audio_in_calibrate :
                     (sw[8] ? delayed_convolved_audio_out_system : 
                     (sw[9] ? delayed_unconvolved_audio_out_system : 
                     (sw[2] ? one_second_delay : 0))))));
@@ -253,7 +264,7 @@ module top_level(
   pdm pdm_calibrate(
         .clk_in(audio_clk),
         .rst_in(sys_rst),
-        .level_in(impulse_amp_out),
+        .level_in(raw_audio_in_system),
         .pdm_out(sound_out_calibrate));
 
   pdm pdm_system(

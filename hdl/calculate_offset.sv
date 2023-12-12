@@ -44,7 +44,7 @@ module calculate_offset (input wire audio_clk,
                 COMPUTING : begin
                     state <= WAITING_FOR_TRIGGER;
                     offset_produced <= 1;
-                    offset <= (sum_of_offsets >>> 4'sd15);
+                    offset <= (sum_of_offsets >>> 4'd15);
                 end 
                 default : begin
                     offset <= 0;
