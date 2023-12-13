@@ -8,3 +8,4 @@ obj/
 *.out
 local_stuff/
 *.jpeg
+*.ipynb
