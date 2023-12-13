@@ -41,7 +41,8 @@ module process_audio (input wire audio_clk,
     end 
     
     // assign dc_blocked_audio_in = offset_produced ? (raw_audio_in - OFFSET) : raw_audio_in;
-    assign dc_blocked_audio_in = offset_produced ? (raw_audio_in - (16'shFC73)) : raw_audio_in;
+    // assign dc_blocked_audio_in = offset_produced ? (raw_audio_in - (16'shFC73)) : raw_audio_in;
+    assign dc_blocked_audio_in = offset_produced ? (raw_audio_in - (16'shFC72)) : raw_audio_in;
     assign intermediate_audio_val = dc_blocked_audio_in;
     assign processed_audio = OFFSET;
     // Antialiasing Filter
