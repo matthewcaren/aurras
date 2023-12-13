@@ -46,6 +46,7 @@ module top_level(
   logic signed [15:0] raw_audio_in_system_singlecycle, raw_audio_in_calibrate_singlecycle;
   logic signed [15:0] raw_audio_in_system, raw_audio_in_calibrate;
   logic signed [15:0] processed_audio_in_system, processed_audio_in_calibrate;
+  logic signed [15:0] intermediate_audio_val_system, intermediate_audio_val_calibrate;
   logic mic_data_valid_system, mic_data_valid_calibrate;
 
   i2s mic_system(
@@ -73,13 +74,12 @@ module top_level(
   assign mic_data_system = pmoda[3];
   assign mic_data_calibrate = pmoda[7];
 
-  logic signed [15:0] intermediate_audio_val_system, intermediate_audio_val_calibrate;
-
-
-
   logic debounced_btn_1;
-  debouncer debouncer_system(.clk_in(audio_clk), .rst_in(sys_rst), .dirty_in(btn[1]), .clean_out(debounced_btn_1));
-
+  debouncer debouncer_system (
+				.clk_in(audio_clk),
+				.rst_in(sys_rst),
+				.dirty_in(btn[1]),
+				.clean_out(debounced_btn_1));
 
   process_audio process_mic_system(
         .audio_clk(audio_clk),
@@ -151,28 +151,12 @@ module top_level(
         .second_ir_index(second_ir_index),
         .ir_vals(ir_vals));  
   
-  logic signed [15:0] displayed_audio_system, displayed_audio_calibrate, convolved_audio_system;
+  logic signed [15:0] convolved_audio_system;
   always_ff @(posedge audio_clk) begin
     if (produced_convolutional_result) begin
       convolved_audio_system <= (-16'sd1 * convolved_audio_system_singlecycle[28:13]);
     end
-    if (btn[2]) begin
-      displayed_audio_system <= processed_audio_in_system;
-      displayed_audio_calibrate <= processed_audio_in_calibrate;
-    end
   end
-
-  /// ### SEVEN SEGMENT DISPLAY
-  logic [6:0] ss_c;
-  assign ss0_c = ss_c; 
-  assign ss1_c = ss_c;
-
-  seven_segment_controller mssc(
-        .clk_in(audio_clk),
-        .rst_in(sys_rst),
-        .val_in(sw[3] ? (convolved_audio_system): {displayed_audio_system, displayed_audio_calibrate}),
-        .cat_out(ss_c),
-        .an_out({ss0_an, ss1_an}));
 
   // ### TEST SINE WAVE
 
@@ -252,28 +236,49 @@ module top_level(
   logic signed [15:0] pdm_out_system;
   logic sound_out_system, sound_out_calibrate;
   
-  assign pdm_out_system = sw[4] ? {{8{tone_440[7]}}, tone_440[7:0]} <<< 8 : 
-                    (sw[5] ? raw_audio_in_system : 
-                    (sw[6] ? processed_audio_in_system : 
-                    (sw[7] ? intermediate_audio_val_system :
-                  //   (sw[7] ? processed_audio_in_calibrate :
-                    (sw[8] ? delayed_convolved_audio_out_system : 
-                    (sw[9] ? delayed_unconvolved_audio_out_system : 
-                    (sw[2] ? one_second_delay : 0))))));
+  assign pdm_out_system = sw[2] ? {{8{tone_440[7]}}, tone_440[7:0]} <<< 8 : 
+                    (sw[3] ? raw_audio_in_system : 
+                    (sw[4] ? processed_audio_in_system : 
+                    (sw[5] ? intermediate_audio_val_system :
+                    (sw[6] ? delayed_convolved_audio_out_system : 
+                    (sw[7] ? delayed_unconvolved_audio_out_system : 
+                    (sw[8] ? one_second_delay : 0))))));
 
   pdm pdm_calibrate(
         .clk_in(audio_clk),
         .rst_in(sys_rst),
-        .level_in(raw_audio_in_system),
+        .level_in(impulse_amp_out),
         .pdm_out(sound_out_calibrate));
 
   pdm pdm_system(
         .clk_in(audio_clk),
         .rst_in(sys_rst),
-        .level_in(pdm_out_system),
+        .level_in(pdm_out_system + 16'sd250),
         .pdm_out(sound_out_system));
 
   assign spkl = sw[0] ? sound_out_calibrate : 0;
   assign spkr = sw[1] ? sound_out_system : 0;
 
+
+  /// ### SEVEN SEGMENT DISPLAY
+
+	logic signed [15:0] displayed_audio_left, displayed_audio_right;
+  always_ff @(posedge audio_clk) begin
+    if (btn[2]) begin
+      displayed_audio_left <= pdm_out_system;
+      displayed_audio_right <= (sw[9] ? raw_audio_in_system : processed_audio_in_system);
+    end
+  end
+
+  logic [6:0] ss_c;
+  assign ss0_c = ss_c; 
+  assign ss1_c = ss_c;
+
+  seven_segment_controller mssc(
+        .clk_in(audio_clk),
+        .rst_in(sys_rst),
+        .val_in({displayed_audio_left, displayed_audio_right}),
+        .cat_out(ss_c),
+        .an_out({ss0_an, ss1_an}));
+        
 endmodule

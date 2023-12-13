@@ -40,12 +40,11 @@ module process_audio (input wire audio_clk,
         end 
     end 
     
-    // assign dc_blocked_audio_in = offset_produced ? (raw_audio_in - OFFSET) : raw_audio_in;
-    // assign dc_blocked_audio_in = offset_produced ? (raw_audio_in - (16'shFC73)) : raw_audio_in;
+    assign dc_blocked_audio_in = offset_produced ? (raw_audio_in - OFFSET) : raw_audio_in;
     // assign dc_blocked_audio_in = offset_produced ? (raw_audio_in - (16'shFC73)) : raw_audio_in;   // NO NOISE: -909
     // assign dc_blocked_audio_in = offset_produced ? (raw_audio_in - (16'shFC00)) : raw_audio_in;   // NO NOISE: -1024
     // assign dc_blocked_audio_in = offset_produced ? (raw_audio_in - (16'shF8F2)) : raw_audio_in;   // NOISY: -1806
-    assign dc_blocked_audio_in = offset_produced ? (raw_audio_in - (16'shF830)) : raw_audio_in;   // ??: -2000
+    // assign dc_blocked_audio_in = offset_produced ? (raw_audio_in - (16'shF830)) : raw_audio_in;   // NO NOISE: -2000
 
     assign intermediate_audio_val = dc_blocked_audio_in;
     // Antialiasing Filter
@@ -65,7 +64,6 @@ module process_audio (input wire audio_clk,
             anti_alias_audio_in <= anti_alias_audio_in_singlecycle;
         end
     end 
-
 
     // 48k to 24k decimation
     logic decimation_counter; 
