@@ -59,7 +59,15 @@ module impulse_generator (
                     state <= WAITING;
                 end
             end
+
+            default: begin
+                impulse_out <= 0;
+                amp_out <= 16'sd0;
+                state <= WAITING;
+            end
+
         endcase
+
     end
   end
 

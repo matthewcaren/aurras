@@ -7,4 +7,5 @@ obj/
 *.vcd
 *.out
 local_stuff/
+*.jpeg
 *.ipynb

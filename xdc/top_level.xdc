@@ -125,15 +125,10 @@ set_property IOSTANDARD LVCMOS33 [ get_ports "spk*"]
 # set_property PACKAGE_PIN D12 [ get_ports "mic_data"]
 # set_property IOSTANDARD LVCMOS33 [ get_ports "mic*"]
 
-# # change G15 to B13 and E13 to B14
-# set_property PACKAGE_PIN B13 [ get_ports "spkl"]
-# set_property PACKAGE_PIN B14 [ get_ports "spkr"]
-# set_property IOSTANDARD LVCMOS33 [ get_ports "spk*"]
-
 set_property BITSTREAM.CONFIG.UNUSEDPIN PULLUP [current_design]
 set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 
 # uart pins for working with manta:
-set_property PACKAGE_PIN B16 [ get_ports "uart_rxd"]
-set_property PACKAGE_PIN A16 [ get_ports "uart_txd"]
-set_property IOSTANDARD LVCMOS33 [ get_ports "uart*"]
+# set_property PACKAGE_PIN B16 [ get_ports "uart_rxd"]
+# set_property PACKAGE_PIN A16 [ get_ports "uart_txd"]
+# set_property IOSTANDARD LVCMOS33 [ get_ports "uart*"]
