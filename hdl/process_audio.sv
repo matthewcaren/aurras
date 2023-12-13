@@ -42,9 +42,12 @@ module process_audio (input wire audio_clk,
     
     // assign dc_blocked_audio_in = offset_produced ? (raw_audio_in - OFFSET) : raw_audio_in;
     // assign dc_blocked_audio_in = offset_produced ? (raw_audio_in - (16'shFC73)) : raw_audio_in;
-    assign dc_blocked_audio_in = offset_produced ? (raw_audio_in - (16'shFC72)) : raw_audio_in;
+    // assign dc_blocked_audio_in = offset_produced ? (raw_audio_in - (16'shFC73)) : raw_audio_in;   // NO NOISE: -909
+    // assign dc_blocked_audio_in = offset_produced ? (raw_audio_in - (16'shFC00)) : raw_audio_in;   // NO NOISE: -1024
+    // assign dc_blocked_audio_in = offset_produced ? (raw_audio_in - (16'shF8F2)) : raw_audio_in;   // NOISY: -1806
+    assign dc_blocked_audio_in = offset_produced ? (raw_audio_in - (16'shF830)) : raw_audio_in;   // ??: -2000
+
     assign intermediate_audio_val = dc_blocked_audio_in;
-    assign processed_audio = OFFSET;
     // Antialiasing Filter
     logic signed [15:0] anti_alias_audio_in_singlecycle;
     logic filter_valid;
@@ -65,19 +68,18 @@ module process_audio (input wire audio_clk,
 
 
     // 48k to 24k decimation
-    // logic decimation_counter; 
-    // always_ff @(posedge audio_clk) begin
-    //     if (rst_in) begin
-    //         decimation_counter <= 0;
-    //     end
-    //     if (filter_valid) begin
-    //         if (decimation_counter == 0) begin
-    //            // processed_audio <= anti_alias_audio_in;
-    //             // processed_audio <= dc_blocked_audio_in;
-    //         end 
-    //         decimation_counter <= ~(decimation_counter);
-    //     end
-    // end
+    logic decimation_counter; 
+    always_ff @(posedge audio_clk) begin
+        if (rst_in) begin
+            decimation_counter <= 0;
+        end
+        if (filter_valid) begin
+            if (decimation_counter == 0) begin
+               processed_audio <= anti_alias_audio_in;
+            end 
+            decimation_counter <= ~(decimation_counter);
+        end
+    end
 endmodule
 
 `timescale 1ns / 1ps
