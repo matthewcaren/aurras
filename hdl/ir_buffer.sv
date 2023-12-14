@@ -19,9 +19,9 @@ module ir_buffer #(parameter MEMORY_DEPTH = 16'd6000)
         .RAM_WIDTH(16),
         .RAM_DEPTH(MEMORY_DEPTH)
     ) ir_buffer_0 (
-        .addra((ir_data_in_valid && (ir_sample_index < 6000)) ? (16'd5999 - ir_sample_index) : first_ir_index),
+        .addra((ir_data_in_valid && (ir_sample_index >= 16'd18000)) ? (16'd23999 - ir_sample_index) : first_ir_index),
         .clka(audio_clk),
-        .wea(write_enable && ir_data_in_valid && (ir_sample_index < 6000)),
+        .wea(write_enable && ir_data_in_valid && (ir_sample_index >= 16'd18000)),
         .dina(write_data),
         .ena(1'b1),
         .regcea(1'b1),
@@ -42,9 +42,9 @@ module ir_buffer #(parameter MEMORY_DEPTH = 16'd6000)
         .RAM_WIDTH(16),
         .RAM_DEPTH(MEMORY_DEPTH)
     ) ir_buffer_1 (
-        .addra((ir_data_in_valid && (ir_sample_index < 16'd12000) && (ir_sample_index >= 16'd6000)) ? (16'd11999 - ir_sample_index) : first_ir_index),
+        .addra((ir_data_in_valid && (ir_sample_index < 16'd18000) && (ir_sample_index >= 16'd12000)) ? (16'd17999 - ir_sample_index) : first_ir_index),
         .clka(audio_clk),
-        .wea(write_enable && ir_data_in_valid && (ir_sample_index < 16'd12000) && (ir_sample_index >= 16'd6000)),
+        .wea(write_enable && ir_data_in_valid && (ir_sample_index < 16'd18000) && (ir_sample_index >= 16'd12000)),
         .dina(write_data),
         .ena(1'b1),
         .regcea(1'b1),
@@ -65,9 +65,9 @@ module ir_buffer #(parameter MEMORY_DEPTH = 16'd6000)
         .RAM_WIDTH(16),
         .RAM_DEPTH(MEMORY_DEPTH)
     ) ir_buffer_2 (
-        .addra((ir_data_in_valid && (ir_sample_index < 16'd18000) && (ir_sample_index >= 16'd12000)) ? (16'd17999 - ir_sample_index) : first_ir_index),
+        .addra((ir_data_in_valid && (ir_sample_index < 16'd12000) && (ir_sample_index >= 16'd6000)) ? (16'd11999 - ir_sample_index) : first_ir_index),
         .clka(audio_clk),
-        .wea(write_enable && ir_data_in_valid && (ir_sample_index < 16'd18000) && (ir_sample_index >= 16'd12000)),
+        .wea(write_enable && ir_data_in_valid && (ir_sample_index < 16'd12000) && (ir_sample_index >= 16'd6000)),
         .dina(write_data),
         .ena(1'b1),
         .regcea(1'b1),
@@ -88,9 +88,9 @@ module ir_buffer #(parameter MEMORY_DEPTH = 16'd6000)
         .RAM_WIDTH(16),
         .RAM_DEPTH(MEMORY_DEPTH)
     ) ir_buffer_3 (
-        .addra((ir_data_in_valid && (ir_sample_index >= 16'd18000)) ? (16'd23999 - ir_sample_index) : first_ir_index),
+        .addra((ir_data_in_valid && (ir_sample_index < 6000)) ? (16'd5999 - ir_sample_index) : first_ir_index),
         .clka(audio_clk),
-        .wea(write_enable && ir_data_in_valid && (ir_sample_index >= 16'd18000)),
+        .wea(write_enable && ir_data_in_valid && (ir_sample_index < 6000)),
         .dina(write_data),
         .ena(1'b1),
         .regcea(1'b1),

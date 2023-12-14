@@ -253,7 +253,7 @@ module top_level(
   pdm pdm_system(
         .clk_in(audio_clk),
         .rst_in(sys_rst),
-        .level_in(pdm_out_system + 16'sd250),
+        .level_in(pdm_out_system + 16'sd2000),
         .pdm_out(sound_out_system));
 
   assign spkl = sw[0] ? sound_out_calibrate : 0;
@@ -262,7 +262,7 @@ module top_level(
 
   /// ### SEVEN SEGMENT DISPLAY
 
-	logic signed [15:0] displayed_audio_left, displayed_audio_right;
+  logic signed [15:0] displayed_audio_left, displayed_audio_right;
   always_ff @(posedge audio_clk) begin
     if (btn[2]) begin
       displayed_audio_left <= pdm_out_system;

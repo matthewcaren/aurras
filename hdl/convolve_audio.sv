@@ -87,10 +87,14 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
                 end
 
                 WRITING_AUDIO_BUFFER: begin
-                    data_in_brom0 <= audio_in;
-                    data_in_brom1 <= last_value_brom0;
-                    data_in_brom2 <= last_value_brom1;
-                    data_in_brom3 <= last_value_brom2;
+                    data_in_brom3 <= audio_in;
+                    data_in_brom2 <= last_value_brom3;
+                    data_in_brom1 <= last_value_brom2;
+                    data_in_brom0 <= last_value_brom1;
+                    // data_in_brom0 <= audio_in;
+                    // data_in_brom1 <= last_value_brom0;
+                    // data_in_brom2 <= last_value_brom1;
+                    // data_in_brom3 <= last_value_brom2;
                     if (fsm_transition_delay_counter == 2'd1) begin
                         fsm_transition_delay_counter <= 0;
                         live_write_enable <= 0;
@@ -110,13 +114,13 @@ module convolve_audio #(parameter IMPULSE_LENGTH = 24000) (
                         first_ir_index <= (convolve_counter << 1);
                         second_ir_index <= (convolve_counter << 1) + 1; 
                         
-                        first_audio_index <= (((convolve_counter << 1) + live_audio_start_address) >= 16'd6000) ? 
-                                             (((convolve_counter << 1) + live_audio_start_address) - 16'd6000) : 
-                                             ((convolve_counter << 1) + live_audio_start_address);
+                        first_audio_index <= (((convolve_counter << 1) + live_audio_start_address + 1) >= 16'd6000) ? 
+                                             (((convolve_counter << 1) + live_audio_start_address + 1) - 16'd6000) : 
+                                             ((convolve_counter << 1) + live_audio_start_address + 1);
 
-                        second_audio_index <= (((convolve_counter << 1) + live_audio_start_address + 1) >= 16'd6000) ?
-                                              (((convolve_counter << 1) + live_audio_start_address + 1) - 16'd6000) :
-                                              ((convolve_counter << 1) + live_audio_start_address + 1);
+                        second_audio_index <= (((convolve_counter << 1) + live_audio_start_address + 2) >= 16'd6000) ?
+                                              (((convolve_counter << 1) + live_audio_start_address + 2) - 16'd6000) :
+                                              ((convolve_counter << 1) + live_audio_start_address + 2);
                     end
 
                     // Loop over 3000 
