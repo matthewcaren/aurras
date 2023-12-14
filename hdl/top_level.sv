@@ -262,7 +262,7 @@ module top_level(
 
   /// ### SEVEN SEGMENT DISPLAY
 
-	logic signed [15:0] displayed_audio_left, displayed_audio_right;
+  logic signed [15:0] displayed_audio_left, displayed_audio_right;
   always_ff @(posedge audio_clk) begin
     if (btn[2]) begin
       displayed_audio_left <= pdm_out_system;
