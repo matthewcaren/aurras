@@ -36,7 +36,7 @@ module impulse_generator (
             end
             HOLDING : begin
                 holding_counter <= holding_counter + 1;
-                if (holding_counter == 32'd98_300_000) begin
+                if (holding_counter == 32'd140_000_000) begin
                     state <= WILL_SEND_IMPULSE;
                     end
                 end
