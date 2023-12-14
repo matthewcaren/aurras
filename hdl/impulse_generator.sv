@@ -35,7 +35,7 @@ module impulse_generator (
 
             WILL_SEND_IMPULSE: begin
                 if (step_in) begin
-                    amp_out <= 16'shDFFF;
+                    amp_out <= 16'shCFFF;
                     impulse_length_counter <= 0;
                     state <= SENDING_IMPULSE;
                 end
