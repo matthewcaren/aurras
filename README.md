@@ -29,6 +29,7 @@ Active environmental noise cancellation using an FPGA.
 
 btn0: system reset\
 btn1: calculate DC offset\
+btn2: sample audio from microphone\
 btn3: record impulse\
 
 sw0: channel 0 output enable\
@@ -37,10 +38,10 @@ sw1: channel 1 output enable\\
 sw2: 440Hz test tone\
 sw3: Raw input from mic\
 sw4: Processed input from mic (DC-blocked, antialiased, downsampled)\
-sw5: Calibration out\
-sw6: Convolved audio\
-sw7: Phase-corrected audio\
-sw8: Full anti-noise output
+sw5: Intermediate output\
+sw6: Room Adjusted Mode: Delayed and convolved audio output\
+sw7: Core Noise Cancellation Mode: Delayed but not convolved audio output\
+sw8: Audio delayed by one second\
 
 sw10-15: Delay amount\\
 
