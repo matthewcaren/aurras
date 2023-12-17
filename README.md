@@ -5,7 +5,7 @@ Active environmental noise cancellation using an FPGA.
 
 ## specs
 
-16-bit audio @ 24 kHz
+16-bit audio @ 24 kHz. Developed for the Xilinx Spartan-7 FPGA with the RealDigital Urbana Board.
 
 ### clocking
 
