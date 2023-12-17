@@ -1,5 +1,4 @@
 # mclk is from the 100 MHz oscillator on Urbana Boad
-
 set_property -dict {PACKAGE_PIN N15 IOSTANDARD LVCMOS33} [get_ports {clk_100mhz}]
 create_clock -add -name gclk -period 10.000 -waveform {0 4} [get_ports {clk_100mhz}]
 
