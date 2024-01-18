@@ -1,18 +1,20 @@
 # aurras
 
-Active environmental noise cancellation using an FPGA.
+Lighweight active environmental noise cancellation on an FPGA.
 
 
 ## specs
 
-16-bit audio @ 24 kHz. Developed for the Xilinx Spartan-7 FPGA with the RealDigital Urbana board.
+Achieves up to 15dB of single-source noise attenuation in a dead room, and up to 12dB of attenuation in reverberant spaces within the target band of 200–2000 Hz (see paper for comprehensive results).
+
+Runs 16-bit audio @ 24 kHz. Developed for the Xilinx Spartan-7 FPGA with the RealDigital Urbana board.
 
 ### clocking
 
-- Main clock: 98.3MhZ
-- i2s driver clock (main clock / 32) ≈ 3.072 MhZ
-- Input audio rate from I2S (main clock / 2048) ≈ 48KhZ
-- Project audio rate (main clock / 4096) ≈ 24kHZ
+- Main clock: 98.3 MHz
+- i2s driver clock (main clock / 32) ≈ 3.072 MHz
+- Input audio rate from I2S (main clock / 2048) ≈ 48 kHz
+- Project audio rate (main clock / 4096) ≈ 24 kHz
 
 ### memory
 
@@ -42,4 +44,4 @@ sw7: Core Noise Cancellation Mode: Delayed but not convolved audio output\
 sw8: Audio delayed by one second\
 sw10-sw15: Delay amount (number of 24kHz cycles)
 
-The 7-segment display shows the samples being sent to the speaker in real-time.
+The 7-segment display shows the numerical values of the samples being sent to the speaker in real-time.
