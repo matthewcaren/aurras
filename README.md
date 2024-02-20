@@ -1,6 +1,6 @@
 # aurras
 
-Lighweight active environmental noise cancellation on an FPGA.
+Lighweight active open-field noise cancellation on an FPGA. Built for an Xilinx Spartan-7 XC7S50-CSGA324 FPGA.
 
 
 ## specs
